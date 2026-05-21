@@ -1,11 +1,10 @@
-
 import { useEffect, useMemo, useState } from 'react'
 import { LineChart, Line, ResponsiveContainer } from 'recharts'
 import { TORT, FURN } from './data/items'
 
 const initialItems = [...TORT, ...FURN].map((item) => ({
   id: item.id,
- title: item.note || item.title,
+  title: item.note || item.title,
   category: item.cat,
   budget: item.total,
   paid: item.paid,
@@ -25,16 +24,19 @@ const chartData = [
 
 export default function App() {
   const [items, setItems] = useState(() => {
-  const saved = localStorage.getItem('am-home-budget-items')
+    const saved = localStorage.getItem(
+      'am-home-budget-items'
+    )
 
-  return saved
-    ? JSON.parse(saved)
-    : initialItems
-})
+    return saved
+      ? JSON.parse(saved)
+      : initialItems
+  })
 
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const [activeCategory, setActiveCategory] = useState('ทั้งหมด')
+  const [activeCategory, setActiveCategory] =
+    useState('ทั้งหมด')
 
   const [form, setForm] = useState({
     title: '',
@@ -44,12 +46,22 @@ export default function App() {
   })
 
   useEffect(() => {
-    localStorage.setItem('am-home-budget-items', JSON.stringify(items))
+    localStorage.setItem(
+      'am-home-budget-items',
+      JSON.stringify(items)
+    )
   }, [items])
 
   const totals = useMemo(() => {
-    const total = items.reduce((s, i) => s + Number(i.budget), 0)
-    const paid = items.reduce((s, i) => s + Number(i.paid), 0)
+    const total = items.reduce(
+      (s, i) => s + Number(i.budget),
+      0
+    )
+
+    const paid = items.reduce(
+      (s, i) => s + Number(i.paid),
+      0
+    )
 
     return {
       total,
@@ -67,8 +79,12 @@ export default function App() {
 
   const filteredItems = items.filter((item) => {
     const matchSearch =
-      item.title.toLowerCase().includes(search.toLowerCase()) ||
-      item.category.toLowerCase().includes(search.toLowerCase())
+      item.title
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      item.category
+        .toLowerCase()
+        .includes(search.toLowerCase())
 
     const matchCategory =
       activeCategory === 'ทั้งหมด' ||
@@ -133,18 +149,14 @@ export default function App() {
 
   const status = (item) => {
     if (item.paid <= 0) return 'ยังไม่จ่าย'
-    if (item.paid >= item.budget) return 'จ่ายครบ'
+    if (item.paid >= item.budget)
+      return 'จ่ายครบ'
+
     return 'บางส่วน'
   }
 
   return (
-    <div
-      className="layout"
-      style={{
-        width: '100%',
-        overflowX: 'hidden',
-      }}
-    >
+    <div className="layout">
       <aside className="sidebar">
         <div className="brand">🏡 AM Home</div>
 
@@ -155,38 +167,33 @@ export default function App() {
         </div>
       </aside>
 
-      <main
-        className="main"
-        style={{
-          width: '100%',
-          minWidth: 0,
-          overflowX: 'hidden',
-        }}
-      >
+      <main className="main">
         <div className="topbar">
           <div>
             <h1>AM Home Budget</h1>
             <p>{items.length} รายการ</p>
           </div>
 
-          <button className="fab" onClick={() => setOpen(true)}>
+          <button
+            className="fab"
+            onClick={() => setOpen(true)}
+          >
             + เพิ่มรายการ
           </button>
         </div>
 
         <section className="summary">
-          <div
-            className="card"
-            style={{
-              minWidth: 0,
-            }}
-          >
+          <div className="card">
             <label>งบทั้งหมด</label>
-            <h2>฿{totals.total.toLocaleString()}</h2>
+
+            <h2>
+              ฿{totals.total.toLocaleString()}
+            </h2>
           </div>
 
           <div className="card">
             <label>จ่ายแล้ว</label>
+
             <h2 style={{ color: '#10b981' }}>
               ฿{totals.paid.toLocaleString()}
             </h2>
@@ -194,28 +201,22 @@ export default function App() {
 
           <div className="card">
             <label>คงเหลือ</label>
+
             <h2 style={{ color: '#f59e0b' }}>
               ฿{totals.remain.toLocaleString()}
             </h2>
           </div>
         </section>
 
-        <section
-          className="grid"
-          style={{
-            display: 'grid',
-            gridTemplateColumns:
-              'minmax(0, 1fr) minmax(320px, 360px)',
-            gap: '24px',
-            width: '100%',
-            overflow: 'hidden',
-          }}
-        >
+        <section className="grid">
           <div className="card">
             <h3>Budget Overview</h3>
 
             <div className="chart">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+              >
                 <LineChart data={chartData}>
                   <Line
                     type="monotone"
@@ -229,19 +230,14 @@ export default function App() {
             </div>
           </div>
 
-          <div
-            className="card"
-            style={{
-              width: '100%',
-              maxWidth: '360px',
-              minWidth: 0,
-            }}
-          >
+          <div className="card">
             <h3>Quick Search</h3>
 
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
               placeholder="ค้นหา..."
               style={{
                 width: '100%',
@@ -254,21 +250,12 @@ export default function App() {
           </div>
         </section>
 
-        <section
-          className="card"
-          style={{
-            width: '100%',
-            maxWidth: '100%',
-            minWidth: 0,
-          }}
-        >
+        <section className="card">
           <div
             style={{
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '12px',
+              flexDirection: 'column',
+              gap: '16px',
               marginBottom: '20px',
             }}
           >
@@ -281,9 +268,7 @@ export default function App() {
                 display: 'flex',
                 gap: '10px',
                 overflowX: 'auto',
-                paddingBottom: '4px',
-                width: '100%',
-                scrollbarWidth: 'thin',
+                paddingBottom: '6px',
               }}
             >
               {categories.map((category) => {
@@ -309,6 +294,7 @@ export default function App() {
                       fontWeight: 600,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
+                      flexShrink: 0,
                     }}
                   >
                     {category}
@@ -321,111 +307,121 @@ export default function App() {
           <div
             style={{
               width: '100%',
-              maxWidth: '100%',
               overflowX: 'auto',
-              overflowY: 'hidden',
-              WebkitOverflowScrolling: 'touch',
             }}
           >
             <table
               style={{
                 width: '100%',
-                minWidth: '1200px',
-                borderCollapse: 'separate',
+                minWidth: '980px',
               }}
             >
-            <thead>
-              <tr>
-                <th style={{ minWidth: '520px' }}>รายการ</th>
-                <th>หมวด</th>
-                <th>งบ</th>
-                <th>จ่ายแล้ว</th>
-                <th>สถานะ</th>
-                <th
-                style={{
-                  position: 'sticky',
-                  right: 0,
-                  background: '#fff',
-                  boxShadow: '-6px 0 8px rgba(0,0,0,0.04)',
-                  zIndex: 2,
-                  minWidth: '170px',
-                }}
-              >
-                Action
-              </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredItems.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <div style={{ fontWeight: 600 }}>
-                      {item.title}
-                    </div>
-
-                    {item.installment && (
-                      <div
-                        style={{
-                          fontSize: '12px',
-                          color: '#6b7280',
-                          marginTop: '4px',
-                        }}
-                      >
-                        ผ่อน {item.installment.paid}/
-                        {item.installment.total} งวด
-                      </div>
-                    )}
-                  </td>
-
-                  <td>{item.category}</td>
-
-                  <td>
-                    ฿{Number(item.budget).toLocaleString()}
-                  </td>
-
-                  <td>
-                    ฿{Number(item.paid).toLocaleString()}
-                  </td>
-
-                  <td>{status(item)}</td>
-
-                  <td
+              <thead>
+                <tr>
+                  <th>รายการ</th>
+                  <th>หมวด</th>
+                  <th>งบ</th>
+                  <th>จ่ายแล้ว</th>
+                  <th>สถานะ</th>
+                  <th
                     style={{
                       position: 'sticky',
                       right: 0,
                       background: '#fff',
-                      boxShadow: '-6px 0 8px rgba(0,0,0,0.04)',
-                      zIndex: 1,
-                      minWidth: '170px',
                     }}
                   >
-                    <div
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredItems.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <div
+                        style={{ fontWeight: 600 }}
+                      >
+                        {item.title}
+                      </div>
+
+                      {item.installment && (
+                        <div
+                          style={{
+                            fontSize: '12px',
+                            color: '#6b7280',
+                            marginTop: '4px',
+                          }}
+                        >
+                          ผ่อน{' '}
+                          {
+                            item.installment
+                              .paid
+                          }
+                          /
+                          {
+                            item.installment
+                              .total
+                          }{' '}
+                          งวด
+                        </div>
+                      )}
+                    </td>
+
+                    <td>{item.category}</td>
+
+                    <td>
+                      ฿
+                      {Number(
+                        item.budget
+                      ).toLocaleString()}
+                    </td>
+
+                    <td>
+                      ฿
+                      {Number(
+                        item.paid
+                      ).toLocaleString()}
+                    </td>
+
+                    <td>{status(item)}</td>
+
+                    <td
                       style={{
-                        display: 'flex',
-                        gap: '8px',
-                        justifyContent: 'flex-end',
+                        position: 'sticky',
+                        right: 0,
+                        background: '#fff',
                       }}
                     >
-                      <button
-                        className="mobile-btn"
-                        onClick={() => addPayment(item.id)}
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '8px',
+                        }}
                       >
-                        + ชำระ
-                      </button>
+                        <button
+                          className="mobile-btn"
+                          onClick={() =>
+                            addPayment(item.id)
+                          }
+                        >
+                          + ชำระ
+                        </button>
 
-                      <button
-                        className="mobile-btn"
-                        onClick={() => deleteItem(item.id)}
-                      >
-                        ลบ
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                        <button
+                          className="mobile-btn"
+                          onClick={() =>
+                            deleteItem(item.id)
+                          }
+                        >
+                          ลบ
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
       </main>
@@ -451,16 +447,27 @@ export default function App() {
               maxWidth: '500px',
             }}
           >
-            <h2 style={{ marginBottom: '20px' }}>
+            <h2
+              style={{ marginBottom: '20px' }}
+            >
               เพิ่มรายจ่าย
             </h2>
 
-            <div style={{ display: 'grid', gap: '14px' }}>
+            <div
+              style={{
+                display: 'grid',
+                gap: '14px',
+              }}
+            >
               <input
                 placeholder="รายละเอียด"
                 value={form.title}
                 onChange={(e) =>
-                  setForm({ ...form, title: e.target.value })
+                  setForm({
+                    ...form,
+                    title:
+                      e.target.value,
+                  })
                 }
                 style={inputStyle}
               />
@@ -468,14 +475,24 @@ export default function App() {
               <select
                 value={form.category}
                 onChange={(e) =>
-                  setForm({ ...form, category: e.target.value })
+                  setForm({
+                    ...form,
+                    category:
+                      e.target.value,
+                  })
                 }
                 style={inputStyle}
               >
                 <option>ต่อเติม</option>
-                <option>Furniture</option>
-                <option>Home Appliances</option>
-                <option>Kitchenware</option>
+                <option>
+                  Furniture
+                </option>
+                <option>
+                  Home Appliances
+                </option>
+                <option>
+                  Kitchenware
+                </option>
               </select>
 
               <input
@@ -483,7 +500,11 @@ export default function App() {
                 placeholder="งบทั้งหมด"
                 value={form.budget}
                 onChange={(e) =>
-                  setForm({ ...form, budget: e.target.value })
+                  setForm({
+                    ...form,
+                    budget:
+                      e.target.value,
+                  })
                 }
                 style={inputStyle}
               />
@@ -493,7 +514,11 @@ export default function App() {
                 placeholder="จ่ายแล้ว"
                 value={form.paid}
                 onChange={(e) =>
-                  setForm({ ...form, paid: e.target.value })
+                  setForm({
+                    ...form,
+                    paid:
+                      e.target.value,
+                  })
                 }
                 style={inputStyle}
               />
@@ -502,19 +527,25 @@ export default function App() {
             <div
               style={{
                 display: 'flex',
-                justifyContent: 'flex-end',
+                justifyContent:
+                  'flex-end',
                 gap: '10px',
                 marginTop: '24px',
               }}
             >
               <button
                 className="mobile-btn"
-                onClick={() => setOpen(false)}
+                onClick={() =>
+                  setOpen(false)
+                }
               >
                 ยกเลิก
               </button>
 
-              <button className="fab" onClick={addExpense}>
+              <button
+                className="fab"
+                onClick={addExpense}
+              >
                 บันทึก
               </button>
             </div>

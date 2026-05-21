@@ -142,6 +142,7 @@ export default function App() {
       className="layout"
       style={{
         width: '100%',
+        overflowX: 'hidden',
       }}
     >
       <aside className="sidebar">
@@ -154,7 +155,14 @@ export default function App() {
         </div>
       </aside>
 
-      <main className="main">
+      <main
+        className="main"
+        style={{
+          width: '100%',
+          minWidth: 0,
+          overflowX: 'hidden',
+        }}
+      >
         <div className="topbar">
           <div>
             <h1>AM Home Budget</h1>
@@ -197,9 +205,10 @@ export default function App() {
           style={{
             display: 'grid',
             gridTemplateColumns:
-              'repeat(auto-fit, minmax(320px, 1fr))',
+              'minmax(0, 1fr) minmax(320px, 360px)',
             gap: '24px',
             width: '100%',
+            overflow: 'hidden',
           }}
         >
           <div className="card">
@@ -223,6 +232,8 @@ export default function App() {
           <div
             className="card"
             style={{
+              width: '100%',
+              maxWidth: '360px',
               minWidth: 0,
             }}
           >
@@ -248,6 +259,7 @@ export default function App() {
           style={{
             width: '100%',
             maxWidth: '100%',
+            minWidth: 0,
           }}
         >
           <div
@@ -270,7 +282,7 @@ export default function App() {
                 gap: '10px',
                 overflowX: 'auto',
                 paddingBottom: '4px',
-                maxWidth: '100%',
+                width: '100%',
                 scrollbarWidth: 'thin',
               }}
             >
@@ -309,6 +321,7 @@ export default function App() {
           <div
             style={{
               width: '100%',
+              maxWidth: '100%',
               overflowX: 'auto',
               overflowY: 'hidden',
               WebkitOverflowScrolling: 'touch',
@@ -316,14 +329,14 @@ export default function App() {
           >
             <table
               style={{
-                minWidth: '1100px',
-                width: 'max-content',
+                width: '100%',
+                minWidth: '1200px',
                 borderCollapse: 'separate',
               }}
             >
             <thead>
               <tr>
-                <th style={{ minWidth: '420px' }}>รายการ</th>
+                <th style={{ minWidth: '520px' }}>รายการ</th>
                 <th>หมวด</th>
                 <th>งบ</th>
                 <th>จ่ายแล้ว</th>

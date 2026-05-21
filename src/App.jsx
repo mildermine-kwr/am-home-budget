@@ -211,14 +211,51 @@ export default function App() {
   }
 
   return (
+    <>
+
+      <style>
+        {`
+          @keyframes meshMove {
+            0% {
+              background-position: 0% 50%;
+            }
+
+            50% {
+              background-position: 100% 50%;
+            }
+
+            100% {
+              background-position: 0% 50%;
+            }
+          }
+
+          @keyframes floatCard {
+            0% {
+              transform: translateY(0px);
+            }
+
+            50% {
+              transform: translateY(-10px);
+            }
+
+            100% {
+              transform: translateY(0px);
+            }
+          }
+        `}
+      </style>
+
     <div
       style={{
         minHeight: '100vh',
         background: `
-          radial-gradient(circle at top left, rgba(255,220,220,.35), transparent 28%),
-          radial-gradient(circle at top right, rgba(210,225,255,.35), transparent 28%),
+          radial-gradient(circle at 20% 20%, rgba(255,170,170,.55), transparent 32%),
+          radial-gradient(circle at 80% 10%, rgba(170,190,255,.55), transparent 32%),
+          radial-gradient(circle at 50% 80%, rgba(255,220,180,.45), transparent 36%),
           #F7F5F1
         `,
+        backgroundSize: '140% 140%',
+        animation: 'meshMove 18s ease infinite',
         padding: '48px',
         fontFamily:
           'Inter, Noto Sans Thai, sans-serif',
@@ -403,6 +440,7 @@ export default function App() {
             border: '1px solid rgba(255,255,255,.55)',
             boxShadow: '0 10px 40px rgba(0,0,0,.04)',
         transition: 'all .35s ease',
+        animation: 'floatCard 7s ease-in-out infinite',
         transform: 'translateY(0px)',
             }}
           >
@@ -924,6 +962,7 @@ export default function App() {
         </div>
       )}
     </div>
+    </>
   )
 }
 
@@ -933,6 +972,40 @@ function SummaryCard({
   color = '#2C5F82',
 }) {
   return (
+    <>
+
+      <style>
+        {`
+          @keyframes meshMove {
+            0% {
+              background-position: 0% 50%;
+            }
+
+            50% {
+              background-position: 100% 50%;
+            }
+
+            100% {
+              background-position: 0% 50%;
+            }
+          }
+
+          @keyframes floatCard {
+            0% {
+              transform: translateY(0px);
+            }
+
+            50% {
+              transform: translateY(-10px);
+            }
+
+            100% {
+              transform: translateY(0px);
+            }
+          }
+        `}
+      </style>
+
     <div
       style={{
         background: 'rgba(255,255,255,.72)',
@@ -942,6 +1015,7 @@ function SummaryCard({
         border: '1px solid rgba(255,255,255,.5)',
         boxShadow: '0 10px 40px rgba(0,0,0,.04)',
         transition: 'all .35s ease',
+        animation: 'floatCard 7s ease-in-out infinite',
         transform: 'translateY(0px)',
       }}
     >
@@ -968,6 +1042,7 @@ function SummaryCard({
         {value.toLocaleString()}
       </h2>
     </div>
+    </>
   )
 }
 

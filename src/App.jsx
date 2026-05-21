@@ -505,7 +505,7 @@ button:hover{
       style={{
         display: 'flex',
         gap: '12px',
-        alignItems: 'center',
+        alignItems: 'right',
         marginTop: '32px',
         flexWrap: 'wrap',
       }}

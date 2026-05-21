@@ -236,6 +236,32 @@ export default function App() {
   return (
     <>
 
+
+<style>
+{`
+@font-face {
+  font-family: 'DB Heavent';
+  src: local('DB Heavent');
+}
+
+*{
+  box-sizing:border-box;
+}
+
+button,
+input,
+textarea,
+select{
+  font-family:'DB Heavent', 'Noto Sans Thai', sans-serif;
+  transition:all .28s cubic-bezier(.22,1,.36,1);
+}
+
+button:hover{
+  transform:translateY(-2px);
+}
+`}
+</style>
+
       
 <style>
 {`
@@ -396,16 +422,16 @@ export default function App() {
       style={{
         minHeight: '100vh',
         background: `
-          radial-gradient(circle at 20% 20%, rgba(255,170,170,.55), transparent 32%),
-          radial-gradient(circle at 80% 10%, rgba(170,190,255,.55), transparent 32%),
-          radial-gradient(circle at 50% 80%, rgba(255,220,180,.45), transparent 36%),
-          #F7F5F1
+          radial-gradient(circle at 15% 20%, rgba(217,196,169,.42), transparent 32%),
+          radial-gradient(circle at 80% 10%, rgba(186,215,255,.55), transparent 34%),
+          radial-gradient(circle at 50% 80%, rgba(255,240,220,.42), transparent 36%),
+          linear-gradient(180deg,#F8FAFF,#F8F4EF)
         `,
         backgroundSize: '140% 140%',
         animation: 'meshMove 18s ease infinite',
-        padding: '48px',
+        padding: '40px',
         fontFamily:
-          'Inter, Noto Sans Thai, sans-serif',
+          'DB Heavent, Noto Sans Thai, sans-serif',
       }}
     >
       <div
@@ -435,11 +461,11 @@ export default function App() {
     <h1
       className="hero-title"
       style={{
-        fontSize: '104px',
+        fontSize: 'clamp(72px,8vw,128px)',
         lineHeight: '.95',
         letterSpacing: '-0.04em',
         margin: 0,
-        color: '#111111',
+        color: '#1B2430',
         fontWeight: 800,
       }}
     >
@@ -453,7 +479,7 @@ export default function App() {
     <p
       className="hero-subtitle"
       style={{
-        color: '#9B9B9B',
+        color: '#7C8798',
         marginTop: '18px',
         fontSize: '18px',
         lineHeight: 1.7,
@@ -481,7 +507,7 @@ export default function App() {
           border: '1px solid rgba(0,0,0,.08)',
           background: 'rgba(255,255,255,.72)',
           backdropFilter: 'blur(16px)',
-          borderRadius: '32px',
+          borderRadius: '36px',
           padding: '14px 20px',
           fontWeight: 600,
           color: '#444',
@@ -571,7 +597,7 @@ export default function App() {
         <div
           style={{
             background: 'rgba(255,255,255,.72)',
-            borderRadius: '32px',
+            borderRadius: '36px',
             padding: '20px',
             marginBottom: '20px',
           }}
@@ -603,7 +629,7 @@ export default function App() {
               overflow: 'hidden',
             backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255,255,255,.55)',
-            boxShadow: '0 10px 40px rgba(0,0,0,.04)',
+            boxShadow: '0 18px 50px rgba(31,41,55,.06)',
         transition: 'all .35s ease',
         animation: 'floatCard 7s ease-in-out infinite',
         transform: 'translateY(0px)',
@@ -614,7 +640,7 @@ export default function App() {
                 width: `${progress}%`,
                 height: '100%',
                 background:
-                  'linear-gradient(90deg,#5E8B67,#8DB996)',
+                  'linear-gradient(90deg,#6FA6E8,#B58A55)',
               }}
             />
           </div>
@@ -623,7 +649,7 @@ export default function App() {
         <div
           style={{
             background: 'rgba(255,255,255,.72)',
-            borderRadius: '32px',
+            borderRadius: '36px',
             overflow: 'hidden',
           }}
         >
@@ -632,7 +658,7 @@ export default function App() {
             style={{
               padding: '16px',
               borderBottom:
-                '1px solid #eee',
+                '1px solid rgba(255,255,255,.45)',
               display: 'flex',
               gap: '10px',
               flexWrap: 'wrap',
@@ -741,9 +767,9 @@ export default function App() {
               }}
               style={{
                 border: 'none',
-                background: '#111111',
+                background: 'linear-gradient(135deg,#6FA6E8,#4E82AD)',
                 color: '#fff',
-                borderRadius: '32px',
+                borderRadius: '36px',
                 padding: '12px 18px',
                 fontWeight: 700,
                 boxShadow: '0 8px 24px rgba(0,0,0,.12)',
@@ -1297,7 +1323,7 @@ export default function App() {
 const fieldStyle = {
   width: '100%',
   borderRadius: '22px',
-  border: '1px solid #D9CDBD',
+  border: '1px solid rgba(255,255,255,.55)',
   background:
     'rgba(255,255,255,.88)',
   padding: '0 22px',
@@ -1377,11 +1403,11 @@ function SummaryCard({
       className="summary-card"
       style={{
         background: 'rgba(255,255,255,.72)',
-        borderRadius: '32px',
-        padding: '48px',
+        borderRadius: '36px',
+        padding: '40px',
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,.5)',
-        boxShadow: '0 10px 40px rgba(0,0,0,.04)',
+        boxShadow: '0 18px 50px rgba(31,41,55,.06)',
         transition: 'all .35s ease',
         animation: 'floatCard 7s ease-in-out infinite',
         transform: 'translateY(0px)',
@@ -1402,7 +1428,7 @@ function SummaryCard({
         style={{
           marginTop: '4px',
           color,
-          fontSize: '64px',
+          fontSize: 'clamp(42px,4vw,64px)',
           letterSpacing: '-0.04em',
           fontWeight: 700,
         }}
@@ -1452,7 +1478,7 @@ function FilterButton({
       onClick={onClick}
       style={{
         border:
-          '1px solid #ddd',
+          '1px solid rgba(255,255,255,.5)',
         borderRadius:
           '999px',
         padding:
@@ -1530,7 +1556,7 @@ function TD({
           '1px solid rgba(0,0,0,.05)',
         transition: 'background .2s ease',
         background:
-          '#fff',
+          'rgba(255,255,255,.72)',
         position: sticky
           ? 'sticky'
           : 'static',

@@ -874,9 +874,11 @@ button:hover{
 <div
             style={{
               overflowX: 'auto',
-              overflowY: 'hidden',
+              overflowY: 'visible',
               WebkitOverflowScrolling: 'touch',
               width: '100%',
+              position: 'relative',
+              cursor: 'grab',
             }}
           >
             <table
@@ -1799,9 +1801,20 @@ function TH({
         right: sticky
           ? action
             ? 0
-            : 150
+            : 140
           : undefined,
         zIndex: sticky ? 20 : 1,
+        background: sticky
+          ? 'rgba(255,255,255,.98)'
+          : '#fff',
+        backdropFilter: sticky
+          ? 'blur(12px)'
+          : undefined,
+        boxShadow: sticky
+          ? action
+            ? '-10px 0 24px rgba(15,23,42,.06)'
+            : '-6px 0 18px rgba(15,23,42,.04)'
+          : 'none',
       }}
     >
       {children}
@@ -1829,9 +1842,20 @@ function TD({
         right: sticky
           ? action
             ? 0
-            : 150
+            : 140
           : undefined,
         zIndex: sticky ? 20 : 1,
+        background: sticky
+          ? 'rgba(255,255,255,.98)'
+          : '#fff',
+        backdropFilter: sticky
+          ? 'blur(12px)'
+          : undefined,
+        boxShadow: sticky
+          ? action
+            ? '-10px 0 24px rgba(15,23,42,.06)'
+            : '-6px 0 18px rgba(15,23,42,.04)'
+          : 'none',
       }}
     >
       {children}

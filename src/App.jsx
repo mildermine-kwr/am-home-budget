@@ -949,26 +949,43 @@ button:hover{
                             {item.installment && (
                               <div
                                 style={{
-                                  fontSize:
-                                    '16px',
-                                  color:
-                                    '#777',
-                                  marginTop:
-                                    '4px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  padding: '8px 14px',
+                                  borderRadius: '999px',
+                                  background:
+                                    'rgba(111,166,232,.14)',
+                                  color: '#4E82AD',
+                                  fontSize: '14px',
+                                  fontWeight: 700,
+                                  marginTop: '10px',
+                                  flexWrap: 'wrap',
                                 }}
                               >
-                                ผ่อน{' '}
-                                {
-                                  item
-                                    .installment
-                                    .paid
-                                }
-                                /
-                                {
-                                  item
-                                    .installment
-                                    .total
-                                }
+                                <span>
+                                  ผ่อน{' '}
+                                  {item.installment.paid}/
+                                  {item.installment.total}
+                                </span>
+
+                                <span
+                                  style={{
+                                    opacity: 0.45,
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  •
+                                </span>
+
+                                <span>
+                                  ฿
+                                  {Math.round(
+                                    item.total /
+                                    item.installment.total
+                                  ).toLocaleString()}
+                                  / งวด
+                                </span>
                               </div>
                             )}
                           </TD>
@@ -1007,11 +1024,22 @@ button:hover{
                                 borderRadius: '12px',
                                 padding: '8px 12px',
                               }}
-                              onClick={() =>
+                              onClick={() => {
                                 setPayingId(
                                   item.id
                                 )
-                              }
+
+                                setPayAmount(
+                                  item.installment
+                                    ? String(
+                                        Math.round(
+                                          item.total /
+                                          item.installment.total
+                                        )
+                                      )
+                                    : ''
+                                )
+                              }}
                             >
                               + ชำระ
                             </button>

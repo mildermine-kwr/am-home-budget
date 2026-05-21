@@ -1769,7 +1769,7 @@ function StatusBadge({
         padding: '6px 12px',
         fontSize: '14px',
         fontWeight: 600,
-        textWrapMode: 'nowrap';
+        whiteSpace: 'nowrap';
       }}
     >
       {children}

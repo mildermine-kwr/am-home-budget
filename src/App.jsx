@@ -400,6 +400,9 @@ export default function App() {
             gap: '16px',
             flexWrap: 'wrap',
             marginBottom: '96px',
+            position: 'relative',
+            overflow: 'visible',
+            minHeight: '720px',
           }}
         >
           <div>
@@ -499,7 +502,33 @@ export default function App() {
               >
                 🛋 ของแต่งบ้าน
               </TabButton>
-            </div>
+            
+</div>
+
+          <div
+            style={{
+              position: 'absolute',
+              right: '-80px',
+              top: '20px',
+              width: '56%',
+              zIndex: 1,
+              pointerEvents: 'none',
+            }}
+          >
+            <img
+              src={house3d}
+              alt="3D House"
+              style={{
+                width: '100%',
+                objectFit: 'contain',
+                filter:
+                  'drop-shadow(0 40px 80px rgba(0,0,0,.18))',
+                animation:
+                  'floatCard 7s ease-in-out infinite',
+              }}
+            />
+          </div>
+
           </div>
         </div>
 

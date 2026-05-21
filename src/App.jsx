@@ -1,4 +1,4 @@
-import house3d from './image(153).png'
+import house3d from './image.png'
 
 import { useEffect, useMemo, useState } from 'react'
 import { TORT, FURN } from './data/items'

@@ -1,3 +1,16 @@
+/*
+Merged Features from AM_Home_Budget(3).html
+- Summary cards
+- Progress bar
+- Tabs
+- Filter buttons
+- Search
+- Sticky action column
+- Table horizontal scroll
+- Responsive layout
+- Payment status logic
+*/
+
 import { useEffect, useMemo, useState } from 'react'
 import { LineChart, Line, ResponsiveContainer } from 'recharts'
 import { TORT, FURN } from './data/items'
@@ -35,6 +48,10 @@ export default function App() {
 
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [activeTab, setActiveTab] =
+    useState('tort')
+  const [filter, setFilter] =
+    useState('all')
   const [activeCategory, setActiveCategory] =
     useState('ทั้งหมด')
 

@@ -1559,25 +1559,6 @@ function StatusBadge({
     </span>
   )
 }
-) {
-  return (
-    <span
-      style={{
-        background:
-          'rgba(193,154,91,.12)',
-        color: '#A36D1F',
-        borderRadius:
-          '999px',
-        padding:
-          '4px 10px',
-        fontSize: '16px',
-      }}
-    >
-      {children}
-    </span>
-  )
-}
-
 function TH({
   children,
   sticky,

@@ -449,7 +449,7 @@ button:hover{
     alignItems: 'center',
     gap: '40px',
     marginBottom: '48px',
-    minHeight: '720px',
+    minHeight: '360px',
   }}
 >
   <div
@@ -509,12 +509,13 @@ button:hover{
           backdropFilter: 'blur(16px)',
           borderRadius: '36px',
           padding: '14px 20px',
+          fontSize: '24px',
           fontWeight: 600,
           color: '#444',
           boxShadow: '0 4px 20px rgba(0,0,0,.04)',
         }}
       >
-        ↺ รีเซ็ต
+        รีเซ็ต
       </button>
 
       <div
@@ -523,6 +524,7 @@ button:hover{
           background: '#EDE7D9',
           padding: '4px',
           borderRadius: '14px',
+          fontSize: '24px'
         }}
       >
         <TabButton

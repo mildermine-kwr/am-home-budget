@@ -588,6 +588,7 @@ button:hover{
               'repeat(auto-fit,minmax(240px,1fr))',
             gap: '16px',
             marginBottom: '20px',
+          
           }}
         >
           <SummaryCard
@@ -614,6 +615,7 @@ button:hover{
             borderRadius: '36px',
             padding: '20px',
             marginBottom: '20px',
+            maxHeight: 'fit-content',
           }}
         >
           <div
@@ -1674,6 +1676,7 @@ function SummaryCard({
           fontSize: 'clamp(36px,4vw,54px)',
           letterSpacing: '-0.04em',
           fontWeight: 700,
+          marginBottom: '0px',
         }}
       >
         ฿

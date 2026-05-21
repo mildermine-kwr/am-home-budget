@@ -279,6 +279,17 @@ export default function App() {
           >
             <button
               onClick={resetData}
+              style={{
+                border: '1px solid rgba(0,0,0,.08)',
+                background: 'rgba(255,255,255,.72)',
+                backdropFilter: 'blur(16px)',
+                borderRadius: '16px',
+                padding: '12px 18px',
+                fontWeight: 600,
+                color: '#444',
+                boxShadow: '0 4px 20px rgba(0,0,0,.04)',
+                transition: '.2s ease',
+              }}
             >
               ↺ รีเซ็ต
             </button>
@@ -502,6 +513,16 @@ export default function App() {
               onClick={() =>
                 setOpen(true)
               }
+              style={{
+                border: 'none',
+                background: '#111111',
+                color: '#fff',
+                borderRadius: '16px',
+                padding: '12px 18px',
+                fontWeight: 700,
+                boxShadow: '0 8px 24px rgba(0,0,0,.12)',
+                transition: '.2s ease',
+              }}
             >
               + เพิ่มรายการ
             </button>

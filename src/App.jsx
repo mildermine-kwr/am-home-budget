@@ -873,22 +873,22 @@ button:hover{
 
 <div
             style={{
-              overflowX: 'auto',
-              overflowY: 'visible',
-              WebkitOverflowScrolling: 'touch',
               width: '100%',
-              maxWidth: '100%',
+              overflowX: 'auto',
+              overflowY: 'hidden',
               position: 'relative',
+              WebkitOverflowScrolling: 'touch',
+              borderRadius: '0 0 32px 32px',
             }}
           >
             <table
               className="desktop-table"
               style={{
-                width: '100%',
-                minWidth:
-                  '1000px',
-                borderCollapse:
-                  'collapse',
+                minWidth: '1500px',
+                width: 'max-content',
+                borderCollapse: 'separate',
+                borderSpacing: 0,
+                background: 'transparent',
               }}
             >
               <thead>
@@ -1789,27 +1789,23 @@ function TH({
   return (
     <th
       style={{
-        padding: '14px',
-        background:
-          'rgba(255,255,255,.72)',
-        backdropFilter: 'blur(20px)',
-        textAlign:
-          'left',
-        position: sticky ? 'sticky' : 'static',
+        padding: '18px 20px',
+        textAlign: 'left',
+        whiteSpace: 'nowrap',
+        background: '#FDFDFD',
+        borderBottom:
+          '1px solid rgba(0,0,0,.06)',
+        position: sticky
+          ? 'sticky'
+          : 'static',
         right: sticky
           ? action
             ? 0
-            : 120
+            : 140
           : undefined,
-        zIndex: sticky ? 20 : 1,
-        background: sticky
-          ? '#FFFFFF'
-          : 'transparent',
-        backdropFilter: sticky
-          ? 'blur(12px)'
-          : undefined,
+        zIndex: sticky ? 30 : 1,
         boxShadow: sticky
-          ? '-12px 0 28px rgba(15,23,42,.08)'
+          ? '-10px 0 24px rgba(15,23,42,.06)'
           : 'none',
       }}
     >
@@ -1826,28 +1822,28 @@ function TD({
   return (
     <td
       style={{
-        padding: '14px',
+        padding: '18px 20px',
+        whiteSpace: 'nowrap',
         borderBottom:
           '1px solid rgba(0,0,0,.05)',
-        transition: 'background .2s ease',
-        background:
-          'rgba(255,255,255,.72)',
-        position: sticky ? 'sticky' : 'static',
+        background: sticky
+          ? '#FFFFFF'
+          : 'rgba(255,255,255,.72)',
+        position: sticky
+          ? 'sticky'
+          : 'static',
         right: sticky
           ? action
             ? 0
-            : 120
+            : 140
           : undefined,
         zIndex: sticky ? 20 : 1,
-        background: sticky
-          ? '#FFFFFF'
-          : 'transparent',
-        backdropFilter: sticky
-          ? 'blur(12px)'
-          : undefined,
         boxShadow: sticky
-          ? '-12px 0 28px rgba(15,23,42,.08)'
+          ? '-10px 0 24px rgba(15,23,42,.06)'
           : 'none',
+        backdropFilter: sticky
+          ? 'blur(14px)'
+          : 'blur(20px)',
       }}
     >
       {children}

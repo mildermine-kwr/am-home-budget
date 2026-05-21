@@ -1003,177 +1003,233 @@ export default function App() {
         </div>
       </div>
 
-      {open && (
-        <div
-          style={{
-            position:
-              'fixed',
-            inset: 0,
-            background:
-              'rgba(0,0,0,.4)',
-            display: 'flex',
-            justifyContent:
-              'center',
-            alignItems:
-              'center',
-            padding: '20px',
-          }}
-        >
+      
+{open && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(15,15,15,.45)',
+      backdropFilter: 'blur(12px)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '24px',
+      zIndex: 9999,
+    }}
+  >
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '620px',
+        borderRadius: '36px',
+        background:
+          'rgba(255,255,255,.78)',
+        backdropFilter: 'blur(24px)',
+        border:
+          '1px solid rgba(255,255,255,.55)',
+        boxShadow:
+          '0 30px 80px rgba(0,0,0,.12)',
+        padding: '34px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent:
+            'space-between',
+          alignItems: 'center',
+          marginBottom: '28px',
+        }}
+      >
+        <div>
           <div
             style={{
-              background:
-                '#fff',
-              borderRadius:
-                '20px',
-              width: '100%',
-              maxWidth:
-                '520px',
-              padding:
-                '24px',
+              fontSize: '42px',
+              fontWeight: 800,
+              letterSpacing: '-0.04em',
+              color: '#111',
+              lineHeight: 1,
             }}
           >
-            <h2>
-              เพิ่มรายการ
-            </h2>
+            เพิ่มรายการ
+          </div>
 
-            <div
-              style={{
-                display:
-                  'grid',
-                gap: '12px',
-                marginTop:
-                  '20px',
-              }}
-            >
-              <input
-                placeholder="วันที่"
-                value={
-                  form.date
-                }
-                onChange={(
-                  e
-                ) =>
-                  setForm({
-                    ...form,
-                    date:
-                      e
-                        .target
-                        .value,
-                  })
-                }
-              />
-
-              <input
-                placeholder="หมวด"
-                value={
-                  form.cat
-                }
-                onChange={(
-                  e
-                ) =>
-                  setForm({
-                    ...form,
-                    cat:
-                      e
-                        .target
-                        .value,
-                  })
-                }
-              />
-
-              <input
-                placeholder="รายละเอียด"
-                value={
-                  form.note
-                }
-                onChange={(
-                  e
-                ) =>
-                  setForm({
-                    ...form,
-                    note:
-                      e
-                        .target
-                        .value,
-                  })
-                }
-              />
-
-              <input
-                type="number"
-                placeholder="งบ"
-                value={
-                  form.total
-                }
-                onChange={(
-                  e
-                ) =>
-                  setForm({
-                    ...form,
-                    total:
-                      e
-                        .target
-                        .value,
-                  })
-                }
-              />
-
-              <input
-                type="number"
-                placeholder="จ่ายแล้ว"
-                value={
-                  form.paid
-                }
-                onChange={(
-                  e
-                ) =>
-                  setForm({
-                    ...form,
-                    paid:
-                      e
-                        .target
-                        .value,
-                  })
-                }
-              />
-            </div>
-
-            <div
-              style={{
-                display:
-                  'flex',
-                justifyContent:
-                  'flex-end',
-                gap: '10px',
-                marginTop:
-                  '24px',
-              }}
-            >
-              <button
-                onClick={() =>
-                  setOpen(
-                    false
-                  )
-                }
-              >
-                ยกเลิก
-              </button>
-
-              <button
-                onClick={
-                  addItem
-                }
-              >
-                บันทึก
-              </button>
-            </div>
+          <div
+            style={{
+              marginTop: '10px',
+              color: '#8B8B8B',
+              fontSize: '15px',
+            }}
+          >
+            เพิ่มค่าใช้จ่ายใหม่เข้าสู่ระบบ
           </div>
         </div>
-      )}
+
+        <button
+          onClick={() =>
+            setOpen(false)
+          }
+          style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '999px',
+            border: 'none',
+            background:
+              'rgba(0,0,0,.06)',
+            cursor: 'pointer',
+            fontSize: '18px',
+          }}
+        >
+          ✕
+        </button>
+      </div>
+
+      <div
+        style={{
+          display: 'grid',
+          gap: '16px',
+        }}
+      >
+        <ModernInput
+          placeholder="วันที่"
+          value={form.date}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              date: e.target.value,
+            })
+          }
+        />
+
+        <ModernInput
+          placeholder="หมวด"
+          value={form.cat}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              cat: e.target.value,
+            })
+          }
+        />
+
+        <ModernInput
+          placeholder="รายละเอียด"
+          value={form.note}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              note: e.target.value,
+            })
+          }
+        />
+
+        <ModernInput
+          type="number"
+          placeholder="งบประมาณ"
+          value={form.total}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              total:
+                e.target.value,
+            })
+          }
+        />
+
+        <ModernInput
+          type="number"
+          placeholder="จ่ายแล้ว"
+          value={form.paid}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              paid:
+                e.target.value,
+            })
+          }
+        />
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '12px',
+          marginTop: '32px',
+        }}
+      >
+        <button
+          onClick={() =>
+            setOpen(false)
+          }
+          style={{
+            border:
+              '1px solid rgba(0,0,0,.08)',
+            background:
+              'rgba(255,255,255,.72)',
+            padding:
+              '14px 20px',
+            borderRadius: '18px',
+            fontWeight: 600,
+            fontSize: '15px',
+            cursor: 'pointer',
+          }}
+        >
+          ยกเลิก
+        </button>
+
+        <button
+          onClick={addItem}
+          style={{
+            border: 'none',
+            background:
+              '#111111',
+            color: '#fff',
+            padding:
+              '14px 24px',
+            borderRadius: '18px',
+            fontWeight: 700,
+            fontSize: '15px',
+            cursor: 'pointer',
+            boxShadow:
+              '0 12px 24px rgba(0,0,0,.12)',
+          }}
+        >
+          + บันทึกรายการ
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
     </>
   )
 }
+
+function ModernInput(props) {
+  return (
+    <input
+      {...props}
+      style={{
+        width: '100%',
+        border:
+          '1px solid rgba(0,0,0,.06)',
+        background:
+          'rgba(255,255,255,.72)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: '18px',
+        padding: '18px 20px',
+        fontSize: '16px',
+        outline: 'none',
+        transition:
+          'all .25s ease',
+        boxSizing: 'border-box',
+      }}
+    />
+  )
+}
+
 
 function SummaryCard({
   title,

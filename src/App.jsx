@@ -214,10 +214,10 @@ export default function App() {
     <div
       style={{
         minHeight: '100vh',
-        background: '#F5F0E8',
+        background: '#F7F5F1',
         padding: '32px',
         fontFamily:
-          'sans-serif',
+          'Inter, Noto Sans Thai, sans-serif',
       }}
     >
       <div
@@ -233,22 +233,40 @@ export default function App() {
               'space-between',
             gap: '16px',
             flexWrap: 'wrap',
-            marginBottom: '24px',
+            marginBottom: '64px',
           }}
         >
           <div>
-            <h1>
-              🏡 AM Home —
-              บัญชีสร้างบ้าน
+            <h1
+              style={{
+                fontSize: '72px',
+                lineHeight: '.95',
+                letterSpacing: '-0.04em',
+                margin: 0,
+                color: '#111111',
+                fontWeight: 800,
+              }}
+            >
+              🏡 AM Home
+              <br />
+              budgeting your
+              <br />
+              dream home.
             </h1>
 
             <p
               style={{
-                color: '#8B7B6A',
-                marginTop: '6px',
+                color: '#8B8B8B',
+                marginTop: '18px',
+                fontSize: '18px',
+                lineHeight: 1.7,
+                maxWidth: '640px',
               }}
             >
-              React Full Port
+              Take control of your home budget with a
+              softer, more intentional experience —
+              from renovation plans to furniture,
+              appliances, and installment tracking.
             </p>
           </div>
 
@@ -335,7 +353,7 @@ export default function App() {
 
         <div
           style={{
-            background: '#fff',
+            background: 'rgba(255,255,255,.72)',
             borderRadius: '16px',
             padding: '20px',
             marginBottom: '20px',
@@ -364,8 +382,11 @@ export default function App() {
               borderRadius:
                 '999px',
               background:
-                '#ECE6DB',
+                'rgba(0,0,0,.06)',
               overflow: 'hidden',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,.45)',
+            boxShadow: '0 10px 40px rgba(0,0,0,.04)',
             }}
           >
             <div
@@ -381,7 +402,7 @@ export default function App() {
 
         <div
           style={{
-            background: '#fff',
+            background: 'rgba(255,255,255,.72)',
             borderRadius: '16px',
             overflow: 'hidden',
           }}
@@ -614,6 +635,12 @@ export default function App() {
                             sticky
                           >
                             <button
+                              style={{
+                                border: '1px solid rgba(0,0,0,.08)',
+                                background: 'rgba(255,255,255,.8)',
+                                borderRadius: '12px',
+                                padding: '8px 12px',
+                              }}
                               onClick={() =>
                                 setPayingId(
                                   item.id
@@ -878,9 +905,12 @@ function SummaryCard({
   return (
     <div
       style={{
-        background: '#fff',
+        background: 'rgba(255,255,255,.72)',
         borderRadius: '16px',
-        padding: '24px',
+        padding: '32px',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,.5)',
+        boxShadow: '0 10px 40px rgba(0,0,0,.04)',
       }}
     >
       <div>{title}</div>
@@ -913,8 +943,11 @@ function TabButton({
         borderRadius:
           '10px',
         background: active
-          ? '#fff'
+          ? '#111111'
           : 'transparent',
+        color: active
+          ? '#fff'
+          : '#555',
       }}
     >
       {children}
@@ -938,11 +971,12 @@ function FilterButton({
         padding:
           '6px 14px',
         background: active
-          ? '#2C5F82'
-          : '#fff',
+          ? '#111111'
+          : 'rgba(255,255,255,.75)',
         color: active
           ? '#fff'
-          : '#333',
+          : '#444',
+        backdropFilter: 'blur(12px)',
       }}
     >
       {children}
@@ -957,8 +991,8 @@ function StatusBadge({
     <span
       style={{
         background:
-          '#FDF4E3',
-        color: '#B07D2A',
+          'rgba(193,154,91,.12)',
+        color: '#A36D1F',
         borderRadius:
           '999px',
         padding:
@@ -980,7 +1014,7 @@ function TH({
       style={{
         padding: '14px',
         background:
-          '#F5F0E8',
+          'rgba(255,255,255,.88)',
         textAlign:
           'left',
         position: sticky

@@ -223,7 +223,7 @@ export default function App() {
           className="card"
           style={{
             width: '100%',
-            overflow: 'hidden',
+            maxWidth: '100%',
           }}
         >
           <div
@@ -284,18 +284,16 @@ export default function App() {
 
           <div
             style={{
+              width: '100%',
               overflowX: 'auto',
               overflowY: 'hidden',
-              width: '100%',
-              maxWidth: '100%',
               WebkitOverflowScrolling: 'touch',
-              borderRadius: '12px',
             }}
           >
             <table
               style={{
                 width: '100%',
-                minWidth: '1600px',
+                minWidth: '1200px',
                 borderCollapse: 'separate',
               }}
             >

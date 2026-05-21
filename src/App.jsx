@@ -1,82 +1,154 @@
 
-// ===== PHASE 1 FEATURES =====
-
-const STORAGE_KEY = 'am-home-budget-v1'
-
-function getStatus(item) {
-  if (item.paid <= 0) return 'ยังไม่จ่าย'
-  if (item.paid >= item.total)
-    return 'จ่ายครบแล้ว'
-
-  return 'ชำระบางส่วน'
-}
-
-function calculateRemain(item) {
-  return item.total - item.paid
-}
-
 import { useEffect, useMemo, useState } from 'react'
-import { LineChart, Line, ResponsiveContainer } from 'recharts'
-import { TORT, FURN } from './data/items'
 
-const initialItems = [...TORT, ...FURN].map((item) => ({
-  id: item.id,
-  title: item.note || item.title,
-  category: item.cat,
-  budget: item.total,
-  paid: item.paid,
-  date: item.date,
-  installment: item.installment || null,
-}))
-
-const chartData = [
-  { value: 10 },
-  { value: 40 },
-  { value: 20 },
-  { value: 55 },
-  { value: 30 },
-  { value: 70 },
-  { value: 45 },
+const DEFAULT_TORT = [
+  {
+    id: 1,
+    date: '16/02/2569',
+    cat: 'ค่ามัดจำต่อเติม',
+    note: 'ค่ามัดจำต่อเติมบ้าน',
+    total: 5000,
+    paid: 5000,
+  },
+  {
+    id: 2,
+    date: '20/04/2569',
+    cat: 'เสาเข็ม',
+    note: 'ค่าลงเสาเข็ม',
+    total: 60000,
+    paid: 60000,
+  },
+  {
+    id: 3,
+    date: '22/04/2569',
+    cat: 'งานปูน',
+    note: 'งานปูนต่อเติม',
+    total: 77500,
+    paid: 30000,
+  },
 ]
 
-export default function App() {
-  const [items, setItems] = useState(() => {
-    const saved = localStorage.getItem(
-      'am-home-budget-items'
-    )
+const DEFAULT_FURN = [
+  {
+    id: 101,
+    date: '20/10/2568',
+    cat: 'Home Appliances',
+    note: 'เครื่องอบผ้า Samsung',
+    total: 22396,
+    paid: 13438,
+    installment: {
+      paid: 6,
+      total: 10,
+      monthly: 2240,
+    },
+  },
+  {
+    id: 102,
+    date: '26/10/2568',
+    cat: 'Furniture',
+    note: 'Sofa Pasadena',
+    total: 47000,
+    paid: 14000,
+  },
+]
 
-    return saved
-      ? JSON.parse(saved)
-      : initialItems
+const STORAGE_KEY =
+  'am-home-react-budget'
+
+export default function App() {
+  const [activeTab, setActiveTab] =
+    useState('tort')
+
+  const [search, setSearch] =
+    useState('')
+
+  const [filter, setFilter] =
+    useState('all')
+
+  const [open, setOpen] =
+    useState(false)
+
+  const [payingId, setPayingId] =
+    useState(null)
+
+  const [payAmount, setPayAmount] =
+    useState('')
+
+  const [data, setData] = useState(() => {
+    const saved =
+      localStorage.getItem(
+        STORAGE_KEY
+      )
+
+    if (saved)
+      return JSON.parse(saved)
+
+    return {
+      tort: DEFAULT_TORT,
+      furn: DEFAULT_FURN,
+    }
   })
 
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
-  const [activeCategory, setActiveCategory] =
-    useState('ทั้งหมด')
-
   const [form, setForm] = useState({
-    title: '',
-    category: 'ต่อเติม',
-    budget: '',
+    date: '',
+    cat: '',
+    note: '',
+    total: '',
     paid: '',
   })
 
   useEffect(() => {
     localStorage.setItem(
-      'am-home-budget-items',
-      JSON.stringify(items)
+      STORAGE_KEY,
+      JSON.stringify(data)
     )
-  }, [items])
+  }, [data])
+
+  const items =
+    activeTab === 'tort'
+      ? data.tort
+      : data.furn
+
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      const q =
+        (
+          item.note + item.cat
+        ).toLowerCase()
+
+      const matchSearch =
+        q.includes(
+          search.toLowerCase()
+        )
+
+      const remain =
+        item.total - item.paid
+
+      const status =
+        item.paid <= 0
+          ? 'none'
+          : remain <= 0
+          ? 'done'
+          : 'partial'
+
+      const matchFilter =
+        filter === 'all' ||
+        filter === status
+
+      return (
+        matchSearch && matchFilter
+      )
+    })
+  }, [items, search, filter])
 
   const totals = useMemo(() => {
     const total = items.reduce(
-      (s, i) => s + Number(i.budget),
+      (s, i) => s + i.total,
       0
     )
 
     const paid = items.reduce(
-      (s, i) => s + Number(i.paid),
+      (s, i) => s + i.paid,
       0
     )
 
@@ -87,481 +159,752 @@ export default function App() {
     }
   }, [items])
 
-  const categories = useMemo(() => {
-    return [
-      'ทั้งหมด',
-      ...new Set(items.map((i) => i.category)),
-    ]
-  }, [items])
+  const progress =
+    totals.total > 0
+      ? Math.round(
+          (totals.paid /
+            totals.total) *
+            100
+        )
+      : 0
 
-  const filteredItems = items.filter((item) => {
-    const matchSearch =
-      item.title
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      item.category
-        .toLowerCase()
-        .includes(search.toLowerCase())
+  const statusText = (item) => {
+    const remain =
+      item.total - item.paid
 
-    const matchCategory =
-      activeCategory === 'ทั้งหมด' ||
-      item.category === activeCategory
+    if (item.paid <= 0)
+      return 'ยังไม่จ่าย'
 
-    return matchSearch && matchCategory
-  })
+    if (remain <= 0)
+      return 'จ่ายครบแล้ว'
 
-  const addExpense = () => {
-    if (!form.title || !form.budget) {
-      alert('กรุณากรอกข้อมูลให้ครบ')
+    return 'ชำระบางส่วน'
+  }
+
+  const addItem = () => {
+    if (!form.note || !form.total)
       return
-    }
 
-    const newItem = {
+    const next = {
       id: Date.now(),
-      title: form.title,
-      category: form.category,
-      budget: Number(form.budget),
+      date:
+        form.date || '—',
+      cat: form.cat || 'อื่นๆ',
+      note: form.note,
+      total: Number(form.total),
       paid: Number(form.paid || 0),
     }
 
-    setItems([newItem, ...items])
-
-    setForm({
-      title: '',
-      category: 'ต่อเติม',
-      budget: '',
-      paid: '',
-    })
+    setData((prev) => ({
+      ...prev,
+      [activeTab]: [
+        next,
+        ...prev[activeTab],
+      ],
+    }))
 
     setOpen(false)
+
+    setForm({
+      date: '',
+      cat: '',
+      note: '',
+      total: '',
+      paid: '',
+    })
   }
 
-  const deleteItem = (id) => {
-    setItems(items.filter((i) => i.id !== id))
-  }
-
-  const addPayment = (id) => {
-    const amount = prompt('เพิ่มยอดชำระ')
+  const confirmPayment = (id) => {
+    const amount =
+      Number(payAmount)
 
     if (!amount) return
 
-    setItems(
-      items.map((item) => {
-        if (item.id === id) {
-          const nextPaid = Math.min(
-            item.paid + Number(amount),
-            item.budget
-          )
+    setData((prev) => ({
+      ...prev,
+      [activeTab]:
+        prev[activeTab].map(
+          (item) => {
+            if (
+              item.id === id
+            ) {
+              return {
+                ...item,
+                paid:
+                  item.paid +
+                  amount,
+              }
+            }
 
-          return {
-            ...item,
-            paid: nextPaid,
+            return item
           }
-        }
+        ),
+    }))
 
-        return item
-      })
-    )
+    setPayingId(null)
+    setPayAmount('')
   }
 
-  const status = (item) => {
-    if (item.paid <= 0) return 'ยังไม่จ่าย'
-    if (item.paid >= item.budget)
-      return 'จ่ายครบ'
+  const resetData = () => {
+    localStorage.removeItem(
+      STORAGE_KEY
+    )
 
-    return 'บางส่วน'
+    setData({
+      tort: DEFAULT_TORT,
+      furn: DEFAULT_FURN,
+    })
   }
 
   return (
-    <div className="layout">
-      <aside className="sidebar">
-        <div className="brand">🏡 AM Home</div>
-
-        <div className="nav">
-          <button>Dashboard</button>
-          <button>ต่อเติม</button>
-          <button>ของแต่งบ้าน</button>
-        </div>
-      </aside>
-
-      <main className="main">
-        <div className="topbar">
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#F5F0E8',
+        padding: '32px',
+        fontFamily:
+          'sans-serif',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent:
+              'space-between',
+            gap: '16px',
+            flexWrap: 'wrap',
+            marginBottom: '24px',
+          }}
+        >
           <div>
-            <h1>AM Home Budget</h1>
-            <p>{items.length} รายการ</p>
-          </div>
+            <h1>
+              🏡 AM Home —
+              บัญชีสร้างบ้าน
+            </h1>
 
-          <button
-            className="fab"
-            onClick={() => setOpen(true)}
-          >
-            + เพิ่มรายการ
-          </button>
-        </div>
-
-        <section className="summary">
-          <div className="card">
-            <label>งบทั้งหมด</label>
-
-            <h2>
-              ฿{totals.total.toLocaleString()}
-            </h2>
-          </div>
-
-          <div className="card">
-            <label>จ่ายแล้ว</label>
-
-            <h2 style={{ color: '#10b981' }}>
-              ฿{totals.paid.toLocaleString()}
-            </h2>
-          </div>
-
-          <div className="card">
-            <label>คงเหลือ</label>
-
-            <h2 style={{ color: '#f59e0b' }}>
-              ฿{totals.remain.toLocaleString()}
-            </h2>
-          </div>
-        </section>
-
-        <section className="grid">
-          <div className="card">
-            <h3>Budget Overview</h3>
-
-            <div className="chart">
-              <ResponsiveContainer
-                width="100%"
-                height="100%"
-              >
-                <LineChart data={chartData}>
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#3b82f6"
-                    strokeWidth={4}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="card">
-            <h3>Quick Search</h3>
-
-            <input
-              value={search}
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
-              placeholder="ค้นหา..."
+            <p
               style={{
-                width: '100%',
-                padding: '14px',
-                borderRadius: '14px',
-                border: '1px solid #e5e7eb',
-                marginTop: '12px',
+                color: '#8B7B6A',
+                marginTop: '6px',
               }}
-            />
+            >
+              React Full Port
+            </p>
           </div>
-        </section>
 
-        <section className="card">
           <div
             style={{
               display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-              marginBottom: '20px',
+              gap: '10px',
+              alignItems: 'center',
             }}
           >
-            <h3 style={{ margin: 0 }}>
-              รายการทั้งหมด
-            </h3>
+            <button
+              onClick={resetData}
+            >
+              ↺ รีเซ็ต
+            </button>
 
             <div
               style={{
                 display: 'flex',
-                gap: '10px',
-                overflowX: 'auto',
-                paddingBottom: '6px',
+                background:
+                  '#EDE7D9',
+                padding: '4px',
+                borderRadius:
+                  '12px',
               }}
             >
-              {categories.map((category) => {
-                const active =
-                  activeCategory === category
+              <TabButton
+                active={
+                  activeTab ===
+                  'tort'
+                }
+                onClick={() =>
+                  setActiveTab(
+                    'tort'
+                  )
+                }
+              >
+                🔨 ต่อเติม
+              </TabButton>
 
-                return (
-                  <button
-                    key={category}
-                    onClick={() =>
-                      setActiveCategory(category)
-                    }
-                    style={{
-                      border: 'none',
-                      padding: '10px 16px',
-                      borderRadius: '999px',
-                      background: active
-                        ? '#111827'
-                        : '#f3f4f6',
-                      color: active
-                        ? '#fff'
-                        : '#374151',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {category}
-                  </button>
-                )
-              })}
+              <TabButton
+                active={
+                  activeTab ===
+                  'furn'
+                }
+                onClick={() =>
+                  setActiveTab(
+                    'furn'
+                  )
+                }
+              >
+                🛋 ของแต่งบ้าน
+              </TabButton>
             </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns:
+              'repeat(auto-fit,minmax(240px,1fr))',
+            gap: '16px',
+            marginBottom: '20px',
+          }}
+        >
+          <SummaryCard
+            title="งบทั้งหมด"
+            value={totals.total}
+          />
+
+          <SummaryCard
+            title="จ่ายแล้ว"
+            value={totals.paid}
+            color="#4A7A52"
+          />
+
+          <SummaryCard
+            title="คงเหลือ"
+            value={totals.remain}
+            color="#B07D2A"
+          />
+        </div>
+
+        <div
+          style={{
+            background: '#fff',
+            borderRadius: '16px',
+            padding: '20px',
+            marginBottom: '20px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent:
+                'space-between',
+              marginBottom: '10px',
+            }}
+          >
+            <span>
+              ความคืบหน้าการชำระ
+            </span>
+
+            <strong>
+              {progress}%
+            </strong>
           </div>
 
           <div
             style={{
-              width: '100%',
+              height: '10px',
+              borderRadius:
+                '999px',
+              background:
+                '#ECE6DB',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                width: `${progress}%`,
+                height: '100%',
+                background:
+                  '#4A7A52',
+              }}
+            />
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: '#fff',
+            borderRadius: '16px',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              padding: '16px',
+              borderBottom:
+                '1px solid #eee',
+              display: 'flex',
+              gap: '10px',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+            }}
+          >
+            <strong>
+              รายการทั้งหมด
+            </strong>
+
+            <FilterButton
+              active={
+                filter ===
+                'all'
+              }
+              onClick={() =>
+                setFilter(
+                  'all'
+                )
+              }
+            >
+              ทั้งหมด
+            </FilterButton>
+
+            <FilterButton
+              active={
+                filter ===
+                'done'
+              }
+              onClick={() =>
+                setFilter(
+                  'done'
+                )
+              }
+            >
+              จ่ายครบ
+            </FilterButton>
+
+            <FilterButton
+              active={
+                filter ===
+                'partial'
+              }
+              onClick={() =>
+                setFilter(
+                  'partial'
+                )
+              }
+            >
+              บางส่วน
+            </FilterButton>
+
+            <FilterButton
+              active={
+                filter ===
+                'none'
+              }
+              onClick={() =>
+                setFilter(
+                  'none'
+                )
+              }
+            >
+              ยังไม่จ่าย
+            </FilterButton>
+
+            <input
+              value={search}
+              onChange={(e) =>
+                setSearch(
+                  e.target.value
+                )
+              }
+              placeholder="ค้นหา..."
+              style={{
+                marginLeft:
+                  'auto',
+                padding:
+                  '10px 14px',
+                borderRadius:
+                  '999px',
+                border:
+                  '1px solid #ddd',
+              }}
+            />
+
+            <button
+              onClick={() =>
+                setOpen(true)
+              }
+            >
+              + เพิ่มรายการ
+            </button>
+          </div>
+
+          <div
+            style={{
               overflowX: 'auto',
             }}
           >
             <table
               style={{
                 width: '100%',
-                minWidth: '980px',
+                minWidth:
+                  '1000px',
+                borderCollapse:
+                  'collapse',
               }}
             >
               <thead>
                 <tr>
-                  <th>รายการ</th>
-                  <th>หมวด</th>
-                  <th>งบ</th>
-                  <th>จ่ายแล้ว</th>
-                  <th>สถานะ</th>
-                  <th
-                    style={{
-                      position: 'sticky',
-                      right: 0,
-                      background: '#fff',
-                    }}
-                  >
+                  <TH>
+                    วันที่
+                  </TH>
+                  <TH>
+                    หมวด
+                  </TH>
+                  <TH>
+                    รายละเอียด
+                  </TH>
+                  <TH>
+                    งบ
+                  </TH>
+                  <TH>
+                    จ่ายแล้ว
+                  </TH>
+                  <TH>
+                    คงเหลือ
+                  </TH>
+                  <TH>
+                    สถานะ
+                  </TH>
+                  <TH sticky>
                     Action
-                  </th>
+                  </TH>
                 </tr>
               </thead>
 
               <tbody>
-                {filteredItems.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <div
-                        style={{ fontWeight: 600 }}
-                      >
-                        {item.title}
-                      </div>
+                {filteredItems.map(
+                  (item) => {
+                    const remain =
+                      item.total -
+                      item.paid
 
-                      {item.installment && (
-                        <div
-                          style={{
-                            fontSize: '12px',
-                            color: '#6b7280',
-                            marginTop: '4px',
-                          }}
-                        >
-                          ผ่อน{' '}
-                          {
-                            item.installment
-                              .paid
-                          }
-                          /
-                          {
-                            item.installment
-                              .total
-                          }{' '}
-                          งวด
-                        </div>
-                      )}
-                    </td>
-
-                    <td>{item.category}</td>
-
-                    <td>
-                      ฿
-                      {Number(
-                        item.budget
-                      ).toLocaleString()}
-                    </td>
-
-                    <td>
-                      ฿
-                      {Number(
-                        item.paid
-                      ).toLocaleString()}
-                    </td>
-
-                    <td>{status(item)}</td>
-
-                    <td
-                      style={{
-                        position: 'sticky',
-                        right: 0,
-                        background: '#fff',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          gap: '8px',
-                        }}
-                      >
-                        <button
-                          className="mobile-btn"
-                          onClick={() =>
-                            addPayment(item.id)
+                    return (
+                      <>
+                        <tr
+                          key={
+                            item.id
                           }
                         >
-                          + ชำระ
-                        </button>
+                          <TD>
+                            {
+                              item.date
+                            }
+                          </TD>
 
-                        <button
-                          className="mobile-btn"
-                          onClick={() =>
-                            deleteItem(item.id)
-                          }
-                        >
-                          ลบ
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <TD>
+                            {
+                              item.cat
+                            }
+                          </TD>
+
+                          <TD>
+                            {
+                              item.note
+                            }
+
+                            {item.installment && (
+                              <div
+                                style={{
+                                  fontSize:
+                                    '12px',
+                                  color:
+                                    '#777',
+                                  marginTop:
+                                    '4px',
+                                }}
+                              >
+                                ผ่อน{' '}
+                                {
+                                  item
+                                    .installment
+                                    .paid
+                                }
+                                /
+                                {
+                                  item
+                                    .installment
+                                    .total
+                                }
+                              </div>
+                            )}
+                          </TD>
+
+                          <TD>
+                            ฿
+                            {item.total.toLocaleString()}
+                          </TD>
+
+                          <TD>
+                            ฿
+                            {item.paid.toLocaleString()}
+                          </TD>
+
+                          <TD>
+                            ฿
+                            {remain.toLocaleString()}
+                          </TD>
+
+                          <TD>
+                            <StatusBadge>
+                              {statusText(
+                                item
+                              )}
+                            </StatusBadge>
+                          </TD>
+
+                          <TD
+                            sticky
+                          >
+                            <button
+                              onClick={() =>
+                                setPayingId(
+                                  item.id
+                                )
+                              }
+                            >
+                              + ชำระ
+                            </button>
+                          </TD>
+                        </tr>
+
+                        {payingId ===
+                          item.id && (
+                          <tr>
+                            <td
+                              colSpan={
+                                8
+                              }
+                              style={{
+                                background:
+                                  '#F2F8F3',
+                                padding:
+                                  '14px',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display:
+                                    'flex',
+                                  gap: '10px',
+                                  alignItems:
+                                    'center',
+                                }}
+                              >
+                                <input
+                                  type="number"
+                                  value={
+                                    payAmount
+                                  }
+                                  onChange={(
+                                    e
+                                  ) =>
+                                    setPayAmount(
+                                      e
+                                        .target
+                                        .value
+                                    )
+                                  }
+                                  placeholder="จำนวนเงิน"
+                                />
+
+                                <button
+                                  onClick={() =>
+                                    confirmPayment(
+                                      item.id
+                                    )
+                                  }
+                                >
+                                  ✓
+                                  บันทึก
+                                </button>
+
+                                <button
+                                  onClick={() =>
+                                    setPayingId(
+                                      null
+                                    )
+                                  }
+                                >
+                                  ยกเลิก
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    )
+                  }
+                )}
               </tbody>
             </table>
           </div>
-        </section>
-      </main>
+        </div>
+      </div>
 
       {open && (
         <div
           style={{
-            position: 'fixed',
+            position:
+              'fixed',
             inset: 0,
-            background: 'rgba(0,0,0,.4)',
+            background:
+              'rgba(0,0,0,.4)',
             display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent:
+              'center',
+            alignItems:
+              'center',
             padding: '20px',
           }}
         >
           <div
             style={{
-              background: 'white',
-              borderRadius: '24px',
-              padding: '24px',
+              background:
+                '#fff',
+              borderRadius:
+                '20px',
               width: '100%',
-              maxWidth: '500px',
+              maxWidth:
+                '520px',
+              padding:
+                '24px',
             }}
           >
-            <h2
-              style={{ marginBottom: '20px' }}
-            >
-              เพิ่มรายจ่าย
+            <h2>
+              เพิ่มรายการ
             </h2>
 
             <div
               style={{
-                display: 'grid',
-                gap: '14px',
+                display:
+                  'grid',
+                gap: '12px',
+                marginTop:
+                  '20px',
               }}
             >
               <input
-                placeholder="รายละเอียด"
-                value={form.title}
-                onChange={(e) =>
+                placeholder="วันที่"
+                value={
+                  form.date
+                }
+                onChange={(
+                  e
+                ) =>
                   setForm({
                     ...form,
-                    title:
-                      e.target.value,
+                    date:
+                      e
+                        .target
+                        .value,
                   })
                 }
-                style={inputStyle}
               />
 
-              <select
-                value={form.category}
-                onChange={(e) =>
+              <input
+                placeholder="หมวด"
+                value={
+                  form.cat
+                }
+                onChange={(
+                  e
+                ) =>
                   setForm({
                     ...form,
-                    category:
-                      e.target.value,
+                    cat:
+                      e
+                        .target
+                        .value,
                   })
                 }
-                style={inputStyle}
-              >
-                <option>ต่อเติม</option>
-                <option>
-                  Furniture
-                </option>
-                <option>
-                  Home Appliances
-                </option>
-                <option>
-                  Kitchenware
-                </option>
-              </select>
+              />
+
+              <input
+                placeholder="รายละเอียด"
+                value={
+                  form.note
+                }
+                onChange={(
+                  e
+                ) =>
+                  setForm({
+                    ...form,
+                    note:
+                      e
+                        .target
+                        .value,
+                  })
+                }
+              />
 
               <input
                 type="number"
-                placeholder="งบทั้งหมด"
-                value={form.budget}
-                onChange={(e) =>
+                placeholder="งบ"
+                value={
+                  form.total
+                }
+                onChange={(
+                  e
+                ) =>
                   setForm({
                     ...form,
-                    budget:
-                      e.target.value,
+                    total:
+                      e
+                        .target
+                        .value,
                   })
                 }
-                style={inputStyle}
               />
 
               <input
                 type="number"
                 placeholder="จ่ายแล้ว"
-                value={form.paid}
-                onChange={(e) =>
+                value={
+                  form.paid
+                }
+                onChange={(
+                  e
+                ) =>
                   setForm({
                     ...form,
                     paid:
-                      e.target.value,
+                      e
+                        .target
+                        .value,
                   })
                 }
-                style={inputStyle}
               />
             </div>
 
             <div
               style={{
-                display: 'flex',
+                display:
+                  'flex',
                 justifyContent:
                   'flex-end',
                 gap: '10px',
-                marginTop: '24px',
+                marginTop:
+                  '24px',
               }}
             >
               <button
-                className="mobile-btn"
                 onClick={() =>
-                  setOpen(false)
+                  setOpen(
+                    false
+                  )
                 }
               >
                 ยกเลิก
               </button>
 
               <button
-                className="fab"
-                onClick={addExpense}
+                onClick={
+                  addItem
+                }
               >
                 บันทึก
               </button>
@@ -573,9 +916,153 @@ export default function App() {
   )
 }
 
-const inputStyle = {
-  width: '100%',
-  padding: '14px',
-  borderRadius: '14px',
-  border: '1px solid #e5e7eb',
+function SummaryCard({
+  title,
+  value,
+  color = '#2C5F82',
+}) {
+  return (
+    <div
+      style={{
+        background: '#fff',
+        borderRadius: '16px',
+        padding: '24px',
+      }}
+    >
+      <div>{title}</div>
+
+      <h2
+        style={{
+          marginTop: '10px',
+          color,
+        }}
+      >
+        ฿
+        {value.toLocaleString()}
+      </h2>
+    </div>
+  )
+}
+
+function TabButton({
+  children,
+  active,
+  onClick,
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        border: 'none',
+        padding:
+          '10px 18px',
+        borderRadius:
+          '10px',
+        background: active
+          ? '#fff'
+          : 'transparent',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+function FilterButton({
+  children,
+  active,
+  onClick,
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        border:
+          '1px solid #ddd',
+        borderRadius:
+          '999px',
+        padding:
+          '6px 14px',
+        background: active
+          ? '#2C5F82'
+          : '#fff',
+        color: active
+          ? '#fff'
+          : '#333',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+function StatusBadge({
+  children,
+}) {
+  return (
+    <span
+      style={{
+        background:
+          '#FDF4E3',
+        color: '#B07D2A',
+        borderRadius:
+          '999px',
+        padding:
+          '4px 10px',
+        fontSize: '12px',
+      }}
+    >
+      {children}
+    </span>
+  )
+}
+
+function TH({
+  children,
+  sticky,
+}) {
+  return (
+    <th
+      style={{
+        padding: '14px',
+        background:
+          '#F5F0E8',
+        textAlign:
+          'left',
+        position: sticky
+          ? 'sticky'
+          : 'static',
+        right: sticky
+          ? 0
+          : undefined,
+      }}
+    >
+      {children}
+    </th>
+  )
+}
+
+function TD({
+  children,
+  sticky,
+}) {
+  return (
+    <td
+      style={{
+        padding: '14px',
+        borderBottom:
+          '1px solid #eee',
+        background:
+          '#fff',
+        position: sticky
+          ? 'sticky'
+          : 'static',
+        right: sticky
+          ? 0
+          : undefined,
+      }}
+    >
+      {children}
+    </td>
+  )
 }

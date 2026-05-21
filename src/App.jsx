@@ -874,6 +874,7 @@ button:hover{
 <div
             style={{
               overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch',
             }}
           >
             <table
@@ -906,10 +907,10 @@ button:hover{
                   <TH>
                     คงเหลือ
                   </TH>
-                  <TH>
+                  <TH sticky>
                     สถานะ
                   </TH>
-                  <TH sticky>
+                  <TH sticky action>
                     Action
                   </TH>
                 </tr>
@@ -1005,7 +1006,7 @@ button:hover{
                             {remain.toLocaleString()}
                           </TD>
 
-                          <TD>
+                          <TD sticky>
                             <StatusBadge>
                               {statusText(
                                 item
@@ -1013,9 +1014,7 @@ button:hover{
                             </StatusBadge>
                           </TD>
 
-                          <TD
-                            sticky
-                          >
+                          <TD sticky action>
                             <button
                               style={{
                                 border: '1px solid rgba(0,0,0,.08)',
@@ -1768,7 +1767,10 @@ function StatusBadge({
         borderRadius: '999px',
         padding: '6px 12px',
         fontSize: '14px',
-        fontWeight: 600,
+        fontWeight: 700,
+        whiteSpace: 'nowrap',
+        display: 'inline-flex',
+        alignItems: 'center',
       }}
     >
       {children}
@@ -1778,6 +1780,7 @@ function StatusBadge({
 function TH({
   children,
   sticky,
+  action,
 }) {
   return (
     <th
@@ -1792,8 +1795,11 @@ function TH({
           ? 'sticky'
           : 'static',
         right: sticky
-          ? 0
+          ? action
+            ? 0
+            : 130
           : undefined,
+        zIndex: sticky ? 5 : 1,
       }}
     >
       {children}
@@ -1804,6 +1810,7 @@ function TH({
 function TD({
   children,
   sticky,
+  action,
 }) {
   return (
     <td
@@ -1818,8 +1825,11 @@ function TD({
           ? 'sticky'
           : 'static',
         right: sticky
-          ? 0
+          ? action
+            ? 0
+            : 130
           : undefined,
+        zIndex: sticky ? 5 : 1,
       }}
     >
       {children}

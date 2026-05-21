@@ -10,27 +10,6 @@ const DEFAULT_FURN = FURN
 const STORAGE_KEY =
   'am-home-react-budget'
 
-
-const TCATS = [
-  'ค่ามัดจำต่อเติม',
-  'เสาเข็ม',
-  'งานปูน',
-  'งานระบบ',
-  'หลังคา',
-  'งานโครงสร้าง',
-  'อื่นๆ',
-]
-
-const FCATS = [
-  'Home Appliances',
-  'Furniture',
-  'Building Materials / Repairs',
-  'Kitchenware',
-  'Bedding',
-  'Decorations',
-  'อื่นๆ',
-]
-
 export default function App() {
   const [activeTab, setActiveTab] =
     useState('tort')
@@ -71,7 +50,6 @@ export default function App() {
     note: '',
     total: '',
     paid: '',
-    remark: '',
   })
 
   useEffect(() => {
@@ -236,29 +214,6 @@ export default function App() {
   return (
     <>
 
-
-<style>
-{`
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap');
-
-*{
-  box-sizing:border-box;
-}
-
-button,
-input,
-textarea,
-select{
-  font-family:'IBM Plex Sans Thai', sans-serif;
-  transition:all .28s cubic-bezier(.22,1,.36,1);
-}
-
-button:hover{
-  transform:translateY(-2px);
-}
-`}
-</style>
-
       
 <style>
 {`
@@ -362,21 +317,6 @@ button:hover{
       font-weight: 600;
     }
 
-    
-    .mobile-modal-close{
-      position:absolute;
-      top:18px;
-      right:18px;
-      width:42px;
-      height:42px;
-      border:none;
-      border-radius:999px;
-      background:rgba(255,255,255,.82);
-      backdrop-filter:blur(12px);
-      font-size:18px;
-      cursor:pointer;
-    }
-
     .mobile-action {
       width: 100%;
       border: none;
@@ -434,15 +374,16 @@ button:hover{
       style={{
         minHeight: '100vh',
         background: `
-          radial-gradient(circle at 15% 20%, rgba(217,196,169,.42), transparent 32%),
-          radial-gradient(circle at 80% 10%, rgba(186,215,255,.55), transparent 34%),
-          radial-gradient(circle at 50% 80%, rgba(255,240,220,.42), transparent 36%),
-          linear-gradient(180deg,#F8FAFF,#F8F4EF)
+          radial-gradient(circle at 20% 20%, rgba(255,170,170,.55), transparent 32%),
+          radial-gradient(circle at 80% 10%, rgba(170,190,255,.55), transparent 32%),
+          radial-gradient(circle at 50% 80%, rgba(255,220,180,.45), transparent 36%),
+          #F7F5F1
         `,
         backgroundSize: '140% 140%',
         animation: 'meshMove 18s ease infinite',
-        padding: '40px',
-       fontFamily: "'IBM Plex Sans Thai', sans-serif",
+        padding: '48px',
+        fontFamily:
+          "IBM Plex Sans Thai, sans-serif",
       }}
     >
       <div
@@ -459,8 +400,8 @@ button:hover{
     gridTemplateColumns: '1fr 1fr',
     alignItems: 'center',
     gap: '40px',
-    marginBottom: '48px',
-    minHeight: '360px',
+    marginBottom: '96px',
+    minHeight: '720px',
   }}
 >
   <div
@@ -472,15 +413,15 @@ button:hover{
     <h1
       className="hero-title"
       style={{
-        fontSize: 'clamp(44px,6vw,72px)',
+        fontSize: '104px',
         lineHeight: '.95',
         letterSpacing: '-0.04em',
         margin: 0,
-        color: '#1B2430',
+        color: '#111111',
         fontWeight: 800,
       }}
     >
-      AM Home
+      🏡 AM Home
       <br />
       budgeting your
       <br />
@@ -490,9 +431,9 @@ button:hover{
     <p
       className="hero-subtitle"
       style={{
-        color: '#7C8798',
+        color: '#9B9B9B',
         marginTop: '18px',
-        fontSize: '16px',
+        fontSize: '18px',
         lineHeight: 1.7,
         maxWidth: '640px',
       }}
@@ -518,15 +459,14 @@ button:hover{
           border: '1px solid rgba(0,0,0,.08)',
           background: 'rgba(255,255,255,.72)',
           backdropFilter: 'blur(16px)',
-          borderRadius: '36px',
+          borderRadius: '32px',
           padding: '14px 20px',
-          fontSize: '16px',
           fontWeight: 600,
           color: '#444',
           boxShadow: '0 4px 20px rgba(0,0,0,.04)',
         }}
       >
-        รีเซ็ต
+        ↺ รีเซ็ต
       </button>
 
       <div
@@ -535,7 +475,6 @@ button:hover{
           background: '#EDE7D9',
           padding: '4px',
           borderRadius: '14px',
-          fontSize: '16px'
         }}
       >
         <TabButton
@@ -610,7 +549,7 @@ button:hover{
         <div
           style={{
             background: 'rgba(255,255,255,.72)',
-            borderRadius: '36px',
+            borderRadius: '32px',
             padding: '20px',
             marginBottom: '20px',
           }}
@@ -642,7 +581,7 @@ button:hover{
               overflow: 'hidden',
             backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255,255,255,.55)',
-            boxShadow: '0 18px 50px rgba(31,41,55,.06)',
+            boxShadow: '0 10px 40px rgba(0,0,0,.04)',
         transition: 'all .35s ease',
         animation: 'floatCard 7s ease-in-out infinite',
         transform: 'translateY(0px)',
@@ -653,7 +592,7 @@ button:hover{
                 width: `${progress}%`,
                 height: '100%',
                 background:
-                  'linear-gradient(90deg,#6FA6E8,#B58A55)',
+                  'linear-gradient(90deg,#5E8B67,#8DB996)',
               }}
             />
           </div>
@@ -662,7 +601,7 @@ button:hover{
         <div
           style={{
             background: 'rgba(255,255,255,.72)',
-            borderRadius: '36px',
+            borderRadius: '32px',
             overflow: 'hidden',
           }}
         >
@@ -671,7 +610,7 @@ button:hover{
             style={{
               padding: '16px',
               borderBottom:
-                '1px solid rgba(255,255,255,.45)',
+                '1px solid #eee',
               display: 'flex',
               gap: '10px',
               flexWrap: 'wrap',
@@ -761,28 +700,14 @@ button:hover{
             />
 
             <button
-              onClick={() => {
-                setForm({
-                  date: new Date()
-                    .toISOString()
-                    .slice(0, 10),
-                  cat:
-                    activeTab === 'tort'
-                      ? TCATS[0]
-                      : FCATS[0],
-                  note: '',
-                  total: '',
-                  paid: '',
-                  remark: '',
-                })
-
+              onClick={() =>
                 setOpen(true)
-              }}
+              }
               style={{
                 border: 'none',
-                background: 'linear-gradient(135deg,#6FA6E8,#4E82AD)',
+                background: '#111111',
                 color: '#fff',
-                borderRadius: '36px',
+                borderRadius: '32px',
                 padding: '12px 18px',
                 fontWeight: 700,
                 boxShadow: '0 8px 24px rgba(0,0,0,.12)',
@@ -936,7 +861,7 @@ button:hover{
                               <div
                                 style={{
                                   fontSize:
-                                    '16px',
+                                    '12px',
                                   color:
                                     '#777',
                                   marginTop:
@@ -1079,236 +1004,175 @@ button:hover{
       </div>
 
       
-
 {open && (
   <div
     style={{
       position: 'fixed',
       inset: 0,
-      background:
-        'rgba(15,15,15,.28)',
-      zIndex: 100,
+      background: 'rgba(15,15,15,.45)',
+      backdropFilter: 'blur(12px)',
       display: 'flex',
-      alignItems: 'center',
       justifyContent: 'center',
-      backdropFilter: 'blur(10px)',
-      padding: window.innerWidth < 768 ? '0px' : '24px',
+      alignItems: 'center',
+      padding: '24px',
+      zIndex: 9999,
     }}
-    onClick={() =>
-      setOpen(false)
-    }
   >
     <div
-      onClick={(e) =>
-        e.stopPropagation()
-      }
       style={{
         width: '100%',
-        maxWidth: window.innerWidth < 768 ? '100%' : '820px',
-        borderRadius: window.innerWidth < 768 ? '0px' : '40px',
-        padding: window.innerWidth < 768 ? '24px' : '32px',
+        maxWidth: '620px',
+        borderRadius: '36px',
         background:
-          'rgba(255,255,255,.82)',
-        backdropFilter:
-          'blur(24px)',
+          'rgba(255,255,255,.78)',
+        backdropFilter: 'blur(24px)',
         border:
-          '1px solid rgba(255,255,255,.6)',
+          '1px solid rgba(255,255,255,.55)',
         boxShadow:
-          '0 30px 90px rgba(0,0,0,.12)',
+          '0 30px 80px rgba(0,0,0,.12)',
+        padding: '34px',
       }}
     >
-      <button
-        className="mobile-modal-close"
-        onClick={() => setOpen(false)}
-      >
-        ✕
-      </button>
-
-      <h3
-        style={{
-          fontSize: '42px',
-          lineHeight: 1,
-          fontWeight: 800,
-          letterSpacing:
-            '-0.05em',
-          color: '#6B4B2A',
-          marginBottom: '34px',
-        }}
-      >
-        + เพิ่มรายการ
-      </h3>
-
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns:
-            window.innerWidth < 768
-              ? '1fr'
-              : '1fr 1fr',
-          gap: '16px',
-          marginBottom: '18px',
+          display: 'flex',
+          justifyContent:
+            'space-between',
+          alignItems: 'center',
+          marginBottom: '28px',
         }}
       >
-        <Field label="วันที่">
-          <input
-            type="date"
-            value={form.date}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                date:
-                  e.target.value,
-              })
-            }
-            style={fieldStyle}
-          />
-        </Field>
-
-        <Field label="หมวดงาน / หมวดสินค้า">
-          <select
-            value={form.cat}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                cat:
-                  e.target.value,
-              })
-            }
-            style={fieldStyle}
-          >
-            {(activeTab ===
-            'tort'
-              ? TCATS
-              : FCATS
-            ).map((c) => (
-              <option
-                key={c}
-                value={c}
-              >
-                {c}
-              </option>
-            ))}
-          </select>
-        </Field>
-      </div>
-
-      <div
-        style={{
-          marginBottom: '18px',
-        }}
-      >
-        <Field label="รายละเอียด">
-          <input
-            type="text"
-            placeholder="ชื่อรายการ..."
-            value={form.note}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                note:
-                  e.target.value,
-              })
-            }
-            style={fieldStyle}
-          />
-        </Field>
-      </div>
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns:
-            window.innerWidth < 768
-              ? '1fr'
-              : '1fr 1fr',
-          gap: '16px',
-          marginBottom: '18px',
-        }}
-      >
-        <Field
-          label="ราคา / งบ (บาท)"
-        >
-          <input
-            type="number"
-            value={form.total}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                total:
-                  e.target.value,
-              })
-            }
-            style={fieldStyle}
-          />
-        </Field>
-
-        <Field
-          label="จ่ายแล้ว (บาท)"
-        >
-          <input
-            type="number"
-            value={form.paid}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                paid:
-                  e.target.value,
-              })
-            }
-            style={fieldStyle}
-          />
-        </Field>
-      </div>
-
-      <div
-        style={{
-          marginBottom: '18px',
-        }}
-      >
-        <Field label="หมายเหตุ">
-          <textarea
-            placeholder="หมายเหตุเพิ่มเติม..."
-            value={form.remark}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                remark:
-                  e.target.value,
-              })
-            }
+        <div>
+          <div
             style={{
-              ...fieldStyle,
-              minHeight: '120px',
-              paddingTop: '18px',
-              resize: 'none',
+              fontSize: '42px',
+              fontWeight: 800,
+              letterSpacing: '-0.04em',
+              color: '#111',
+              lineHeight: 1,
             }}
-          />
-        </Field>
+          >
+            เพิ่มรายการ
+          </div>
+
+          <div
+            style={{
+              marginTop: '10px',
+              color: '#8B8B8B',
+              fontSize: '15px',
+            }}
+          >
+            เพิ่มค่าใช้จ่ายใหม่เข้าสู่ระบบ
+          </div>
+        </div>
+
+        <button
+          onClick={() =>
+            setOpen(false)
+          }
+          style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '999px',
+            border: 'none',
+            background:
+              'rgba(0,0,0,.06)',
+            cursor: 'pointer',
+            fontSize: '18px',
+          }}
+        >
+          ✕
+        </button>
+      </div>
+
+      <div
+        style={{
+          display: 'grid',
+          gap: '16px',
+        }}
+      >
+        <ModernInput
+          placeholder="วันที่"
+          value={form.date}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              date: e.target.value,
+            })
+          }
+        />
+
+        <ModernInput
+          placeholder="หมวด"
+          value={form.cat}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              cat: e.target.value,
+            })
+          }
+        />
+
+        <ModernInput
+          placeholder="รายละเอียด"
+          value={form.note}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              note: e.target.value,
+            })
+          }
+        />
+
+        <ModernInput
+          type="number"
+          placeholder="งบประมาณ"
+          value={form.total}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              total:
+                e.target.value,
+            })
+          }
+        />
+
+        <ModernInput
+          type="number"
+          placeholder="จ่ายแล้ว"
+          value={form.paid}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              paid:
+                e.target.value,
+            })
+          }
+        />
       </div>
 
       <div
         style={{
           display: 'flex',
-          justifyContent:
-            'flex-end',
-          gap: '16px',
-          marginTop: '34px',
+          justifyContent: 'flex-end',
+          gap: '12px',
+          marginTop: '32px',
         }}
       >
         <button
           onClick={() =>
             setOpen(false)
           }
-          className="modal-cancel"
           style={{
-            height: '58px',
-            padding: '0 34px',
-            borderRadius: '22px',
-            border: '1px solid #D8CCBB',
-            background: '#EFE7DB',
-            color: '#6F5B47',
-            fontSize: '16px',
-            fontWeight: 700,
+            border:
+              '1px solid rgba(0,0,0,.08)',
+            background:
+              'rgba(255,255,255,.72)',
+            padding:
+              '14px 20px',
+            borderRadius: '18px',
+            fontWeight: 600,
+            fontSize: '15px',
             cursor: 'pointer',
           }}
         >
@@ -1317,22 +1181,22 @@ button:hover{
 
         <button
           onClick={addItem}
-          className="modal-save"
           style={{
-            height: '58px',
-            padding: '0 36px',
             border: 'none',
-            borderRadius: '22px',
-            background: '#4E82AD',
+            background:
+              '#111111',
             color: '#fff',
-            fontSize: '16px',
-            fontWeight: 800,
+            padding:
+              '14px 24px',
+            borderRadius: '18px',
+            fontWeight: 700,
+            fontSize: '15px',
             cursor: 'pointer',
             boxShadow:
-              '0 14px 30px rgba(78,130,173,.22)',
+              '0 12px 24px rgba(0,0,0,.12)',
           }}
         >
-          บันทึก
+          + บันทึกรายการ
         </button>
       </div>
     </div>
@@ -1343,42 +1207,26 @@ button:hover{
   )
 }
 
-
-const fieldStyle = {
-  width: '100%',
-  borderRadius: '22px',
-  border: '1px solid rgba(255,255,255,.55)',
-  background:
-    'rgba(255,255,255,.88)',
-  padding: '0 22px',
-  fontSize: '16px',
-  height: '64px',
-  outline: 'none',
-  boxSizing: 'border-box',
-}
-
-function Field({
-  label,
-  children,
-}) {
+function ModernInput(props) {
   return (
-    <div>
-      <label
-        style={{
-          display: 'block',
-          marginBottom: '10px',
-          fontSize: '16px',
-          fontWeight: 600,
-          color: '#9A8873',
-        }}
-      >
-        {label}
-      </label>
-
-      <div>
-        {children}
-      </div>
-    </div>
+    <input
+      {...props}
+      style={{
+        width: '100%',
+        border:
+          '1px solid rgba(0,0,0,.06)',
+        background:
+          'rgba(255,255,255,.72)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: '18px',
+        padding: '18px 20px',
+        fontSize: '16px',
+        outline: 'none',
+        transition:
+          'all .25s ease',
+        boxSizing: 'border-box',
+      }}
+    />
   )
 }
 
@@ -1427,11 +1275,11 @@ function SummaryCard({
       className="summary-card"
       style={{
         background: 'rgba(255,255,255,.72)',
-        borderRadius: '36px',
-        padding: '40px',
+        borderRadius: '32px',
+        padding: '48px',
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,.5)',
-        boxShadow: '0 18px 50px rgba(31,41,55,.06)',
+        boxShadow: '0 10px 40px rgba(0,0,0,.04)',
         transition: 'all .35s ease',
         animation: 'floatCard 7s ease-in-out infinite',
         transform: 'translateY(0px)',
@@ -1440,7 +1288,7 @@ function SummaryCard({
       <div
         style={{
           color: '#8B8B8B',
-          fontSize: '16px',
+          fontSize: '15px',
           marginBottom: '12px',
         }}
       >
@@ -1452,7 +1300,7 @@ function SummaryCard({
         style={{
           marginTop: '4px',
           color,
-          fontSize: 'clamp(36px,4vw,56px)',
+          fontSize: '64px',
           letterSpacing: '-0.04em',
           fontWeight: 700,
         }}
@@ -1502,7 +1350,7 @@ function FilterButton({
       onClick={onClick}
       style={{
         border:
-          '1px solid rgba(255,255,255,.5)',
+          '1px solid #ddd',
         borderRadius:
           '999px',
         padding:
@@ -1522,6 +1370,62 @@ function FilterButton({
 }
 
 
+function StatusBadge({ children }) {
+  let bg = '#FFF1D6'
+  let color = '#A8741A'
+
+  if (children === 'จ่ายครบแล้ว') {
+    bg = '#DDF5E4'
+    color = '#2E6B45'
+  }
+
+  if (children === 'ยังไม่จ่าย') {
+    bg = '#FFE1E1'
+    color = '#A23B3B'
+  }
+
+  return (
+    <span
+      style={{
+        background: bg,
+        color: color,
+        borderRadius: '999px',
+        padding: '6px 12px',
+        fontSize: '14px',
+        fontWeight: 600,
+      }}
+    >
+      {children}
+    </span>
+  )
+}
+
+function TH({
+  children,
+  sticky,
+}) {
+  return (
+    <th
+      style={{
+        padding: '14px',
+        background:
+          'rgba(255,255,255,.72)',
+        backdropFilter: 'blur(20px)',
+        textAlign:
+          'left',
+        position: sticky
+          ? 'sticky'
+          : 'static',
+        right: sticky
+          ? 0
+          : undefined,
+      }}
+    >
+      {children}
+    </th>
+  )
+}
+
 function TD({
   children,
   sticky,
@@ -1534,7 +1438,7 @@ function TD({
           '1px solid rgba(0,0,0,.05)',
         transition: 'background .2s ease',
         background:
-          'rgba(255,255,255,.72)',
+          '#fff',
         position: sticky
           ? 'sticky'
           : 'static',

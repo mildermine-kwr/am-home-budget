@@ -35,6 +35,10 @@ export default function App() {
   const [activeTab, setActiveTab] =
     useState('tort')
 
+  const [payAmount, setPayAmount] =
+  useState('')
+  const [toast, setToast] =
+  useState('')
   const [search, setSearch] =
     useState('')
 
@@ -79,6 +83,8 @@ export default function App() {
       furn: DEFAULT_FURN,
     }
   })
+
+  
 
   const [form, setForm] = useState({
     date: '',
@@ -172,7 +178,13 @@ export default function App() {
 
     return 'ชำระบางส่วน'
   }
+const showToast = (message) => {
+  setToast(message)
 
+  setTimeout(() => {
+    setToast('')
+  }, 2200)
+}
   const addItem = () => {
     if (!form.note || !form.total)
       return
@@ -194,6 +206,7 @@ export default function App() {
         ...prev[activeTab],
       ],
     }))
+showToast('บันทึกรายการสำเร็จ ✨')
 
     setOpen(false)
 
@@ -232,7 +245,7 @@ export default function App() {
           }
         ),
     }))
-
+showToast('บันทึกการชำระสำเร็จ 💸')
     setPayingId(null)
     setPayAmount('')
   }
@@ -412,7 +425,17 @@ button:hover{
               background-position: 0% 50%;
             }
           }
+@keyframes toastIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px) scale(.96);
+  }
 
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
           @keyframes floatCard {
             0% {
               transform: translateY(0px);
@@ -1685,7 +1708,29 @@ function SummaryCard({
         {value.toLocaleString()}
       </h2>
 
-
+{toast && (
+  <div
+    style={{
+      position: 'fixed',
+      top: '24px',
+      right: '24px',
+      zIndex: 9999,
+      background: 'rgba(17,24,39,.92)',
+      color: '#fff',
+      padding: '16px 20px',
+      borderRadius: '20px',
+      backdropFilter: 'blur(20px)',
+      boxShadow:
+        '0 20px 40px rgba(0,0,0,.18)',
+      fontWeight: 700,
+      fontSize: '15px',
+      animation:
+        'toastIn .35s cubic-bezier(.22,1,.36,1)',
+    }}
+  >
+    {toast}
+  </div>
+)}
 
     </div>
     </>

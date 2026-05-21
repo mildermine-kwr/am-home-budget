@@ -440,7 +440,7 @@ button:hover{
           linear-gradient(180deg,#F8FAFF,#F8F4EF)
         `,
         backgroundSize: '140% 140%',
-        animation: 'meshMove 18s ease infinite',
+        
         padding: '40px',
         fontFamily: "'IBM Plex Sans Thai', sans-serif",
       }}
@@ -641,12 +641,12 @@ button:hover{
               background:
                 'rgba(0,0,0,.06)',
               overflow: 'hidden',
-            backdropFilter: 'blur(20px)',
+            
             border: '1px solid rgba(255,255,255,.55)',
             boxShadow: '0 18px 50px rgba(31,41,55,.06)',
         transition: 'all .35s ease',
-        animation: 'floatCard 7s ease-in-out infinite',
-        transform: 'translateY(0px)',
+        
+        
             }}
           >
             <div
@@ -875,18 +875,15 @@ button:hover{
             style={{
               width: '100%',
               overflowX: 'auto',
-              overflowY: 'hidden',
-              position: 'relative',
               WebkitOverflowScrolling: 'touch',
-              borderRadius: '0 0 32px 32px',
             }}
           >
             <table
               className="desktop-table"
               style={{
-                minWidth: '1400px',
-                width: 'max-content',
-                borderCollapse: 'separate',
+                minWidth: '1200px',
+                width: '100%',
+                borderCollapse: 'collapse',
                 borderSpacing: 0,
                 background: 'transparent',
               }}
@@ -1650,12 +1647,12 @@ function SummaryCard({
         background: 'rgba(255,255,255,.68)',
         borderRadius: '36px',
         padding: '40px',
-        backdropFilter: 'blur(20px)',
+        
         border: '1px solid rgba(255,255,255,.5)',
         boxShadow: '0 18px 50px rgba(31,41,55,.06)',
         transition: 'all .35s ease',
-        animation: 'floatCard 7s ease-in-out infinite',
-        transform: 'translateY(0px)',
+        
+        
       }}
     >
       <div
@@ -1781,6 +1778,7 @@ function StatusBadge({
     </span>
   )
 }
+
 function TH({
   children,
 }) {
@@ -1793,6 +1791,9 @@ function TH({
         background: '#FFFFFF',
         borderBottom:
           '1px solid rgba(0,0,0,.06)',
+        fontSize: '14px',
+        fontWeight: 700,
+        color: '#667085',
       }}
     >
       {children}
@@ -1800,10 +1801,9 @@ function TH({
   )
 }
 
+
 function TD({
   children,
-  sticky,
-  action,
 }) {
   return (
     <td
@@ -1812,24 +1812,10 @@ function TD({
         whiteSpace: 'nowrap',
         borderBottom:
           '1px solid rgba(0,0,0,.05)',
-        background: sticky
-          ? '#FFFFFF'
-          : 'rgba(255,255,255,.72)',
-        position: sticky
-          ? 'sticky'
-          : 'static',
-        right: sticky
-          ? action
-            ? 0
-            : 140
-          : undefined,
-        zIndex: sticky ? 20 : 1,
-        boxShadow: sticky
-          ? '-10px 0 24px rgba(15,23,42,.06)'
-          : 'none',
-        backdropFilter: sticky
-          ? 'blur(14px)'
-          : 'blur(20px)',
+        background:
+          'rgba(255,255,255,.72)',
+        fontSize: '15px',
+        color: '#1B2430',
       }}
     >
       {children}

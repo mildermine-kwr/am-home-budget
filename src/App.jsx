@@ -10,6 +10,27 @@ const DEFAULT_FURN = FURN
 const STORAGE_KEY =
   'am-home-react-budget'
 
+
+const TCATS = [
+  'ค่ามัดจำต่อเติม',
+  'เสาเข็ม',
+  'งานปูน',
+  'งานระบบ',
+  'หลังคา',
+  'งานโครงสร้าง',
+  'อื่นๆ',
+]
+
+const FCATS = [
+  'Home Appliances',
+  'Furniture',
+  'Building Materials / Repairs',
+  'Kitchenware',
+  'Bedding',
+  'Decorations',
+  'อื่นๆ',
+]
+
 export default function App() {
   const [activeTab, setActiveTab] =
     useState('tort')
@@ -50,6 +71,7 @@ export default function App() {
     note: '',
     total: '',
     paid: '',
+    remark: '',
   })
 
   useEffect(() => {
@@ -700,9 +722,23 @@ export default function App() {
             />
 
             <button
-              onClick={() =>
+              onClick={() => {
+                setForm({
+                  date: new Date()
+                    .toISOString()
+                    .slice(0, 10),
+                  cat:
+                    activeTab === 'tort'
+                      ? TCATS[0]
+                      : FCATS[0],
+                  note: '',
+                  total: '',
+                  paid: '',
+                  remark: '',
+                })
+
                 setOpen(true)
-              }
+              }}
               style={{
                 border: 'none',
                 background: '#111111',
@@ -1004,175 +1040,225 @@ export default function App() {
       </div>
 
       
+
 {open && (
   <div
     style={{
       position: 'fixed',
       inset: 0,
-      background: 'rgba(15,15,15,.45)',
-      backdropFilter: 'blur(12px)',
+      background:
+        'rgba(15,15,15,.28)',
+      zIndex: 100,
       display: 'flex',
-      justifyContent: 'center',
       alignItems: 'center',
+      justifyContent: 'center',
+      backdropFilter: 'blur(10px)',
       padding: '24px',
-      zIndex: 9999,
     }}
+    onClick={() =>
+      setOpen(false)
+    }
   >
     <div
+      onClick={(e) =>
+        e.stopPropagation()
+      }
       style={{
         width: '100%',
-        maxWidth: '620px',
-        borderRadius: '36px',
+        maxWidth: '980px',
+        borderRadius: '40px',
+        padding: '42px',
         background:
-          'rgba(255,255,255,.78)',
-        backdropFilter: 'blur(24px)',
+          'rgba(255,255,255,.82)',
+        backdropFilter:
+          'blur(24px)',
         border:
-          '1px solid rgba(255,255,255,.55)',
+          '1px solid rgba(255,255,255,.6)',
         boxShadow:
-          '0 30px 80px rgba(0,0,0,.12)',
-        padding: '34px',
+          '0 30px 90px rgba(0,0,0,.12)',
       }}
     >
-      <div
+      <h3
         style={{
-          display: 'flex',
-          justifyContent:
-            'space-between',
-          alignItems: 'center',
-          marginBottom: '28px',
+          fontSize: '54px',
+          lineHeight: 1,
+          fontWeight: 800,
+          letterSpacing:
+            '-0.05em',
+          color: '#6B4B2A',
+          marginBottom: '34px',
         }}
       >
-        <div>
-          <div
-            style={{
-              fontSize: '42px',
-              fontWeight: 800,
-              letterSpacing: '-0.04em',
-              color: '#111',
-              lineHeight: 1,
-            }}
-          >
-            เพิ่มรายการ
-          </div>
+        + เพิ่มรายการ
+      </h3>
 
-          <div
-            style={{
-              marginTop: '10px',
-              color: '#8B8B8B',
-              fontSize: '15px',
-            }}
-          >
-            เพิ่มค่าใช้จ่ายใหม่เข้าสู่ระบบ
-          </div>
-        </div>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns:
+            '1fr 1fr',
+          gap: '20px',
+          marginBottom: '18px',
+        }}
+      >
+        <Field label="วันที่">
+          <input
+            type="date"
+            value={form.date}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                date:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          />
+        </Field>
 
-        <button
-          onClick={() =>
-            setOpen(false)
-          }
-          style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: '999px',
-            border: 'none',
-            background:
-              'rgba(0,0,0,.06)',
-            cursor: 'pointer',
-            fontSize: '18px',
-          }}
-        >
-          ✕
-        </button>
+        <Field label="หมวดงาน / หมวดสินค้า">
+          <select
+            value={form.cat}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                cat:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          >
+            {(activeTab ===
+            'tort'
+              ? TCATS
+              : FCATS
+            ).map((c) => (
+              <option
+                key={c}
+                value={c}
+              >
+                {c}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
+      <div
+        style={{
+          marginBottom: '18px',
+        }}
+      >
+        <Field label="รายละเอียด">
+          <input
+            type="text"
+            placeholder="ชื่อรายการ..."
+            value={form.note}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                note:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          />
+        </Field>
       </div>
 
       <div
         style={{
           display: 'grid',
-          gap: '16px',
+          gridTemplateColumns:
+            '1fr 1fr',
+          gap: '20px',
+          marginBottom: '18px',
         }}
       >
-        <ModernInput
-          placeholder="วันที่"
-          value={form.date}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              date: e.target.value,
-            })
-          }
-        />
+        <Field
+          label="ราคา / งบ (บาท)"
+        >
+          <input
+            type="number"
+            value={form.total}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                total:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          />
+        </Field>
 
-        <ModernInput
-          placeholder="หมวด"
-          value={form.cat}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              cat: e.target.value,
-            })
-          }
-        />
+        <Field
+          label="จ่ายแล้ว (บาท)"
+        >
+          <input
+            type="number"
+            value={form.paid}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                paid:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          />
+        </Field>
+      </div>
 
-        <ModernInput
-          placeholder="รายละเอียด"
-          value={form.note}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              note: e.target.value,
-            })
-          }
-        />
-
-        <ModernInput
-          type="number"
-          placeholder="งบประมาณ"
-          value={form.total}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              total:
-                e.target.value,
-            })
-          }
-        />
-
-        <ModernInput
-          type="number"
-          placeholder="จ่ายแล้ว"
-          value={form.paid}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              paid:
-                e.target.value,
-            })
-          }
-        />
+      <div
+        style={{
+          marginBottom: '18px',
+        }}
+      >
+        <Field label="หมายเหตุ">
+          <textarea
+            placeholder="หมายเหตุเพิ่มเติม..."
+            value={form.remark}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                remark:
+                  e.target.value,
+              })
+            }
+            style={{
+              ...fieldStyle,
+              minHeight: '140px',
+              paddingTop: '18px',
+              resize: 'none',
+            }}
+          />
+        </Field>
       </div>
 
       <div
         style={{
           display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '12px',
-          marginTop: '32px',
+          justifyContent:
+            'flex-end',
+          gap: '16px',
+          marginTop: '34px',
         }}
       >
         <button
           onClick={() =>
             setOpen(false)
           }
+          className="modal-cancel"
           style={{
-            border:
-              '1px solid rgba(0,0,0,.08)',
-            background:
-              'rgba(255,255,255,.72)',
-            padding:
-              '14px 20px',
-            borderRadius: '18px',
-            fontWeight: 600,
-            fontSize: '15px',
+            height: '64px',
+            padding: '0 38px',
+            borderRadius: '22px',
+            border: '1px solid #D8CCBB',
+            background: '#EFE7DB',
+            color: '#6F5B47',
+            fontSize: '20px',
+            fontWeight: 700,
             cursor: 'pointer',
           }}
         >
@@ -1181,22 +1267,22 @@ export default function App() {
 
         <button
           onClick={addItem}
+          className="modal-save"
           style={{
+            height: '64px',
+            padding: '0 42px',
             border: 'none',
-            background:
-              '#111111',
+            borderRadius: '22px',
+            background: '#4E82AD',
             color: '#fff',
-            padding:
-              '14px 24px',
-            borderRadius: '18px',
-            fontWeight: 700,
-            fontSize: '15px',
+            fontSize: '20px',
+            fontWeight: 800,
             cursor: 'pointer',
             boxShadow:
-              '0 12px 24px rgba(0,0,0,.12)',
+              '0 14px 30px rgba(78,130,173,.22)',
           }}
         >
-          + บันทึกรายการ
+          บันทึก
         </button>
       </div>
     </div>
@@ -1207,26 +1293,42 @@ export default function App() {
   )
 }
 
-function ModernInput(props) {
+
+const fieldStyle = {
+  width: '100%',
+  borderRadius: '22px',
+  border: '1px solid #D9CDBD',
+  background:
+    'rgba(255,255,255,.88)',
+  padding: '0 22px',
+  fontSize: '20px',
+  height: '76px',
+  outline: 'none',
+  boxSizing: 'border-box',
+}
+
+function Field({
+  label,
+  children,
+}) {
   return (
-    <input
-      {...props}
-      style={{
-        width: '100%',
-        border:
-          '1px solid rgba(0,0,0,.06)',
-        background:
-          'rgba(255,255,255,.72)',
-        backdropFilter: 'blur(12px)',
-        borderRadius: '18px',
-        padding: '18px 20px',
-        fontSize: '16px',
-        outline: 'none',
-        transition:
-          'all .25s ease',
-        boxSizing: 'border-box',
-      }}
-    />
+    <div>
+      <label
+        style={{
+          display: 'block',
+          marginBottom: '10px',
+          fontSize: '15px',
+          fontWeight: 600,
+          color: '#9A8873',
+        }}
+      >
+        {label}
+      </label>
+
+      <div>
+        {children}
+      </div>
+    </div>
   )
 }
 

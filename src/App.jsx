@@ -442,8 +442,7 @@ button:hover{
         backgroundSize: '140% 140%',
         animation: 'meshMove 18s ease infinite',
         padding: '40px',
-        fontFamily:
-          'IBM Plex Sans Thai', sans-serif',
+       fontFamily: "'IBM Plex Sans Thai', sans-serif",
       }}
     >
       <div

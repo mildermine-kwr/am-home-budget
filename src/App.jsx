@@ -884,7 +884,7 @@ button:hover{
             <table
               className="desktop-table"
               style={{
-                minWidth: '1500px',
+                minWidth: '1400px',
                 width: 'max-content',
                 borderCollapse: 'separate',
                 borderSpacing: 0,
@@ -911,10 +911,10 @@ button:hover{
                   <TH>
                     คงเหลือ
                   </TH>
-                  <TH sticky>
+                  <TH>
                     สถานะ
                   </TH>
-                  <TH sticky action>
+                  <TH>
                     Action
                   </TH>
                 </tr>
@@ -1010,7 +1010,7 @@ button:hover{
                             {remain.toLocaleString()}
                           </TD>
 
-                          <TD sticky>
+                          <TD>
                             <StatusBadge>
                               {statusText(
                                 item
@@ -1018,7 +1018,7 @@ button:hover{
                             </StatusBadge>
                           </TD>
 
-                          <TD sticky action>
+                          <TD>
                             <button
                               style={{
                                 border: '1px solid rgba(0,0,0,.08)',
@@ -1783,8 +1783,6 @@ function StatusBadge({
 }
 function TH({
   children,
-  sticky,
-  action,
 }) {
   return (
     <th
@@ -1792,21 +1790,9 @@ function TH({
         padding: '18px 20px',
         textAlign: 'left',
         whiteSpace: 'nowrap',
-        background: '#FDFDFD',
+        background: '#FFFFFF',
         borderBottom:
           '1px solid rgba(0,0,0,.06)',
-        position: sticky
-          ? 'sticky'
-          : 'static',
-        right: sticky
-          ? action
-            ? 0
-            : 140
-          : undefined,
-        zIndex: sticky ? 30 : 1,
-        boxShadow: sticky
-          ? '-10px 0 24px rgba(15,23,42,.06)'
-          : 'none',
       }}
     >
       {children}

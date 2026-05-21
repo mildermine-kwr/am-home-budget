@@ -535,6 +535,9 @@ button:hover{
         alignItems: 'right',
         marginTop: '32px',
         flexWrap: 'wrap',
+        marginBottom: '24px',
+    width: '100%',
+    justifyContent: 'flex-end',
       }}
     >
       <button

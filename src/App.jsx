@@ -289,18 +289,19 @@ export default function App() {
               width: '100%',
               maxWidth: '100%',
               WebkitOverflowScrolling: 'touch',
+              borderRadius: '12px',
             }}
           >
             <table
               style={{
                 width: '100%',
-                minWidth: '1200px',
+                minWidth: '1600px',
                 borderCollapse: 'separate',
               }}
             >
             <thead>
               <tr>
-                <th>รายการ</th>
+                <th style={{ minWidth: '520px' }}>รายการ</th>
                 <th>หมวด</th>
                 <th>งบ</th>
                 <th>จ่ายแล้ว</th>
@@ -310,6 +311,7 @@ export default function App() {
                   position: 'sticky',
                   right: 0,
                   background: '#fff',
+                  boxShadow: '-6px 0 8px rgba(0,0,0,0.04)',
                   zIndex: 2,
                   minWidth: '170px',
                 }}
@@ -358,6 +360,7 @@ export default function App() {
                       position: 'sticky',
                       right: 0,
                       background: '#fff',
+                      boxShadow: '-6px 0 8px rgba(0,0,0,0.04)',
                       zIndex: 1,
                       minWidth: '170px',
                     }}

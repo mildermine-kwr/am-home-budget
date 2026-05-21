@@ -138,7 +138,13 @@ export default function App() {
   }
 
   return (
-    <div className="layout">
+    <div
+      className="layout"
+      style={{
+        width: '100%',
+        overflowX: 'hidden',
+      }}
+    >
       <aside className="sidebar">
         <div className="brand">🏡 AM Home</div>
 
@@ -162,7 +168,12 @@ export default function App() {
         </div>
 
         <section className="summary">
-          <div className="card">
+          <div
+            className="card"
+            style={{
+              minWidth: 0,
+            }}
+          >
             <label>งบทั้งหมด</label>
             <h2>฿{totals.total.toLocaleString()}</h2>
           </div>
@@ -182,7 +193,17 @@ export default function App() {
           </div>
         </section>
 
-        <section className="grid">
+        <section
+          className="grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns:
+              'minmax(0, 1fr) minmax(320px, 360px)',
+            gap: '24px',
+            width: '100%',
+            overflow: 'hidden',
+          }}
+        >
           <div className="card">
             <h3>Budget Overview</h3>
 
@@ -201,7 +222,14 @@ export default function App() {
             </div>
           </div>
 
-          <div className="card">
+          <div
+            className="card"
+            style={{
+              width: '100%',
+              maxWidth: '360px',
+              minWidth: 0,
+            }}
+          >
             <h3>Quick Search</h3>
 
             <input

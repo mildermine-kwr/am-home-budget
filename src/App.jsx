@@ -29,6 +29,14 @@ const chartData = [
 { value: 45 },
 ]
 
+const inputStyle = {
+width: '100%',
+padding: '14px',
+borderRadius: '14px',
+border: '1px solid #e5e7eb',
+marginTop: '12px',
+}
+
 export default function App() {
 const [items, setItems] = useState(() => {
 const saved = localStorage.getItem(
@@ -200,12 +208,11 @@ return 'บางส่วน'
 }
 
 return (
-
-
-
+<div className="layout">
+<aside className="sidebar">
+<div className="brand">
 🏡 AM Home
-
-
+</div>
 
     <div className="nav">
       <button
@@ -321,266 +328,8 @@ return (
         </h2>
       </div>
     </section>
-
-    <section className="grid">
-      <div className="card">
-        <h3>
-          Budget Overview
-        </h3>
-
-        <div className="chart">
-          <ResponsiveContainer
-            width="100%"
-            height="100%"
-          >
-            <LineChart
-              data={chartData}
-            >
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#3b82f6"
-                strokeWidth={4}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      <div className="card">
-        <h3>
-          Quick Search
-        </h3>
-
-        <input
-          value={search}
-          onChange={(e) =>
-            setSearch(
-              e.target.value
-            )
-          }
-          placeholder="ค้นหา..."
-          style={inputStyle}
-        />
-      </div>
-    </section>
-
-    <section className="card">
-      <h3>
-        รายการทั้งหมด
-      </h3>
-
-      <table>
-        <thead>
-          <tr>
-            <th>
-              รายการ
-            </th>
-            <th>
-              หมวด
-            </th>
-            <th>งบ</th>
-            <th>
-              จ่ายแล้ว
-            </th>
-            <th>
-              สถานะ
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {filteredItems.map(
-            (item) => (
-              <tr
-                key={item.id}
-              >
-                <td>
-                  {
-                    item.title
-                  }
-                </td>
-
-                <td>
-                  {
-                    item.category
-                  }
-                </td>
-
-                <td>
-                  ฿
-                  {Number(
-                    item.budget
-                  ).toLocaleString()}
-                </td>
-
-                <td>
-                  ฿
-                  {Number(
-                    item.paid
-                  ).toLocaleString()}
-                </td>
-
-                <td>
-                  {getStatus(
-                    item
-                  )}
-                </td>
-
-                <td>
-                  <div
-                    style={{
-                      display:
-                        'flex',
-                      gap: '8px',
-                    }}
-                  >
-                    <button
-                      className="mobile-btn"
-                      onClick={() =>
-                        addPayment(
-                          item.id
-                        )
-                      }
-                    >
-                      + ชำระ
-                    </button>
-
-                    <button
-                      className="mobile-btn"
-                      onClick={() =>
-                        deleteItem(
-                          item.id
-                        )
-                      }
-                    >
-                      ลบ
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            )
-          )}
-        </tbody>
-      </table>
-    </section>
   </main>
-
-  {open && (
-    <div className="modal">
-      <div className="modal-card">
-        <h2>
-          เพิ่มรายจ่าย
-        </h2>
-
-        <div className="form-grid">
-          <input
-            placeholder="รายละเอียด"
-            value={form.title}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                title:
-                  e.target
-                    .value,
-              })
-            }
-            style={inputStyle}
-          />
-
-          <select
-            value={
-              form.category
-            }
-            onChange={(e) =>
-              setForm({
-                ...form,
-                category:
-                  e.target
-                    .value,
-              })
-            }
-            style={inputStyle}
-          >
-            <option>
-              ต่อเติม
-            </option>
-
-            <option>
-              Furniture
-            </option>
-
-            <option>
-              Home Appliances
-            </option>
-
-            <option>
-              Kitchenware
-            </option>
-          </select>
-
-          <input
-            type="number"
-            placeholder="งบทั้งหมด"
-            value={form.budget}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                budget:
-                  e.target
-                    .value,
-              })
-            }
-            style={inputStyle}
-          />
-
-          <input
-            type="number"
-            placeholder="จ่ายแล้ว"
-            value={form.paid}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                paid:
-                  e.target
-                    .value,
-              })
-            }
-            style={inputStyle}
-          />
-        </div>
-
-        <div className="modal-actions">
-          <button
-            className="mobile-btn"
-            onClick={() =>
-              setOpen(false)
-            }
-          >
-            ยกเลิก
-          </button>
-
-          <button
-            className="fab"
-            onClick={addExpense}
-          >
-            บันทึก
-          </button>
-        </div>
-      </div>
-    </div>
-  )}
 </div>
 
 )
-}
-
-const inputStyle = {
-width: '100%',
-padding: '14px',
-borderRadius: '14px',
-border: '1px solid #e5e7eb',
-marginTop: '12px',
 }

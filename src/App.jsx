@@ -1,56 +1,10 @@
 
 import { useEffect, useMemo, useState } from 'react'
+import { TORT, FURN } from './data/items'
 
-const DEFAULT_TORT = [
-  {
-    id: 1,
-    date: '16/02/2569',
-    cat: 'ค่ามัดจำต่อเติม',
-    note: 'ค่ามัดจำต่อเติมบ้าน',
-    total: 5000,
-    paid: 5000,
-  },
-  {
-    id: 2,
-    date: '20/04/2569',
-    cat: 'เสาเข็ม',
-    note: 'ค่าลงเสาเข็ม',
-    total: 60000,
-    paid: 60000,
-  },
-  {
-    id: 3,
-    date: '22/04/2569',
-    cat: 'งานปูน',
-    note: 'งานปูนต่อเติม',
-    total: 77500,
-    paid: 30000,
-  },
-]
+const DEFAULT_TORT = TORT
 
-const DEFAULT_FURN = [
-  {
-    id: 101,
-    date: '20/10/2568',
-    cat: 'Home Appliances',
-    note: 'เครื่องอบผ้า Samsung',
-    total: 22396,
-    paid: 13438,
-    installment: {
-      paid: 6,
-      total: 10,
-      monthly: 2240,
-    },
-  },
-  {
-    id: 102,
-    date: '26/10/2568',
-    cat: 'Furniture',
-    note: 'Sofa Pasadena',
-    total: 47000,
-    paid: 14000,
-  },
-]
+const DEFAULT_FURN = FURN
 
 const STORAGE_KEY =
   'am-home-react-budget'

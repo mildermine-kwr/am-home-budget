@@ -482,9 +482,7 @@ button:hover{
     >
       AM Home
       <br />
-      budgeting your
-      <br />
-      dream home.
+      Budget
     </h1>
 
     <p

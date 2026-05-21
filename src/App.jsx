@@ -1023,6 +1023,7 @@ button:hover{
                                 boxShadow: '0 4px 14px rgba(0,0,0,.06)',
                                 borderRadius: '12px',
                                 padding: '8px 12px',
+                                whiteSpace: 'nowrap',
                               }}
                               onClick={() => {
                                 setPayingId(

@@ -522,13 +522,7 @@ button:hover{
         flexWrap: 'wrap',
       }}
     >
-      <div
-                        style={stickyColumnStyle(
-                          0,
-                          9
-                        )}
-                      >
-                        <button
+      <button
         onClick={resetData}
         style={{
           border: '1px solid rgba(0,0,0,.08)',
@@ -882,7 +876,6 @@ button:hover{
                   >
                     + ชำระ
                   </button>
-                      </div>
                 </div>
               )
             })}
@@ -969,7 +962,7 @@ button:hover{
                             {item.installment && (
                               <div
                                 style={{
-                                  display: 'inline-flex',
+                                  display: 'flex',
                                   alignItems: 'center',
                                   gap: '8px',
                                   padding: '8px 14px',
@@ -1795,7 +1788,7 @@ function StatusBadge({
         fontSize: '14px',
         fontWeight: 700,
         whiteSpace: 'nowrap',
-        display: 'inline-flex',
+        display: 'flex',
         alignItems: 'center',
       }}
     >

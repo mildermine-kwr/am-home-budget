@@ -613,7 +613,7 @@ button:hover{
             background: 'rgba(255,255,255,.68)',
             borderRadius: '36px',
             padding: '20px',
-            marginBottom: '0px',
+            marginBottom: '20px',
           }}
         >
           <div
@@ -1799,9 +1799,9 @@ function TH({
         right: sticky
           ? action
             ? 0
-            : 130
+            : 150
           : undefined,
-        zIndex: sticky ? 5 : 1,
+        zIndex: sticky ? 20 : 1,
       }}
     >
       {children}
@@ -1829,9 +1829,9 @@ function TD({
         right: sticky
           ? action
             ? 0
-            : 130
+            : 150
           : undefined,
-        zIndex: sticky ? 5 : 1,
+        zIndex: sticky ? 20 : 1,
       }}
     >
       {children}

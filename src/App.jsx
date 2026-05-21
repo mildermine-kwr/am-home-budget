@@ -214,19 +214,19 @@ export default function App() {
     <div
       style={{
         minHeight: '100vh',
-        background: '''
+        background: `
           radial-gradient(circle at top left, rgba(255,220,220,.35), transparent 28%),
           radial-gradient(circle at top right, rgba(210,225,255,.35), transparent 28%),
           #F7F5F1
-        ''',
-        padding: '32px',
+        `,
+        padding: '48px',
         fontFamily:
           'Inter, Noto Sans Thai, sans-serif',
       }}
     >
       <div
         style={{
-          maxWidth: '1200px',
+          maxWidth: '1400px',
           margin: '0 auto',
         }}
       >
@@ -237,13 +237,13 @@ export default function App() {
               'space-between',
             gap: '16px',
             flexWrap: 'wrap',
-            marginBottom: '64px',
+            marginBottom: '96px',
           }}
         >
           <div>
             <h1
               style={{
-                fontSize: '72px',
+                fontSize: '104px',
                 lineHeight: '.95',
                 letterSpacing: '-0.04em',
                 margin: 0,
@@ -287,12 +287,12 @@ export default function App() {
                 border: '1px solid rgba(0,0,0,.08)',
                 background: 'rgba(255,255,255,.72)',
                 backdropFilter: 'blur(16px)',
-                borderRadius: '16px',
+                borderRadius: '32px',
                 padding: '12px 18px',
                 fontWeight: 600,
                 color: '#444',
                 boxShadow: '0 4px 20px rgba(0,0,0,.04)',
-                transition: '.2s ease',
+                transition: 'all .25s ease',
               }}
             >
               ↺ รีเซ็ต
@@ -369,7 +369,7 @@ export default function App() {
         <div
           style={{
             background: 'rgba(255,255,255,.72)',
-            borderRadius: '16px',
+            borderRadius: '32px',
             padding: '20px',
             marginBottom: '20px',
           }}
@@ -411,7 +411,7 @@ export default function App() {
                 width: `${progress}%`,
                 height: '100%',
                 background:
-                  '#4A7A52',
+                  'linear-gradient(90deg,#5E8B67,#8DB996)',
               }}
             />
           </div>
@@ -420,7 +420,7 @@ export default function App() {
         <div
           style={{
             background: 'rgba(255,255,255,.72)',
-            borderRadius: '16px',
+            borderRadius: '32px',
             overflow: 'hidden',
           }}
         >
@@ -511,7 +511,9 @@ export default function App() {
                 borderRadius:
                   '999px',
                 border:
-                  '1px solid #ddd',
+                  '1px solid rgba(0,0,0,.06)',
+                background: 'rgba(255,255,255,.75)',
+                backdropFilter: 'blur(16px)',
               }}
             />
 
@@ -523,11 +525,11 @@ export default function App() {
                 border: 'none',
                 background: '#111111',
                 color: '#fff',
-                borderRadius: '16px',
+                borderRadius: '32px',
                 padding: '12px 18px',
                 fontWeight: 700,
                 boxShadow: '0 8px 24px rgba(0,0,0,.12)',
-                transition: '.2s ease',
+                transition: 'all .25s ease',
               }}
             >
               + เพิ่มรายการ
@@ -934,8 +936,8 @@ function SummaryCard({
     <div
       style={{
         background: 'rgba(255,255,255,.72)',
-        borderRadius: '16px',
-        padding: '32px',
+        borderRadius: '32px',
+        padding: '48px',
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,.5)',
         boxShadow: '0 10px 40px rgba(0,0,0,.04)',
@@ -957,7 +959,7 @@ function SummaryCard({
         style={{
           marginTop: '4px',
           color,
-          fontSize: '52px',
+          fontSize: '64px',
           letterSpacing: '-0.04em',
           fontWeight: 700,
         }}
@@ -1055,7 +1057,8 @@ function TH({
       style={{
         padding: '14px',
         background:
-          'rgba(255,255,255,.88)',
+          'rgba(255,255,255,.72)',
+        backdropFilter: 'blur(20px)',
         textAlign:
           'left',
         position: sticky
@@ -1080,7 +1083,8 @@ function TD({
       style={{
         padding: '14px',
         borderBottom:
-          '1px solid #eee',
+          '1px solid rgba(0,0,0,.05)',
+        transition: 'background .2s ease',
         background:
           '#fff',
         position: sticky
@@ -1101,3 +1105,13 @@ function TD({
 const floatingStyle = {
   animation: 'float 6s ease-in-out infinite'
 }
+
+/*
+CLARIO THEME UPGRADE:
+- editorial typography
+- mesh gradient background
+- premium glass cards
+- floating fintech feel
+- airy spacing
+- luxury table styling
+*/

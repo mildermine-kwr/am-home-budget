@@ -241,4 +241,38 @@ th{
     align-items:flex-start;
     gap:18px;
   }
+
+  flex-direction: column;
+gap: 12px;
 }
+
+.nav button {
+width: 100%;
+border: none;
+background: #eef2ff;
+padding: 16px;
+border-radius: 18px;
+font-weight: 600;
+cursor: pointer;
+transition: 0.2s ease;
+text-align: left;
+position: relative;
+z-index: 2;
+}
+
+.nav button:hover {
+background: #dbeafe;
+}
+
+.nav button.active {
+background: #2563eb;
+color: white;
+}
+
+.sidebar {
+position: relative;
+z-index: 5;
+}
+}
+
+

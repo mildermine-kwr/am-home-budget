@@ -1,15 +1,19 @@
-/*
-Merged Features from AM_Home_Budget(3).html
-- Summary cards
-- Progress bar
-- Tabs
-- Filter buttons
-- Search
-- Sticky action column
-- Table horizontal scroll
-- Responsive layout
-- Payment status logic
-*/
+
+// ===== PHASE 1 FEATURES =====
+
+const STORAGE_KEY = 'am-home-budget-v1'
+
+function getStatus(item) {
+  if (item.paid <= 0) return 'ยังไม่จ่าย'
+  if (item.paid >= item.total)
+    return 'จ่ายครบแล้ว'
+
+  return 'ชำระบางส่วน'
+}
+
+function calculateRemain(item) {
+  return item.total - item.paid
+}
 
 import { useEffect, useMemo, useState } from 'react'
 import { LineChart, Line, ResponsiveContainer } from 'recharts'
@@ -48,10 +52,6 @@ export default function App() {
 
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const [activeTab, setActiveTab] =
-    useState('tort')
-  const [filter, setFilter] =
-    useState('all')
   const [activeCategory, setActiveCategory] =
     useState('ทั้งหมด')
 

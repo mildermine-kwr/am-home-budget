@@ -219,7 +219,13 @@ export default function App() {
           </div>
         </section>
 
-        <section className="card">
+        <section
+          className="card"
+          style={{
+            width: '100%',
+            overflow: 'hidden',
+          }}
+        >
           <div
             style={{
               display: 'flex',
@@ -240,6 +246,8 @@ export default function App() {
                 gap: '10px',
                 overflowX: 'auto',
                 paddingBottom: '4px',
+                width: '100%',
+                scrollbarWidth: 'thin',
               }}
             >
               {categories.map((category) => {
@@ -277,12 +285,17 @@ export default function App() {
           <div
             style={{
               overflowX: 'auto',
+              overflowY: 'hidden',
               width: '100%',
+              maxWidth: '100%',
+              WebkitOverflowScrolling: 'touch',
             }}
           >
             <table
               style={{
-                minWidth: '1100px',
+                width: '100%',
+                minWidth: '1200px',
+                borderCollapse: 'separate',
               }}
             >
             <thead>

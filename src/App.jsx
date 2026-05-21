@@ -213,7 +213,130 @@ export default function App() {
   return (
     <>
 
-      <style>
+      
+<style>
+{`
+  @media (max-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: 1fr !important;
+      gap: 40px !important;
+      min-height: auto !important;
+    }
+
+    .hero-title {
+      font-size: 72px !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .app-shell {
+      padding: 20px !important;
+    }
+
+    .hero-title {
+      font-size: 54px !important;
+      line-height: .95 !important;
+    }
+
+    .hero-subtitle {
+      font-size: 18px !important;
+    }
+
+    .summary-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .summary-card {
+      padding: 24px !important;
+      border-radius: 24px !important;
+    }
+
+    .summary-value {
+      font-size: 42px !important;
+    }
+
+    .table-toolbar {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 14px !important;
+    }
+
+    .table-filters {
+      overflow-x: auto !important;
+      padding-bottom: 4px !important;
+      scrollbar-width: none;
+    }
+
+    .table-filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .desktop-table {
+      display: none !important;
+    }
+
+    .mobile-cards {
+      display: flex !important;
+      flex-direction: column;
+      gap: 16px;
+      padding: 18px;
+    }
+
+    .mobile-budget-card {
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.6);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.04);
+    }
+
+    .mobile-budget-title {
+      font-size: 18px;
+      line-height: 1.4;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .mobile-budget-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .mobile-budget-label {
+      color: #8B8B8B;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .mobile-budget-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .mobile-action {
+      width: 100%;
+      border: none;
+      background: #111;
+      color: white;
+      padding: 14px;
+      border-radius: 16px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .mobile-cards {
+      display: none !important;
+    }
+  }
+`}
+</style>
+
+<style>
         {`
           @keyframes meshMove {
             0% {
@@ -246,6 +369,7 @@ export default function App() {
       </style>
 
     <div
+      className="app-shell"
       style={{
         minHeight: '100vh',
         background: `
@@ -279,6 +403,7 @@ export default function App() {
         >
           <div>
             <h1
+              className="hero-title"
               style={{
                 fontSize: '104px',
                 lineHeight: '.95',
@@ -296,6 +421,7 @@ export default function App() {
             </h1>
 
             <p
+              className="hero-subtitle"
               style={{
                 color: '#9B9B9B',
                 marginTop: '18px',
@@ -377,6 +503,7 @@ export default function App() {
         </div>
 
         <div
+          className="summary-grid"
           style={{
             display: 'grid',
             gridTemplateColumns:
@@ -463,6 +590,7 @@ export default function App() {
           }}
         >
           <div
+            className="table-toolbar"
             style={{
               padding: '16px',
               borderBottom:
@@ -477,7 +605,7 @@ export default function App() {
               รายการทั้งหมด
             </strong>
 
-            <FilterButton
+            <div className="table-filters" style={{display:'flex',gap:'10px',alignItems:'center'}}><FilterButton
               active={
                 filter ===
                 'all'
@@ -533,7 +661,7 @@ export default function App() {
               ยังไม่จ่าย
             </FilterButton>
 
-            <input
+            </div><input
               value={search}
               onChange={(e) =>
                 setSearch(
@@ -574,12 +702,77 @@ export default function App() {
             </button>
           </div>
 
-          <div
+          
+          <div className="mobile-cards">
+            {filteredItems.map((item) => {
+              const remain = item.total - item.paid
+
+              return (
+                <div
+                  key={item.id}
+                  className="mobile-budget-card"
+                >
+                  <div className="mobile-budget-title">
+                    {item.note}
+                  </div>
+
+                  <div className="mobile-budget-meta">
+                    <div>
+                      <div className="mobile-budget-label">
+                        หมวด
+                      </div>
+
+                      <div className="mobile-budget-value">
+                        {item.cat}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="mobile-budget-label">
+                        วันที่
+                      </div>
+
+                      <div className="mobile-budget-value">
+                        {item.date}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="mobile-budget-label">
+                        จ่ายแล้ว
+                      </div>
+
+                      <div className="mobile-budget-value">
+                        ฿{item.paid.toLocaleString()}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="mobile-budget-label">
+                        คงเหลือ
+                      </div>
+
+                      <div className="mobile-budget-value">
+                        ฿{remain.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button className="mobile-action">
+                    + ชำระ
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+
+<div
             style={{
               overflowX: 'auto',
             }}
           >
             <table
+              className="desktop-table"
               style={{
                 width: '100%',
                 minWidth:
@@ -1007,6 +1200,7 @@ function SummaryCard({
       </style>
 
     <div
+      className="summary-card"
       style={{
         background: 'rgba(255,255,255,.72)',
         borderRadius: '32px',
@@ -1030,6 +1224,7 @@ function SummaryCard({
       </div>
 
       <h2
+        className="summary-value"
         style={{
           marginTop: '4px',
           color,

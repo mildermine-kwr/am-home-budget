@@ -31,16 +31,6 @@ const FCATS = [
   'อื่นๆ',
 ]
 
-
-const stickyColumnStyle = (right = 0, zIndex = 5) => ({
-  position: 'sticky',
-  right,
-  background: '#FFFFFF',
-  zIndex,
-  boxShadow: '-10px 0 24px rgba(15,23,42,.06)',
-})
-
-
 export default function App() {
   const [activeTab, setActiveTab] =
     useState('tort')
@@ -450,7 +440,7 @@ button:hover{
           linear-gradient(180deg,#F8FAFF,#F8F4EF)
         `,
         backgroundSize: '140% 140%',
-        
+        animation: 'meshMove 18s ease infinite',
         padding: '40px',
         fontFamily: "'IBM Plex Sans Thai', sans-serif",
       }}
@@ -651,12 +641,12 @@ button:hover{
               background:
                 'rgba(0,0,0,.06)',
               overflow: 'hidden',
-            
+            backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255,255,255,.55)',
             boxShadow: '0 18px 50px rgba(31,41,55,.06)',
         transition: 'all .35s ease',
-        
-        
+        animation: 'floatCard 7s ease-in-out infinite',
+        transform: 'translateY(0px)',
             }}
           >
             <div
@@ -883,20 +873,17 @@ button:hover{
 
 <div
             style={{
-              width: '100%',
               overflowX: 'auto',
-              WebkitOverflowScrolling: 'touch',
             }}
           >
             <table
               className="desktop-table"
               style={{
-                minWidth: '1400px',
                 width: '100%',
-                borderCollapse: 'collapse',
-                borderSpacing: 0,
-                tableLayout: 'fixed',
-                background: 'transparent',
+                minWidth:
+                  '1000px',
+                borderCollapse:
+                  'collapse',
               }}
             >
               <thead>
@@ -922,7 +909,7 @@ button:hover{
                   <TH>
                     สถานะ
                   </TH>
-                  <TH>
+                  <TH sticky>
                     Action
                   </TH>
                 </tr>
@@ -962,7 +949,7 @@ button:hover{
                             {item.installment && (
                               <div
                                 style={{
-                                  display: 'flex',
+                                  display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '8px',
                                   padding: '8px 14px',
@@ -1026,14 +1013,10 @@ button:hover{
                             </StatusBadge>
                           </TD>
 
-                          <TD>
-                            <div
-                        style={stickyColumnStyle(
-                          0,
-                          9
-                        )}
-                      >
-                        <button
+                          <TD
+                            sticky
+                          >
+                            <button
                               style={{
                                 border: '1px solid rgba(0,0,0,.08)',
                                 background: 'rgba(255,255,255,.92)',
@@ -1060,7 +1043,6 @@ button:hover{
                             >
                               + ชำระ
                             </button>
-                      </div>
                           </TD>
                         </tr>
 
@@ -1665,12 +1647,12 @@ function SummaryCard({
         background: 'rgba(255,255,255,.68)',
         borderRadius: '36px',
         padding: '40px',
-        
+        backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,.5)',
         boxShadow: '0 18px 50px rgba(31,41,55,.06)',
         transition: 'all .35s ease',
-        
-        
+        animation: 'floatCard 7s ease-in-out infinite',
+        transform: 'translateY(0px)',
       }}
     >
       <div
@@ -1786,32 +1768,32 @@ function StatusBadge({
         borderRadius: '999px',
         padding: '6px 12px',
         fontSize: '14px',
-        fontWeight: 700,
-        whiteSpace: 'nowrap',
-        display: 'flex',
-        alignItems: 'center',
+        fontWeight: 600,
       }}
     >
       {children}
     </span>
   )
 }
-
 function TH({
   children,
+  sticky,
 }) {
   return (
     <th
       style={{
-        padding: '18px 20px',
-        textAlign: 'left',
-        whiteSpace: 'nowrap',
-        background: '#FFFFFF',
-        borderBottom:
-          '1px solid rgba(0,0,0,.06)',
-        fontSize: '14px',
-        fontWeight: 700,
-        color: '#667085',
+        padding: '14px',
+        background:
+          'rgba(255,255,255,.72)',
+        backdropFilter: 'blur(20px)',
+        textAlign:
+          'left',
+        position: sticky
+          ? 'sticky'
+          : 'static',
+        right: sticky
+          ? 0
+          : undefined,
       }}
     >
       {children}
@@ -1819,21 +1801,25 @@ function TH({
   )
 }
 
-
 function TD({
   children,
+  sticky,
 }) {
   return (
     <td
       style={{
-        padding: '18px 20px',
-        whiteSpace: 'nowrap',
+        padding: '14px',
         borderBottom:
           '1px solid rgba(0,0,0,.05)',
+        transition: 'background .2s ease',
         background:
           'rgba(255,255,255,.72)',
-        fontSize: '15px',
-        color: '#1B2430',
+        position: sticky
+          ? 'sticky'
+          : 'static',
+        right: sticky
+          ? 0
+          : undefined,
       }}
     >
       {children}

@@ -1,22 +1,17 @@
+
 import { useEffect, useMemo, useState } from 'react'
 import { LineChart, Line, ResponsiveContainer } from 'recharts'
+import { TORT, FURN } from './data/items'
 
-const initialItems = [
-  {
-    id: 1,
-    title: 'งานหลังคางวดที่ 2',
-    category: 'ต่อเติม',
-    budget: 76000,
-    paid: 50000,
-  },
-  {
-    id: 2,
-    title: 'Lucky Flame',
-    category: 'Kitchenware',
-    budget: 19190,
-    paid: 19190,
-  },
-]
+const initialItems = [...TORT, ...FURN].map((item) => ({
+  id: item.id,
+  title: item.note || item.title,
+  category: item.cat,
+  budget: item.total,
+  paid: item.paid,
+  date: item.date,
+  installment: item.installment || null,
+}))
 
 const chartData = [
   { value: 10 },
@@ -30,9 +25,12 @@ const chartData = [
 
 export default function App() {
   const [items, setItems] = useState(() => {
-    const saved = localStorage.getItem('am-home-budget-items')
-    return saved ? JSON.parse(saved) : initialItems
-  })
+  const saved = localStorage.getItem('am-home-budget-items')
+
+  return saved
+    ? JSON.parse(saved)
+    : initialItems
+})
 
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -142,7 +140,7 @@ export default function App() {
         <div className="topbar">
           <div>
             <h1>AM Home Budget</h1>
-            <p>Interactive version</p>
+            <p>{items.length} รายการ</p>
           </div>
 
           <button className="fab" onClick={() => setOpen(true)}>
@@ -226,11 +224,37 @@ export default function App() {
             <tbody>
               {filteredItems.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.title}</td>
+                  <td>
+                    <div style={{ fontWeight: 600 }}>
+                      {item.title}
+                    </div>
+
+                    {item.installment && (
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          marginTop: '4px',
+                        }}
+                      >
+                        ผ่อน {item.installment.paid}/
+                        {item.installment.total} งวด
+                      </div>
+                    )}
+                  </td>
+
                   <td>{item.category}</td>
-                  <td>฿{item.budget.toLocaleString()}</td>
-                  <td>฿{item.paid.toLocaleString()}</td>
+
+                  <td>
+                    ฿{Number(item.budget).toLocaleString()}
+                  </td>
+
+                  <td>
+                    ฿{Number(item.paid).toLocaleString()}
+                  </td>
+
                   <td>{status(item)}</td>
+
                   <td>
                     <div
                       style={{
@@ -281,7 +305,9 @@ export default function App() {
               maxWidth: '500px',
             }}
           >
-            <h2 style={{ marginBottom: '20px' }}>เพิ่มรายจ่าย</h2>
+            <h2 style={{ marginBottom: '20px' }}>
+              เพิ่มรายจ่าย
+            </h2>
 
             <div style={{ display: 'grid', gap: '14px' }}>
               <input
@@ -335,7 +361,10 @@ export default function App() {
                 marginTop: '24px',
               }}
             >
-              <button className="mobile-btn" onClick={() => setOpen(false)}>
+              <button
+                className="mobile-btn"
+                onClick={() => setOpen(false)}
+              >
                 ยกเลิก
               </button>
 

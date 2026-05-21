@@ -214,7 +214,11 @@ export default function App() {
     <div
       style={{
         minHeight: '100vh',
-        background: '#F7F5F1',
+        background: '''
+          radial-gradient(circle at top left, rgba(255,220,220,.35), transparent 28%),
+          radial-gradient(circle at top right, rgba(210,225,255,.35), transparent 28%),
+          #F7F5F1
+        ''',
         padding: '32px',
         fontFamily:
           'Inter, Noto Sans Thai, sans-serif',
@@ -256,7 +260,7 @@ export default function App() {
 
             <p
               style={{
-                color: '#8B8B8B',
+                color: '#9B9B9B',
                 marginTop: '18px',
                 fontSize: '18px',
                 lineHeight: 1.7,
@@ -396,8 +400,10 @@ export default function App() {
                 'rgba(0,0,0,.06)',
               overflow: 'hidden',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,.45)',
+            border: '1px solid rgba(255,255,255,.55)',
             boxShadow: '0 10px 40px rgba(0,0,0,.04)',
+        transition: 'all .35s ease',
+        transform: 'translateY(0px)',
             }}
           >
             <div
@@ -658,7 +664,8 @@ export default function App() {
                             <button
                               style={{
                                 border: '1px solid rgba(0,0,0,.08)',
-                                background: 'rgba(255,255,255,.8)',
+                                background: 'rgba(255,255,255,.92)',
+                                boxShadow: '0 4px 14px rgba(0,0,0,.06)',
                                 borderRadius: '12px',
                                 padding: '8px 12px',
                               }}
@@ -932,14 +939,27 @@ function SummaryCard({
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,.5)',
         boxShadow: '0 10px 40px rgba(0,0,0,.04)',
+        transition: 'all .35s ease',
+        transform: 'translateY(0px)',
       }}
     >
-      <div>{title}</div>
+      <div
+        style={{
+          color: '#8B8B8B',
+          fontSize: '15px',
+          marginBottom: '12px',
+        }}
+      >
+        {title}
+      </div>
 
       <h2
         style={{
-          marginTop: '10px',
+          marginTop: '4px',
           color,
+          fontSize: '52px',
+          letterSpacing: '-0.04em',
+          fontWeight: 700,
         }}
       >
         ฿
@@ -1074,4 +1094,10 @@ function TD({
       {children}
     </td>
   )
+}
+
+
+// floating animation styles
+const floatingStyle = {
+  animation: 'float 6s ease-in-out infinite'
 }

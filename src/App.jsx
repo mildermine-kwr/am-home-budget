@@ -274,7 +274,17 @@ export default function App() {
             </div>
           </div>
 
-          <table>
+          <div
+            style={{
+              overflowX: 'auto',
+              width: '100%',
+            }}
+          >
+            <table
+              style={{
+                minWidth: '1100px',
+              }}
+            >
             <thead>
               <tr>
                 <th>รายการ</th>
@@ -282,7 +292,17 @@ export default function App() {
                 <th>งบ</th>
                 <th>จ่ายแล้ว</th>
                 <th>สถานะ</th>
-                <th></th>
+                <th
+                style={{
+                  position: 'sticky',
+                  right: 0,
+                  background: '#fff',
+                  zIndex: 2,
+                  minWidth: '170px',
+                }}
+              >
+                Action
+              </th>
               </tr>
             </thead>
 
@@ -320,11 +340,20 @@ export default function App() {
 
                   <td>{status(item)}</td>
 
-                  <td>
+                  <td
+                    style={{
+                      position: 'sticky',
+                      right: 0,
+                      background: '#fff',
+                      zIndex: 1,
+                      minWidth: '170px',
+                    }}
+                  >
                     <div
                       style={{
                         display: 'flex',
                         gap: '8px',
+                        justifyContent: 'flex-end',
                       }}
                     >
                       <button
@@ -346,6 +375,7 @@ export default function App() {
               ))}
             </tbody>
           </table>
+          </div>
         </section>
       </main>
 

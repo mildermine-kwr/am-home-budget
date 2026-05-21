@@ -877,8 +877,8 @@ button:hover{
               overflowY: 'visible',
               WebkitOverflowScrolling: 'touch',
               width: '100%',
+              maxWidth: '100%',
               position: 'relative',
-              cursor: 'grab',
             }}
           >
             <table
@@ -1795,25 +1795,21 @@ function TH({
         backdropFilter: 'blur(20px)',
         textAlign:
           'left',
-        position: sticky
-          ? 'sticky'
-          : 'static',
+        position: sticky ? 'sticky' : 'static',
         right: sticky
           ? action
             ? 0
-            : 140
+            : 120
           : undefined,
         zIndex: sticky ? 20 : 1,
         background: sticky
-          ? 'rgba(255,255,255,.98)'
-          : '#fff',
+          ? '#FFFFFF'
+          : 'transparent',
         backdropFilter: sticky
           ? 'blur(12px)'
           : undefined,
         boxShadow: sticky
-          ? action
-            ? '-10px 0 24px rgba(15,23,42,.06)'
-            : '-6px 0 18px rgba(15,23,42,.04)'
+          ? '-12px 0 28px rgba(15,23,42,.08)'
           : 'none',
       }}
     >
@@ -1836,25 +1832,21 @@ function TD({
         transition: 'background .2s ease',
         background:
           'rgba(255,255,255,.72)',
-        position: sticky
-          ? 'sticky'
-          : 'static',
+        position: sticky ? 'sticky' : 'static',
         right: sticky
           ? action
             ? 0
-            : 140
+            : 120
           : undefined,
         zIndex: sticky ? 20 : 1,
         background: sticky
-          ? 'rgba(255,255,255,.98)'
-          : '#fff',
+          ? '#FFFFFF'
+          : 'transparent',
         backdropFilter: sticky
           ? 'blur(12px)'
           : undefined,
         boxShadow: sticky
-          ? action
-            ? '-10px 0 24px rgba(15,23,42,.06)'
-            : '-6px 0 18px rgba(15,23,42,.04)'
+          ? '-12px 0 28px rgba(15,23,42,.08)'
           : 'none',
       }}
     >

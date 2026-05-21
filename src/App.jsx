@@ -501,7 +501,34 @@ button:hover{
       appliances, and installment tracking.
     </p>
 
-    <div
+  </div>
+
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+    }}
+  >
+    <img
+      src={house3d}
+      alt="3D House"
+      style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: '760px',
+        objectFit: 'contain',
+        filter:
+          'drop-shadow(0 40px 80px rgba(0,0,0,.18))',
+        animation:
+          'floatCard 7s ease-in-out infinite',
+      }}
+    />
+  </div>
+</div>
+
+            <div
       style={{
         display: 'flex',
         gap: '12px',
@@ -551,32 +578,6 @@ button:hover{
         </TabButton>
       </div>
     </div>
-  </div>
-
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-    }}
-  >
-    <img
-      src={house3d}
-      alt="3D House"
-      style={{
-        position: 'relative',
-        width: '100%',
-        maxWidth: '760px',
-        objectFit: 'contain',
-        filter:
-          'drop-shadow(0 40px 80px rgba(0,0,0,.18))',
-        animation:
-          'floatCard 7s ease-in-out infinite',
-      }}
-    />
-  </div>
-</div>
 
 <div
   className="summary-grid"

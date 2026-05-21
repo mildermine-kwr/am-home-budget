@@ -31,6 +31,16 @@ const FCATS = [
   'อื่นๆ',
 ]
 
+
+const stickyColumnStyle = (right = 0, zIndex = 5) => ({
+  position: 'sticky',
+  right,
+  background: '#FFFFFF',
+  zIndex,
+  boxShadow: '-10px 0 24px rgba(15,23,42,.06)',
+})
+
+
 export default function App() {
   const [activeTab, setActiveTab] =
     useState('tort')
@@ -512,7 +522,13 @@ button:hover{
         flexWrap: 'wrap',
       }}
     >
-      <button
+      <div
+                        style={stickyColumnStyle(
+                          0,
+                          9
+                        )}
+                      >
+                        <button
         onClick={resetData}
         style={{
           border: '1px solid rgba(0,0,0,.08)',
@@ -866,6 +882,7 @@ button:hover{
                   >
                     + ชำระ
                   </button>
+                      </div>
                 </div>
               )
             })}
@@ -881,10 +898,11 @@ button:hover{
             <table
               className="desktop-table"
               style={{
-                minWidth: '1200px',
+                minWidth: '1400px',
                 width: '100%',
                 borderCollapse: 'collapse',
                 borderSpacing: 0,
+                tableLayout: 'fixed',
                 background: 'transparent',
               }}
             >
@@ -1016,7 +1034,13 @@ button:hover{
                           </TD>
 
                           <TD>
-                            <button
+                            <div
+                        style={stickyColumnStyle(
+                          0,
+                          9
+                        )}
+                      >
+                        <button
                               style={{
                                 border: '1px solid rgba(0,0,0,.08)',
                                 background: 'rgba(255,255,255,.92)',
@@ -1043,6 +1067,7 @@ button:hover{
                             >
                               + ชำระ
                             </button>
+                      </div>
                           </TD>
                         </tr>
 

@@ -835,7 +835,10 @@ button:hover{
                     </div>
                   </div>
 
-                  <button className="mobile-action">
+                  <button
+                    className="mobile-action"
+                    onClick={() => setPayingId(item.id)}
+                  >
                     + ชำระ
                   </button>
                 </div>
@@ -1343,6 +1346,163 @@ button:hover{
     </div>
   </div>
 )}
+
+{payingId && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(15,15,15,.28)',
+      zIndex: 120,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backdropFilter: 'blur(10px)',
+      padding:
+        window.innerWidth < 768
+          ? '18px'
+          : '24px',
+    }}
+    onClick={() => {
+      setPayingId(null)
+      setPayAmount('')
+    }}
+  >
+    <div
+      onClick={(e) =>
+        e.stopPropagation()
+      }
+      style={{
+        width: '100%',
+        maxWidth: '460px',
+        borderRadius:
+          window.innerWidth < 768
+            ? '32px'
+            : '36px',
+        padding:
+          window.innerWidth < 768
+            ? '28px 22px'
+            : '32px',
+        background:
+          'rgba(255,255,255,.82)',
+        backdropFilter: 'blur(24px)',
+        border:
+          '1px solid rgba(255,255,255,.6)',
+        boxShadow:
+          '0 30px 90px rgba(0,0,0,.12)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent:
+            'space-between',
+          alignItems: 'center',
+          marginBottom: '24px',
+        }}
+      >
+        <h3
+          style={{
+            margin: 0,
+            fontSize: '32px',
+            fontWeight: 800,
+            color: '#1B2430',
+            letterSpacing:
+              '-0.04em',
+          }}
+        >
+          ชำระเงิน
+        </h3>
+
+        <button
+          onClick={() => {
+            setPayingId(null)
+            setPayAmount('')
+          }}
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '999px',
+            border: 'none',
+            background:
+              'rgba(255,255,255,.8)',
+            cursor: 'pointer',
+            fontSize: '18px',
+          }}
+        >
+          ✕
+        </button>
+      </div>
+
+      <div
+        style={{
+          marginBottom: '20px',
+        }}
+      >
+        <label
+          style={{
+            display: 'block',
+            marginBottom: '10px',
+            fontSize: '15px',
+            fontWeight: 600,
+            color: '#8B7A68',
+          }}
+        >
+          จำนวนเงิน
+        </label>
+
+        <input
+          type="number"
+          value={payAmount}
+          onChange={(e) =>
+            setPayAmount(
+              e.target.value
+            )
+          }
+          placeholder="กรอกจำนวนเงิน"
+          style={{
+            width: '100%',
+            height: '62px',
+            borderRadius: '20px',
+            border:
+              '1px solid rgba(255,255,255,.5)',
+            background:
+              'rgba(255,255,255,.88)',
+            padding: '0 20px',
+            fontSize: '18px',
+            outline: 'none',
+            boxSizing: 'border-box',
+          }}
+        />
+      </div>
+
+      <button
+        onClick={() => {
+          confirmPayment(
+            payingId
+          )
+        }}
+        style={{
+          width: '100%',
+          height: '60px',
+          border: 'none',
+          borderRadius: '22px',
+          background:
+            'linear-gradient(135deg,#6FA6E8,#4E82AD)',
+          color: '#fff',
+          fontSize: '18px',
+          fontWeight: 700,
+          cursor: 'pointer',
+          boxShadow:
+            '0 14px 30px rgba(78,130,173,.22)',
+        }}
+      >
+        บันทึกการชำระ
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
     </>
   )
@@ -1465,6 +1625,163 @@ function SummaryCard({
         ฿
         {value.toLocaleString()}
       </h2>
+
+{payingId && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(15,15,15,.28)',
+      zIndex: 120,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backdropFilter: 'blur(10px)',
+      padding:
+        window.innerWidth < 768
+          ? '18px'
+          : '24px',
+    }}
+    onClick={() => {
+      setPayingId(null)
+      setPayAmount('')
+    }}
+  >
+    <div
+      onClick={(e) =>
+        e.stopPropagation()
+      }
+      style={{
+        width: '100%',
+        maxWidth: '460px',
+        borderRadius:
+          window.innerWidth < 768
+            ? '32px'
+            : '36px',
+        padding:
+          window.innerWidth < 768
+            ? '28px 22px'
+            : '32px',
+        background:
+          'rgba(255,255,255,.82)',
+        backdropFilter: 'blur(24px)',
+        border:
+          '1px solid rgba(255,255,255,.6)',
+        boxShadow:
+          '0 30px 90px rgba(0,0,0,.12)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent:
+            'space-between',
+          alignItems: 'center',
+          marginBottom: '24px',
+        }}
+      >
+        <h3
+          style={{
+            margin: 0,
+            fontSize: '32px',
+            fontWeight: 800,
+            color: '#1B2430',
+            letterSpacing:
+              '-0.04em',
+          }}
+        >
+          ชำระเงิน
+        </h3>
+
+        <button
+          onClick={() => {
+            setPayingId(null)
+            setPayAmount('')
+          }}
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '999px',
+            border: 'none',
+            background:
+              'rgba(255,255,255,.8)',
+            cursor: 'pointer',
+            fontSize: '18px',
+          }}
+        >
+          ✕
+        </button>
+      </div>
+
+      <div
+        style={{
+          marginBottom: '20px',
+        }}
+      >
+        <label
+          style={{
+            display: 'block',
+            marginBottom: '10px',
+            fontSize: '15px',
+            fontWeight: 600,
+            color: '#8B7A68',
+          }}
+        >
+          จำนวนเงิน
+        </label>
+
+        <input
+          type="number"
+          value={payAmount}
+          onChange={(e) =>
+            setPayAmount(
+              e.target.value
+            )
+          }
+          placeholder="กรอกจำนวนเงิน"
+          style={{
+            width: '100%',
+            height: '62px',
+            borderRadius: '20px',
+            border:
+              '1px solid rgba(255,255,255,.5)',
+            background:
+              'rgba(255,255,255,.88)',
+            padding: '0 20px',
+            fontSize: '18px',
+            outline: 'none',
+            boxSizing: 'border-box',
+          }}
+        />
+      </div>
+
+      <button
+        onClick={() => {
+          confirmPayment(
+            payingId
+          )
+        }}
+        style={{
+          width: '100%',
+          height: '60px',
+          border: 'none',
+          borderRadius: '22px',
+          background:
+            'linear-gradient(135deg,#6FA6E8,#4E82AD)',
+          color: '#fff',
+          fontSize: '18px',
+          fontWeight: 700,
+          cursor: 'pointer',
+          boxShadow:
+            '0 14px 30px rgba(78,130,173,.22)',
+        }}
+      >
+        บันทึกการชำระ
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
     </>
   )

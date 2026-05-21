@@ -448,7 +448,7 @@ button:hover{
     gridTemplateColumns: '1fr 1fr',
     alignItems: 'center',
     gap: '40px',
-    marginBottom: '96px',
+    marginBottom: '48px',
     minHeight: '720px',
   }}
 >
@@ -461,7 +461,7 @@ button:hover{
     <h1
       className="hero-title"
       style={{
-        fontSize: 'clamp(72px,8vw,128px)',
+        fontSize: '48px',
         lineHeight: '.95',
         letterSpacing: '-0.04em',
         margin: 0,
@@ -469,7 +469,7 @@ button:hover{
         fontWeight: 800,
       }}
     >
-      🏡 AM Home
+      AM Home
       <br />
       budgeting your
       <br />
@@ -481,7 +481,7 @@ button:hover{
       style={{
         color: '#7C8798',
         marginTop: '18px',
-        fontSize: '18px',
+        fontSize: '20px',
         lineHeight: 1.7,
         maxWidth: '640px',
       }}
@@ -923,7 +923,7 @@ button:hover{
                               <div
                                 style={{
                                   fontSize:
-                                    '12px',
+                                    '16px',
                                   color:
                                     '#777',
                                   marginTop:
@@ -1343,7 +1343,7 @@ function Field({
         style={{
           display: 'block',
           marginBottom: '10px',
-          fontSize: '15px',
+          fontSize: '20px',
           fontWeight: 600,
           color: '#9A8873',
         }}
@@ -1416,7 +1416,7 @@ function SummaryCard({
       <div
         style={{
           color: '#8B8B8B',
-          fontSize: '15px',
+          fontSize: '20px',
           marginBottom: '12px',
         }}
       >
@@ -1510,7 +1510,7 @@ function StatusBadge({
           '999px',
         padding:
           '4px 10px',
-        fontSize: '12px',
+        fontSize: '20px',
       }}
     >
       {children}

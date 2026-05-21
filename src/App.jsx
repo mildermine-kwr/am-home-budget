@@ -35,10 +35,8 @@ export default function App() {
   const [activeTab, setActiveTab] =
     useState('tort')
 
-  const [payAmount, setPayAmount] =
-  useState('')
-  const [toast, setToast] =
-  useState('')
+ 
+ 
   const [search, setSearch] =
     useState('')
 
@@ -53,6 +51,8 @@ export default function App() {
 
   const [payAmount, setPayAmount] =
     useState('')
+   const [toast, setToast] =
+  useState('')
 
   const [data, setData] = useState(() => {
     try {

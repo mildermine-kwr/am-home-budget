@@ -587,7 +587,7 @@ button:hover{
             gridTemplateColumns:
               'repeat(auto-fit,minmax(240px,1fr))',
             gap: '16px',
-            marginBottom: '0px',
+            marginBottom: '20px',
           }}
         >
           <SummaryCard
@@ -874,7 +874,9 @@ button:hover{
 <div
             style={{
               overflowX: 'auto',
+              overflowY: 'hidden',
               WebkitOverflowScrolling: 'touch',
+              width: '100%',
             }}
           >
             <table

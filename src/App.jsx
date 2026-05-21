@@ -587,7 +587,7 @@ button:hover{
             gridTemplateColumns:
               'repeat(auto-fit,minmax(240px,1fr))',
             gap: '16px',
-            marginBottom: '20px',
+            marginBottom: '0px',
           }}
         >
           <SummaryCard

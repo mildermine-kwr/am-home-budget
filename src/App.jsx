@@ -10,6 +10,27 @@ const DEFAULT_FURN = FURN
 const STORAGE_KEY =
   'am-home-react-budget'
 
+
+const TCATS = [
+  'ค่ามัดจำต่อเติม',
+  'เสาเข็ม',
+  'งานปูน',
+  'งานระบบ',
+  'หลังคา',
+  'งานโครงสร้าง',
+  'อื่นๆ',
+]
+
+const FCATS = [
+  'Home Appliances',
+  'Furniture',
+  'Building Materials / Repairs',
+  'Kitchenware',
+  'Bedding',
+  'Decorations',
+  'อื่นๆ',
+]
+
 export default function App() {
   const [activeTab, setActiveTab] =
     useState('tort')
@@ -50,6 +71,7 @@ export default function App() {
     note: '',
     total: '',
     paid: '',
+    remark: '',
   })
 
   useEffect(() => {
@@ -214,6 +236,29 @@ export default function App() {
   return (
     <>
 
+
+<style>
+{`
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap');
+
+*{
+  box-sizing:border-box;
+}
+
+button,
+input,
+textarea,
+select{
+  font-family:'IBM Plex Sans Thai', sans-serif;
+  transition:all .28s cubic-bezier(.22,1,.36,1);
+}
+
+button:hover{
+  transform:translateY(-2px);
+}
+`}
+</style>
+
       
 <style>
 {`
@@ -374,16 +419,16 @@ export default function App() {
       style={{
         minHeight: '100vh',
         background: `
-          radial-gradient(circle at 20% 20%, rgba(255,170,170,.55), transparent 32%),
-          radial-gradient(circle at 80% 10%, rgba(170,190,255,.55), transparent 32%),
-          radial-gradient(circle at 50% 80%, rgba(255,220,180,.45), transparent 36%),
-          #F7F5F1
+          radial-gradient(circle at 15% 20%, rgba(217,196,169,.42), transparent 32%),
+          radial-gradient(circle at 80% 10%, rgba(186,215,255,.55), transparent 34%),
+          radial-gradient(circle at 50% 80%, rgba(255,240,220,.42), transparent 36%),
+          linear-gradient(180deg,#F8FAFF,#F8F4EF)
         `,
         backgroundSize: '140% 140%',
         animation: 'meshMove 18s ease infinite',
-        padding: '48px',
+        padding: '40px',
         fontFamily:
-          "IBM Plex Sans Thai, sans-serif",
+          'IBM Plex Sans Thai', sans-serif,
       }}
     >
       <div
@@ -400,8 +445,8 @@ export default function App() {
     gridTemplateColumns: '1fr 1fr',
     alignItems: 'center',
     gap: '40px',
-    marginBottom: '96px',
-    minHeight: '720px',
+    marginBottom: '48px',
+    minHeight: '360px',
   }}
 >
   <div
@@ -413,15 +458,15 @@ export default function App() {
     <h1
       className="hero-title"
       style={{
-        fontSize: '104px',
+        fontSize: 'clamp(52px,6vw,84px)',
         lineHeight: '.95',
         letterSpacing: '-0.04em',
         margin: 0,
-        color: '#111111',
+        color: '#1B2430',
         fontWeight: 800,
       }}
     >
-      🏡 AM Home
+      AM Home
       <br />
       budgeting your
       <br />
@@ -431,9 +476,9 @@ export default function App() {
     <p
       className="hero-subtitle"
       style={{
-        color: '#9B9B9B',
+        color: '#7C8798',
         marginTop: '18px',
-        fontSize: '18px',
+        fontSize: '16px',
         lineHeight: 1.7,
         maxWidth: '640px',
       }}
@@ -457,16 +502,17 @@ export default function App() {
         onClick={resetData}
         style={{
           border: '1px solid rgba(0,0,0,.08)',
-          background: 'rgba(255,255,255,.72)',
+          background: 'rgba(255,255,255,.68)',
           backdropFilter: 'blur(16px)',
-          borderRadius: '32px',
+          borderRadius: '36px',
           padding: '14px 20px',
+          fontSize: '16px',
           fontWeight: 600,
           color: '#444',
           boxShadow: '0 4px 20px rgba(0,0,0,.04)',
         }}
       >
-        ↺ รีเซ็ต
+        รีเซ็ต
       </button>
 
       <div
@@ -475,6 +521,7 @@ export default function App() {
           background: '#EDE7D9',
           padding: '4px',
           borderRadius: '14px',
+          fontSize: '16px'
         }}
       >
         <TabButton
@@ -506,6 +553,7 @@ export default function App() {
       src={house3d}
       alt="3D House"
       style={{
+        position: 'relative',
         width: '100%',
         maxWidth: '760px',
         objectFit: 'contain',
@@ -548,8 +596,8 @@ export default function App() {
 
         <div
           style={{
-            background: 'rgba(255,255,255,.72)',
-            borderRadius: '32px',
+            background: 'rgba(255,255,255,.68)',
+            borderRadius: '36px',
             padding: '20px',
             marginBottom: '20px',
           }}
@@ -581,7 +629,7 @@ export default function App() {
               overflow: 'hidden',
             backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255,255,255,.55)',
-            boxShadow: '0 10px 40px rgba(0,0,0,.04)',
+            boxShadow: '0 18px 50px rgba(31,41,55,.06)',
         transition: 'all .35s ease',
         animation: 'floatCard 7s ease-in-out infinite',
         transform: 'translateY(0px)',
@@ -592,7 +640,7 @@ export default function App() {
                 width: `${progress}%`,
                 height: '100%',
                 background:
-                  'linear-gradient(90deg,#5E8B67,#8DB996)',
+                  'linear-gradient(90deg,#6FA6E8,#B58A55)',
               }}
             />
           </div>
@@ -600,8 +648,8 @@ export default function App() {
 
         <div
           style={{
-            background: 'rgba(255,255,255,.72)',
-            borderRadius: '32px',
+            background: 'rgba(255,255,255,.68)',
+            borderRadius: '36px',
             overflow: 'hidden',
           }}
         >
@@ -610,7 +658,7 @@ export default function App() {
             style={{
               padding: '16px',
               borderBottom:
-                '1px solid #eee',
+                '1px solid rgba(255,255,255,.45)',
               display: 'flex',
               gap: '10px',
               flexWrap: 'wrap',
@@ -700,14 +748,28 @@ export default function App() {
             />
 
             <button
-              onClick={() =>
+              onClick={() => {
+                setForm({
+                  date: new Date()
+                    .toISOString()
+                    .slice(0, 10),
+                  cat:
+                    activeTab === 'tort'
+                      ? TCATS[0]
+                      : FCATS[0],
+                  note: '',
+                  total: '',
+                  paid: '',
+                  remark: '',
+                })
+
                 setOpen(true)
-              }
+              }}
               style={{
                 border: 'none',
-                background: '#111111',
+                background: 'linear-gradient(135deg,#6FA6E8,#4E82AD)',
                 color: '#fff',
-                borderRadius: '32px',
+                borderRadius: '36px',
                 padding: '12px 18px',
                 fontWeight: 700,
                 boxShadow: '0 8px 24px rgba(0,0,0,.12)',
@@ -861,7 +923,7 @@ export default function App() {
                               <div
                                 style={{
                                   fontSize:
-                                    '12px',
+                                    '16px',
                                   color:
                                     '#777',
                                   marginTop:
@@ -1004,175 +1066,255 @@ export default function App() {
       </div>
 
       
+
 {open && (
   <div
     style={{
       position: 'fixed',
       inset: 0,
-      background: 'rgba(15,15,15,.45)',
-      backdropFilter: 'blur(12px)',
+      background:
+        'rgba(15,15,15,.28)',
+      zIndex: 100,
       display: 'flex',
-      justifyContent: 'center',
       alignItems: 'center',
-      padding: '24px',
-      zIndex: 9999,
+      justifyContent: 'center',
+      backdropFilter: 'blur(10px)',
+      padding: window.innerWidth < 768 ? '0px' : '24px',
     }}
+    onClick={() =>
+      setOpen(false)
+    }
   >
     <div
+      onClick={(e) =>
+        e.stopPropagation()
+      }
       style={{
+        position: 'relative',
         width: '100%',
-        maxWidth: '620px',
-        borderRadius: '36px',
+        maxWidth: window.innerWidth < 768 ? '100vw' : '820px',
+        borderRadius: window.innerWidth < 768 ? '0px' : '40px',
+        padding: window.innerWidth < 768 ? '28px 20px 40px' : '32px',
         background:
-          'rgba(255,255,255,.78)',
-        backdropFilter: 'blur(24px)',
+          'rgba(255,255,255,.82)',
+        backdropFilter:
+          'blur(24px)',
         border:
-          '1px solid rgba(255,255,255,.55)',
+          '1px solid rgba(255,255,255,.6)',
         boxShadow:
-          '0 30px 80px rgba(0,0,0,.12)',
-        padding: '34px',
+          '0 30px 90px rgba(0,0,0,.12)',
+        height:
+          window.innerWidth < 768
+            ? '100vh'
+            : 'auto',
+        overflowY: 'auto',
       }}
     >
-      <div
+      <button
+        onClick={() => setOpen(false)}
         style={{
-          display: 'flex',
-          justifyContent:
-            'space-between',
-          alignItems: 'center',
-          marginBottom: '28px',
+          position: 'absolute',
+          top: '18px',
+          right: '18px',
+          width: '42px',
+          height: '42px',
+          border: 'none',
+          borderRadius: '999px',
+          background: 'rgba(255,255,255,.82)',
+          backdropFilter: 'blur(12px)',
+          cursor: 'pointer',
+          fontSize: '18px',
+          fontWeight: 700,
         }}
       >
-        <div>
-          <div
-            style={{
-              fontSize: '42px',
-              fontWeight: 800,
-              letterSpacing: '-0.04em',
-              color: '#111',
-              lineHeight: 1,
-            }}
-          >
-            เพิ่มรายการ
-          </div>
+        ✕
+      </button>
 
-          <div
-            style={{
-              marginTop: '10px',
-              color: '#8B8B8B',
-              fontSize: '15px',
-            }}
-          >
-            เพิ่มค่าใช้จ่ายใหม่เข้าสู่ระบบ
-          </div>
-        </div>
+      <h3
+        style={{
+          fontSize: '42px',
+          lineHeight: 1,
+          fontWeight: 800,
+          letterSpacing:
+            '-0.05em',
+          color: '#6B4B2A',
+          marginBottom: '34px',
+        }}
+      >
+        + เพิ่มรายการ
+      </h3>
 
-        <button
-          onClick={() =>
-            setOpen(false)
-          }
-          style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: '999px',
-            border: 'none',
-            background:
-              'rgba(0,0,0,.06)',
-            cursor: 'pointer',
-            fontSize: '18px',
-          }}
-        >
-          ✕
-        </button>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns:
+            window.innerWidth < 768
+              ? '1fr'
+              : '1fr 1fr',
+          gap: '16px',
+          marginBottom: '18px',
+        }}
+      >
+        <Field label="วันที่">
+          <input
+            type="date"
+            value={form.date}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                date:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          />
+        </Field>
+
+        <Field label="หมวดงาน / หมวดสินค้า">
+          <select
+            value={form.cat}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                cat:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          >
+            {(activeTab ===
+            'tort'
+              ? TCATS
+              : FCATS
+            ).map((c) => (
+              <option
+                key={c}
+                value={c}
+              >
+                {c}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
+      <div
+        style={{
+          marginBottom: '18px',
+        }}
+      >
+        <Field label="รายละเอียด">
+          <input
+            type="text"
+            placeholder="ชื่อรายการ..."
+            value={form.note}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                note:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          />
+        </Field>
       </div>
 
       <div
         style={{
           display: 'grid',
+          gridTemplateColumns:
+            window.innerWidth < 768
+              ? '1fr'
+              : '1fr 1fr',
           gap: '16px',
+          marginBottom: '18px',
         }}
       >
-        <ModernInput
-          placeholder="วันที่"
-          value={form.date}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              date: e.target.value,
-            })
-          }
-        />
+        <Field
+          label="ราคา / งบ (บาท)"
+        >
+          <input
+            type="number"
+            value={form.total}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                total:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          />
+        </Field>
 
-        <ModernInput
-          placeholder="หมวด"
-          value={form.cat}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              cat: e.target.value,
-            })
-          }
-        />
+        <Field
+          label="จ่ายแล้ว (บาท)"
+        >
+          <input
+            type="number"
+            value={form.paid}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                paid:
+                  e.target.value,
+              })
+            }
+            style={fieldStyle}
+          />
+        </Field>
+      </div>
 
-        <ModernInput
-          placeholder="รายละเอียด"
-          value={form.note}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              note: e.target.value,
-            })
-          }
-        />
-
-        <ModernInput
-          type="number"
-          placeholder="งบประมาณ"
-          value={form.total}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              total:
-                e.target.value,
-            })
-          }
-        />
-
-        <ModernInput
-          type="number"
-          placeholder="จ่ายแล้ว"
-          value={form.paid}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              paid:
-                e.target.value,
-            })
-          }
-        />
+      <div
+        style={{
+          marginBottom: '18px',
+        }}
+      >
+        <Field label="หมายเหตุ">
+          <textarea
+            placeholder="หมายเหตุเพิ่มเติม..."
+            value={form.remark}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                remark:
+                  e.target.value,
+              })
+            }
+            style={{
+              ...fieldStyle,
+              minHeight: '120px',
+              paddingTop: '18px',
+              resize: 'none',
+            }}
+          />
+        </Field>
       </div>
 
       <div
         style={{
           display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '12px',
-          marginTop: '32px',
+          justifyContent:
+            'flex-end',
+          gap: '16px',
+          marginTop: '34px',
         }}
       >
         <button
           onClick={() =>
             setOpen(false)
           }
+          className="modal-cancel"
           style={{
-            border:
-              '1px solid rgba(0,0,0,.08)',
-            background:
-              'rgba(255,255,255,.72)',
-            padding:
-              '14px 20px',
-            borderRadius: '18px',
-            fontWeight: 600,
-            fontSize: '15px',
+            height: '58px',
+            padding: '0 34px',
+            borderRadius: '22px',
+            border: '1px solid #D8CCBB',
+            background: '#EFE7DB',
+            color: '#6F5B47',
+            fontSize: '16px',
+            fontWeight: 700,
             cursor: 'pointer',
           }}
         >
@@ -1181,22 +1323,22 @@ export default function App() {
 
         <button
           onClick={addItem}
+          className="modal-save"
           style={{
+            height: '58px',
+            padding: '0 36px',
             border: 'none',
-            background:
-              '#111111',
+            borderRadius: '22px',
+            background: '#4E82AD',
             color: '#fff',
-            padding:
-              '14px 24px',
-            borderRadius: '18px',
-            fontWeight: 700,
-            fontSize: '15px',
+            fontSize: '16px',
+            fontWeight: 800,
             cursor: 'pointer',
             boxShadow:
-              '0 12px 24px rgba(0,0,0,.12)',
+              '0 14px 30px rgba(78,130,173,.22)',
           }}
         >
-          + บันทึกรายการ
+          บันทึก
         </button>
       </div>
     </div>
@@ -1207,26 +1349,42 @@ export default function App() {
   )
 }
 
-function ModernInput(props) {
+
+const fieldStyle = {
+  width: '100%',
+  borderRadius: '22px',
+  border: '1px solid rgba(255,255,255,.55)',
+  background:
+    'rgba(255,255,255,.88)',
+  padding: '0 22px',
+  fontSize: '16px',
+  height: '64px',
+  outline: 'none',
+  boxSizing: 'border-box',
+}
+
+function Field({
+  label,
+  children,
+}) {
   return (
-    <input
-      {...props}
-      style={{
-        width: '100%',
-        border:
-          '1px solid rgba(0,0,0,.06)',
-        background:
-          'rgba(255,255,255,.72)',
-        backdropFilter: 'blur(12px)',
-        borderRadius: '18px',
-        padding: '18px 20px',
-        fontSize: '16px',
-        outline: 'none',
-        transition:
-          'all .25s ease',
-        boxSizing: 'border-box',
-      }}
-    />
+    <div>
+      <label
+        style={{
+          display: 'block',
+          marginBottom: '10px',
+          fontSize: '16px',
+          fontWeight: 600,
+          color: '#9A8873',
+        }}
+      >
+        {label}
+      </label>
+
+      <div>
+        {children}
+      </div>
+    </div>
   )
 }
 
@@ -1274,12 +1432,12 @@ function SummaryCard({
     <div
       className="summary-card"
       style={{
-        background: 'rgba(255,255,255,.72)',
-        borderRadius: '32px',
-        padding: '48px',
+        background: 'rgba(255,255,255,.68)',
+        borderRadius: '36px',
+        padding: '40px',
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,.5)',
-        boxShadow: '0 10px 40px rgba(0,0,0,.04)',
+        boxShadow: '0 18px 50px rgba(31,41,55,.06)',
         transition: 'all .35s ease',
         animation: 'floatCard 7s ease-in-out infinite',
         transform: 'translateY(0px)',
@@ -1288,7 +1446,7 @@ function SummaryCard({
       <div
         style={{
           color: '#8B8B8B',
-          fontSize: '15px',
+          fontSize: '16px',
           marginBottom: '12px',
         }}
       >
@@ -1300,7 +1458,7 @@ function SummaryCard({
         style={{
           marginTop: '4px',
           color,
-          fontSize: '64px',
+          fontSize: 'clamp(36px,4vw,54px)',
           letterSpacing: '-0.04em',
           fontWeight: 700,
         }}
@@ -1350,7 +1508,7 @@ function FilterButton({
       onClick={onClick}
       style={{
         border:
-          '1px solid #ddd',
+          '1px solid rgba(255,255,255,.5)',
         borderRadius:
           '999px',
         padding:
@@ -1370,7 +1528,10 @@ function FilterButton({
 }
 
 
-function StatusBadge({ children }) {
+function StatusBadge({
+  children,
+}) {
+
   let bg = '#FFF1D6'
   let color = '#A8741A'
 
@@ -1393,6 +1554,24 @@ function StatusBadge({ children }) {
         padding: '6px 12px',
         fontSize: '14px',
         fontWeight: 600,
+      }}
+    >
+      {children}
+    </span>
+  )
+}
+) {
+  return (
+    <span
+      style={{
+        background:
+          'rgba(193,154,91,.12)',
+        color: '#A36D1F',
+        borderRadius:
+          '999px',
+        padding:
+          '4px 10px',
+        fontSize: '16px',
       }}
     >
       {children}
@@ -1438,7 +1617,7 @@ function TD({
           '1px solid rgba(0,0,0,.05)',
         transition: 'background .2s ease',
         background:
-          '#fff',
+          'rgba(255,255,255,.72)',
         position: sticky
           ? 'sticky'
           : 'static',

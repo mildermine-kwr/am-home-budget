@@ -392,148 +392,134 @@ export default function App() {
           margin: '0 auto',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent:
-              'space-between',
-            gap: '16px',
-            flexWrap: 'wrap',
-            marginBottom: '96px',
-            position: 'relative',
-            overflow: 'visible',
-            minHeight: '720px',
-          }}
+        
+<div
+  className="hero-grid"
+  style={{
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    alignItems: 'center',
+    gap: '40px',
+    marginBottom: '96px',
+    minHeight: '720px',
+  }}
+>
+  <div
+    style={{
+      position: 'relative',
+      zIndex: 2,
+    }}
+  >
+    <h1
+      className="hero-title"
+      style={{
+        fontSize: '104px',
+        lineHeight: '.95',
+        letterSpacing: '-0.04em',
+        margin: 0,
+        color: '#111111',
+        fontWeight: 800,
+      }}
+    >
+      🏡 AM Home
+      <br />
+      budgeting your
+      <br />
+      dream home.
+    </h1>
+
+    <p
+      className="hero-subtitle"
+      style={{
+        color: '#9B9B9B',
+        marginTop: '18px',
+        fontSize: '18px',
+        lineHeight: 1.7,
+        maxWidth: '640px',
+      }}
+    >
+      Take control of your home budget with a
+      softer, more intentional experience —
+      from renovation plans to furniture,
+      appliances, and installment tracking.
+    </p>
+
+    <div
+      style={{
+        display: 'flex',
+        gap: '12px',
+        alignItems: 'center',
+        marginTop: '32px',
+        flexWrap: 'wrap',
+      }}
+    >
+      <button
+        onClick={resetData}
+        style={{
+          border: '1px solid rgba(0,0,0,.08)',
+          background: 'rgba(255,255,255,.72)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: '32px',
+          padding: '14px 20px',
+          fontWeight: 600,
+          color: '#444',
+          boxShadow: '0 4px 20px rgba(0,0,0,.04)',
+        }}
+      >
+        ↺ รีเซ็ต
+      </button>
+
+      <div
+        style={{
+          display: 'flex',
+          background: '#EDE7D9',
+          padding: '4px',
+          borderRadius: '14px',
+        }}
+      >
+        <TabButton
+          active={activeTab === 'tort'}
+          onClick={() => setActiveTab('tort')}
         >
-          <div>
-            <h1
-              className="hero-title"
-              style={{
-                fontSize: '104px',
-                lineHeight: '.95',
-                letterSpacing: '-0.04em',
-                margin: 0,
-                color: '#111111',
-                fontWeight: 800,
-              }}
-            >
-              🏡 AM Home
-              <br />
-              budgeting your
-              <br />
-              dream home.
-            </h1>
+          🔨 ต่อเติม
+        </TabButton>
 
-            <p
-              className="hero-subtitle"
-              style={{
-                color: '#9B9B9B',
-                marginTop: '18px',
-                fontSize: '18px',
-                lineHeight: 1.7,
-                maxWidth: '640px',
-              }}
-            >
-              Take control of your home budget with a
-              softer, more intentional experience —
-              from renovation plans to furniture,
-              appliances, and installment tracking.
-            </p>
-          </div>
+        <TabButton
+          active={activeTab === 'furn'}
+          onClick={() => setActiveTab('furn')}
+        >
+          🛋 ของแต่งบ้าน
+        </TabButton>
+      </div>
+    </div>
+  </div>
 
-          <div
-            style={{
-              display: 'flex',
-              gap: '10px',
-              alignItems: 'center',
-            }}
-          >
-            <button
-              onClick={resetData}
-              style={{
-                border: '1px solid rgba(0,0,0,.08)',
-                background: 'rgba(255,255,255,.72)',
-                backdropFilter: 'blur(16px)',
-                borderRadius: '32px',
-                padding: '12px 18px',
-                fontWeight: 600,
-                color: '#444',
-                boxShadow: '0 4px 20px rgba(0,0,0,.04)',
-                transition: 'all .25s ease',
-              }}
-            >
-              ↺ รีเซ็ต
-            </button>
-
-            <div
-              style={{
-                display: 'flex',
-                background:
-                  '#EDE7D9',
-                padding: '4px',
-                borderRadius:
-                  '12px',
-              }}
-            >
-              <TabButton
-                active={
-                  activeTab ===
-                  'tort'
-                }
-                onClick={() =>
-                  setActiveTab(
-                    'tort'
-                  )
-                }
-              >
-                🔨 ต่อเติม
-              </TabButton>
-
-              <TabButton
-                active={
-                  activeTab ===
-                  'furn'
-                }
-                onClick={() =>
-                  setActiveTab(
-                    'furn'
-                  )
-                }
-              >
-                🛋 ของแต่งบ้าน
-              </TabButton>
-            
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+    }}
+  >
+    <img
+      src={house3d}
+      alt="3D House"
+      style={{
+        width: '100%',
+        maxWidth: '760px',
+        objectFit: 'contain',
+        filter:
+          'drop-shadow(0 40px 80px rgba(0,0,0,.18))',
+        animation:
+          'floatCard 7s ease-in-out infinite',
+      }}
+    />
+  </div>
 </div>
 
-          <div
-            style={{
-              position: 'absolute',
-              right: '-80px',
-              top: '20px',
-              width: '56%',
-              zIndex: 1,
-              pointerEvents: 'none',
-            }}
-          >
-            <img
-              src={house3d}
-              alt="3D House"
-              style={{
-                width: '100%',
-                objectFit: 'contain',
-                filter:
-                  'drop-shadow(0 40px 80px rgba(0,0,0,.18))',
-                animation:
-                  'floatCard 7s ease-in-out infinite',
-              }}
-            />
-          </div>
-
-          </div>
-        </div>
-
-        <div
-          className="summary-grid"
+<div
+  className="summary-grid"
           style={{
             display: 'grid',
             gridTemplateColumns:

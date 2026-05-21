@@ -239,10 +239,7 @@ export default function App() {
 
 <style>
 {`
-@font-face {
-  font-family: 'DB Heavent';
-  src: local('DB Heavent');
-}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap');
 
 *{
   box-sizing:border-box;
@@ -252,7 +249,7 @@ button,
 input,
 textarea,
 select{
-  font-family:'DB Heavent', 'Noto Sans Thai', sans-serif;
+  font-family:'IBM Plex Sans Thai', sans-serif;
   transition:all .28s cubic-bezier(.22,1,.36,1);
 }
 
@@ -365,6 +362,21 @@ button:hover{
       font-weight: 600;
     }
 
+    
+    .mobile-modal-close{
+      position:absolute;
+      top:18px;
+      right:18px;
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:999px;
+      background:rgba(255,255,255,.82);
+      backdrop-filter:blur(12px);
+      font-size:18px;
+      cursor:pointer;
+    }
+
     .mobile-action {
       width: 100%;
       border: none;
@@ -431,7 +443,7 @@ button:hover{
         animation: 'meshMove 18s ease infinite',
         padding: '40px',
         fontFamily:
-          'DB Heavent, Noto Sans Thai, sans-serif',
+          'IBM Plex Sans Thai', sans-serif',
       }}
     >
       <div
@@ -461,7 +473,7 @@ button:hover{
     <h1
       className="hero-title"
       style={{
-        fontSize: '48px',
+        fontSize: 'clamp(44px,6vw,72px)',
         lineHeight: '.95',
         letterSpacing: '-0.04em',
         margin: 0,
@@ -481,7 +493,7 @@ button:hover{
       style={{
         color: '#7C8798',
         marginTop: '18px',
-        fontSize: '20px',
+        fontSize: '16px',
         lineHeight: 1.7,
         maxWidth: '640px',
       }}
@@ -509,7 +521,7 @@ button:hover{
           backdropFilter: 'blur(16px)',
           borderRadius: '36px',
           padding: '14px 20px',
-          fontSize: '24px',
+          fontSize: '16px',
           fontWeight: 600,
           color: '#444',
           boxShadow: '0 4px 20px rgba(0,0,0,.04)',
@@ -524,7 +536,7 @@ button:hover{
           background: '#EDE7D9',
           padding: '4px',
           borderRadius: '14px',
-          fontSize: '24px'
+          fontSize: '16px'
         }}
       >
         <TabButton
@@ -1081,7 +1093,7 @@ button:hover{
       alignItems: 'center',
       justifyContent: 'center',
       backdropFilter: 'blur(10px)',
-      padding: '24px',
+      padding: window.innerWidth < 768 ? '0px' : '24px',
     }}
     onClick={() =>
       setOpen(false)
@@ -1093,9 +1105,9 @@ button:hover{
       }
       style={{
         width: '100%',
-        maxWidth: '820px',
-        borderRadius: '40px',
-        padding: '32px',
+        maxWidth: window.innerWidth < 768 ? '100%' : '820px',
+        borderRadius: window.innerWidth < 768 ? '0px' : '40px',
+        padding: window.innerWidth < 768 ? '24px' : '32px',
         background:
           'rgba(255,255,255,.82)',
         backdropFilter:
@@ -1106,6 +1118,13 @@ button:hover{
           '0 30px 90px rgba(0,0,0,.12)',
       }}
     >
+      <button
+        className="mobile-modal-close"
+        onClick={() => setOpen(false)}
+      >
+        ✕
+      </button>
+
       <h3
         style={{
           fontSize: '42px',
@@ -1124,7 +1143,9 @@ button:hover{
         style={{
           display: 'grid',
           gridTemplateColumns:
-            '1fr 1fr',
+            window.innerWidth < 768
+              ? '1fr'
+              : '1fr 1fr',
           gap: '16px',
           marginBottom: '18px',
         }}
@@ -1198,7 +1219,9 @@ button:hover{
         style={{
           display: 'grid',
           gridTemplateColumns:
-            '1fr 1fr',
+            window.innerWidth < 768
+              ? '1fr'
+              : '1fr 1fr',
           gap: '16px',
           marginBottom: '18px',
         }}
@@ -1285,7 +1308,7 @@ button:hover{
             border: '1px solid #D8CCBB',
             background: '#EFE7DB',
             color: '#6F5B47',
-            fontSize: '20px',
+            fontSize: '16px',
             fontWeight: 700,
             cursor: 'pointer',
           }}
@@ -1303,7 +1326,7 @@ button:hover{
             borderRadius: '22px',
             background: '#4E82AD',
             color: '#fff',
-            fontSize: '20px',
+            fontSize: '16px',
             fontWeight: 800,
             cursor: 'pointer',
             boxShadow:
@@ -1329,7 +1352,7 @@ const fieldStyle = {
   background:
     'rgba(255,255,255,.88)',
   padding: '0 22px',
-  fontSize: '20px',
+  fontSize: '16px',
   height: '64px',
   outline: 'none',
   boxSizing: 'border-box',
@@ -1345,7 +1368,7 @@ function Field({
         style={{
           display: 'block',
           marginBottom: '10px',
-          fontSize: '20px',
+          fontSize: '16px',
           fontWeight: 600,
           color: '#9A8873',
         }}
@@ -1418,7 +1441,7 @@ function SummaryCard({
       <div
         style={{
           color: '#8B8B8B',
-          fontSize: '20px',
+          fontSize: '16px',
           marginBottom: '12px',
         }}
       >
@@ -1430,7 +1453,7 @@ function SummaryCard({
         style={{
           marginTop: '4px',
           color,
-          fontSize: 'clamp(42px,4vw,64px)',
+          fontSize: 'clamp(36px,4vw,56px)',
           letterSpacing: '-0.04em',
           fontWeight: 700,
         }}
@@ -1499,9 +1522,42 @@ function FilterButton({
   )
 }
 
+
 function StatusBadge({
   children,
 }) {
+
+  let bg = 'rgba(255,221,87,.22)'
+  let color = '#9A6B00'
+
+  if (children === 'จ่ายครบแล้ว') {
+    bg = 'rgba(170,225,190,.32)'
+    color = '#2F6B46'
+  }
+
+  if (children === 'ยังไม่จ่าย') {
+    bg = 'rgba(255,190,190,.32)'
+    color = '#A43E3E'
+  }
+
+  return (
+    <span
+      style={{
+        background: bg,
+        color: color,
+        borderRadius:
+          '999px',
+        padding:
+          '6px 12px',
+        fontSize: '14px',
+        fontWeight: 600,
+      }}
+    >
+      {children}
+    </span>
+  )
+}
+) {
   return (
     <span
       style={{
@@ -1512,7 +1568,7 @@ function StatusBadge({
           '999px',
         padding:
           '4px 10px',
-        fontSize: '20px',
+        fontSize: '16px',
       }}
     >
       {children}

@@ -1065,9 +1065,9 @@ export default function App() {
       }
       style={{
         width: '100%',
-        maxWidth: '980px',
+        maxWidth: '820px',
         borderRadius: '40px',
-        padding: '42px',
+        padding: '32px',
         background:
           'rgba(255,255,255,.82)',
         backdropFilter:
@@ -1080,7 +1080,7 @@ export default function App() {
     >
       <h3
         style={{
-          fontSize: '54px',
+          fontSize: '42px',
           lineHeight: 1,
           fontWeight: 800,
           letterSpacing:
@@ -1097,7 +1097,7 @@ export default function App() {
           display: 'grid',
           gridTemplateColumns:
             '1fr 1fr',
-          gap: '20px',
+          gap: '16px',
           marginBottom: '18px',
         }}
       >
@@ -1171,7 +1171,7 @@ export default function App() {
           display: 'grid',
           gridTemplateColumns:
             '1fr 1fr',
-          gap: '20px',
+          gap: '16px',
           marginBottom: '18px',
         }}
       >
@@ -1228,7 +1228,7 @@ export default function App() {
             }
             style={{
               ...fieldStyle,
-              minHeight: '140px',
+              minHeight: '120px',
               paddingTop: '18px',
               resize: 'none',
             }}
@@ -1251,8 +1251,8 @@ export default function App() {
           }
           className="modal-cancel"
           style={{
-            height: '64px',
-            padding: '0 38px',
+            height: '58px',
+            padding: '0 34px',
             borderRadius: '22px',
             border: '1px solid #D8CCBB',
             background: '#EFE7DB',
@@ -1269,8 +1269,8 @@ export default function App() {
           onClick={addItem}
           className="modal-save"
           style={{
-            height: '64px',
-            padding: '0 42px',
+            height: '58px',
+            padding: '0 36px',
             border: 'none',
             borderRadius: '22px',
             background: '#4E82AD',
@@ -1302,7 +1302,7 @@ const fieldStyle = {
     'rgba(255,255,255,.88)',
   padding: '0 22px',
   fontSize: '20px',
-  height: '76px',
+  height: '64px',
   outline: 'none',
   boxSizing: 'border-box',
 }

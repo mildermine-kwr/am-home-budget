@@ -1,6 +1,7 @@
 import { supabase }
   from './supabase'
 import house3d from './image.png'
+import { DeleteOutlined } from '@ant-design/icons'
 
 import { useEffect, useMemo, useState } from 'react'
 import { TORT, FURN } from './data/items'
@@ -1133,28 +1134,6 @@ button:hover{
                               </div>
                             )}
 
-                            <button
-                              onClick={() =>
-                                setDeleteId(item.id)
-                              }
-                              style={{
-                                width: '42px',
-                                height: '42px',
-                                borderRadius: '12px',
-                                border:
-                                  '1px solid rgba(255,0,0,.08)',
-                                background:
-                                  'rgba(255,240,240,.9)',
-                                color: '#C94B4B',
-                                fontSize: '18px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}
-                            >
-                              🗑
-                            </button>
                           </TD>
 
                           <TD>
@@ -1216,6 +1195,29 @@ button:hover{
                               }}
                             >
                               + ชำระ
+                            </button>
+                            
+                            <button
+                              onClick={() =>
+                                setDeleteId(item.id)
+                              }
+                              style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '12px',
+                                border:
+                                  '1px solid rgba(255,0,0,.08)',
+                                background:
+                                  'rgba(255,240,240,.9)',
+                                color: '#C94B4B',
+                                fontSize: '18px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <DeleteOutlined />
                             </button>
                             )}
                           </TD>

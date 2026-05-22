@@ -904,22 +904,24 @@ button:hover{
                     </div>
                   </div>
 
-                  <button
-                    className="mobile-action"
-                    onClick={() => {
-                      setPayingId(item.id)
+                  {item.paid < item.total && (
+  <button
+    className="mobile-action"
+    onClick={() => {
+      setPayingId(item.id)
 
-                      setPayAmount(
-                        item?.installmentPerMonth
-                          ? String(
-                              item.installmentPerMonth
-                            )
-                          : ''
-                      )
-                    }}
-                  >
-                    + ชำระ
-                  </button>
+      setPayAmount(
+        item?.installmentPerMonth
+          ? String(
+              item.installmentPerMonth
+            )
+          : ''
+      )
+    }}
+  >
+    + ชำระ
+  </button>
+)}
                 </div>
               )
             })}
@@ -1070,6 +1072,7 @@ button:hover{
                           <TD
                             sticky
                           >
+                             {item.paid < item.total && (
                             <button
                               style={{
                                 border: '1px solid rgba(0,0,0,.08)',
@@ -1098,6 +1101,7 @@ button:hover{
                             >
                               + ชำระ
                             </button>
+                            )}
                           </TD>
                         </tr>
 

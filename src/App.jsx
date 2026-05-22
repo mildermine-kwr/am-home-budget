@@ -50,6 +50,11 @@ export default function App() {
   const [payAmount, setPayAmount] =
     useState('')
 
+  const [toast, setToast] = useState({
+    show: false,
+    text: '',
+  })
+
   const [data, setData] = useState(() => {
     try {
       const saved =
@@ -195,6 +200,8 @@ export default function App() {
       ],
     }))
 
+    showToast('บันทึกรายการสำเร็จ')
+
     setOpen(false)
 
     setForm({
@@ -233,8 +240,24 @@ export default function App() {
         ),
     }))
 
+    showToast('บันทึกการชำระสำเร็จ')
+
     setPayingId(null)
     setPayAmount('')
+  }
+
+  const showToast = (text) => {
+    setToast({
+      show: true,
+      text,
+    })
+
+    setTimeout(() => {
+      setToast({
+        show: false,
+        text: '',
+      })
+    }, 2200)
   }
 
   const resetData = () => {
@@ -410,6 +433,18 @@ button:hover{
 
             100% {
               background-position: 0% 50%;
+            }
+          }
+
+          @keyframes toastSlide {
+            0% {
+              opacity: 0;
+              transform: translate(-50%, -14px) scale(.95);
+            }
+
+            100% {
+              opacity: 1;
+              transform: translate(-50%, 0px) scale(1);
             }
           }
 
@@ -1557,6 +1592,57 @@ button:hover{
       >
         บันทึกการชำระ
       </button>
+    </div>
+  </div>
+)}
+
+
+{toast.show && (
+  <div
+    style={{
+      position: 'fixed',
+      top: '24px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: 99999,
+      animation:
+        'toastSlide .38s cubic-bezier(.22,1,.36,1)',
+    }}
+  >
+    <div
+      style={{
+        background:
+          'rgba(22,22,22,.92)',
+        color: '#fff',
+        padding: '14px 18px',
+        borderRadius: '18px',
+        backdropFilter: 'blur(18px)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        fontWeight: 700,
+        boxShadow:
+          '0 18px 50px rgba(0,0,0,.18)',
+      }}
+    >
+      <div
+        style={{
+          width: '24px',
+          height: '24px',
+          borderRadius: '999px',
+          background: '#DDF5E4',
+          color: '#2E6B45',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '13px',
+          fontWeight: 900,
+        }}
+      >
+        ✓
+      </div>
+
+      {toast.text}
     </div>
   </div>
 )}

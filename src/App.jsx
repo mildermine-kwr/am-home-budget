@@ -71,35 +71,10 @@ export default function App() {
     text: '',
   })
 
-  const [data, setData] = useState(() => {
-    try {
-      const saved =
-        localStorage.getItem(
-          STORAGE_KEY
-        )
-
-      if (saved) {
-        const parsed =
-          JSON.parse(saved)
-
-        return {
-          tort:
-            parsed?.tort ||
-            DEFAULT_TORT,
-          furn:
-            parsed?.furn ||
-            DEFAULT_FURN,
-        }
-      }
-    } catch (e) {
-      console.log(e)
-    }
-
-    return {
-      tort: DEFAULT_TORT,
-      furn: DEFAULT_FURN,
-    }
-  })
+  const [data, setData] = useState({
+  tort: [],
+  furn: [],
+})
 
   const [form, setForm] = useState({
     date: '',
@@ -111,11 +86,37 @@ export default function App() {
   })
 
   useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(data)
+  loadBudgets()
+}, [])
+
+const loadBudgets = async () => {
+  const { data, error } =
+    await supabase
+      .from('budgets')
+      .select('*')
+
+  if (error) {
+    console.log(error)
+    return
+  }
+
+  const tort =
+    data.filter(
+      (i) => i.type === 'tort'
     )
-  }, [data])
+
+  const furn =
+    data.filter(
+      (i) => i.type === 'furn'
+    )
+
+  setData({
+    tort,
+    furn,
+  })
+}
+
+ 
 
   const items =
     activeTab === 'tort'
@@ -208,6 +209,13 @@ export default function App() {
       paid: Number(form.paid || 0),
     }
 
+    await supabase
+  .from('budgets')
+  .insert({
+    ...next,
+    type: activeTab,
+  })
+
     setData((prev) => ({
       ...prev,
       [activeTab]: [
@@ -229,7 +237,7 @@ export default function App() {
     })
   }
 
-  const confirmPayment = (id) => {
+  const confirmPayment = async (id) => {
     const amount =
       Number(payAmount)
 
@@ -255,6 +263,18 @@ export default function App() {
           }
         ),
     }))
+    const item =
+  items.find((i) => i.id === id)
+
+if (item) {
+  await supabase
+    .from('budgets')
+    .update({
+      paid:
+        item.paid + amount,
+    })
+    .eq('id', id)
+}
 
     showToast('บันทึกการชำระสำเร็จ')
 
@@ -277,9 +297,6 @@ export default function App() {
   }
 
   const resetData = () => {
-    localStorage.removeItem(
-      STORAGE_KEY
-    )
 
     setData({
       tort: DEFAULT_TORT,

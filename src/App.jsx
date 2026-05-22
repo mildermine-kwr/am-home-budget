@@ -41,7 +41,7 @@ export default function App() {
   const testDB = async () => {
     const { data, error } =
       await supabase
-        .from('budgets')
+        .from('Budget')
         .select('*')
 
     console.log(data)
@@ -92,7 +92,7 @@ export default function App() {
 const loadBudgets = async () => {
   const { data, error } =
     await supabase
-      .from('budgets')
+      .from('Budget')
       .select('*')
 
   if (error) {
@@ -142,7 +142,7 @@ const loadBudgets = async () => {
 
       const { error } =
         await supabase
-          .from('budgets')
+          .from('Budget')
           .insert(all)
 
       if (error) {
@@ -255,7 +255,7 @@ const loadBudgets = async () => {
     }
 
     await supabase
-  .from('budgets')
+  .from('Budget')
   .insert({
     ...next,
     type: activeTab,
@@ -313,7 +313,7 @@ const loadBudgets = async () => {
 
 if (item) {
   await supabase
-    .from('budgets')
+    .from('Budget')
     .update({
       paid:
         item.paid + amount,

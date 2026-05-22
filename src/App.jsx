@@ -655,22 +655,7 @@ button:hover{
     justifyContent: 'flex-end',
       }}
     >
-      <button
-        onClick={resetData}
-        style={{
-          border: '1px solid rgba(0,0,0,.08)',
-          background: 'rgba(255,255,255,.68)',
-          backdropFilter: 'blur(16px)',
-          borderRadius: '36px',
-          padding: '14px 20px',
-          fontSize: '16px',
-          fontWeight: 600,
-          color: '#444',
-          boxShadow: '0 4px 20px rgba(0,0,0,.04)',
-        }}
-      >
-        รีเซ็ต
-      </button>
+      
 
       <div
         style={{
@@ -911,20 +896,7 @@ button:hover{
             >
               + เพิ่มรายการ
             </button>
-            <button
-  onClick={migrateLocalData}
-  style={{
-    padding: '14px 20px',
-    borderRadius: '16px',
-    border: 'none',
-    background: '#111',
-    color: '#fff',
-    fontWeight: 700,
-    cursor: 'pointer',
-  }}
->
-  Migrate
-</button>
+            
           </div>
 
           

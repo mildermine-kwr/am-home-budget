@@ -195,7 +195,7 @@ const loadBudgets = async () => {
     return 'ชำระบางส่วน'
   }
 
-  const addItem = () => {
+  const addItem = async () => {
     if (!form.note || !form.total)
       return
 

@@ -116,6 +116,66 @@ const loadBudgets = async () => {
   })
 }
 
+  const migrateLocalData =
+  async () => {
+    try {
+      const saved =
+        localStorage.getItem(
+          STORAGE_KEY
+        )
+
+      if (!saved) {
+        alert(
+          'ไม่พบข้อมูล local'
+        )
+        return
+      }
+
+      const parsed =
+        JSON.parse(saved)
+
+      const tort =
+        (parsed.tort || []).map(
+          (i) => ({
+            ...i,
+            type: 'tort',
+          })
+        )
+
+      const furn =
+        (parsed.furn || []).map(
+          (i) => ({
+            ...i,
+            type: 'furn',
+          })
+        )
+
+      const all = [
+        ...tort,
+        ...furn,
+      ]
+
+      const { error } =
+        await supabase
+          .from('budgets')
+          .insert(all)
+
+      if (error) {
+        console.log(error)
+        alert('migrate fail')
+        return
+      }
+
+      alert(
+        'migrate success'
+      )
+
+      loadBudgets()
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
  
 
   const items =
@@ -866,6 +926,20 @@ button:hover{
             >
               + เพิ่มรายการ
             </button>
+            <button
+  onClick={migrateLocalData}
+  style={{
+    padding: '14px 20px',
+    borderRadius: '16px',
+    border: 'none',
+    background: '#111',
+    color: '#fff',
+    fontWeight: 700,
+    cursor: 'pointer',
+  }}
+>
+  Migrate
+</button>
           </div>
 
           

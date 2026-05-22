@@ -120,7 +120,7 @@ const loadBudgets = async () => {
   async () => {
     try {
       const tort =
-        DEFAULT_TORT.map(
+        TORT_ITEMS.map(
           (i) => ({
             ...i,
             type: 'tort',
@@ -128,7 +128,7 @@ const loadBudgets = async () => {
         )
 
       const furn =
-        DEFAULT_FURN.map(
+        FURN_ITEMS.map(
           (i) => ({
             ...i,
             type: 'furn',

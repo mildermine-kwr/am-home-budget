@@ -1168,58 +1168,59 @@ button:hover{
                             }}
                           >
                              {item.paid < item.total && (
-                            <button
-                              style={{
-                                border: '1px solid rgba(0,0,0,.08)',
-                                background: 'rgba(255,255,255,.92)',
-                                boxShadow: '0 4px 14px rgba(0,0,0,.06)',
-                                borderRadius: '12px',
-                                padding: '8px 12px',
-                                whiteSpace: 'nowrap',
-                              }}
-                              onClick={() => {
-                                setPayingId(
-                                  item.id
-                                )
+  <button
+    style={{
+      border:
+        '1px solid rgba(0,0,0,.08)',
+      background:
+        'rgba(255,255,255,.92)',
+      boxShadow:
+        '0 4px 14px rgba(0,0,0,.06)',
+      borderRadius: '12px',
+      padding: '8px 12px',
+      whiteSpace: 'nowrap',
+    }}
+    onClick={() => {
+      setPayingId(item.id)
 
-                                setPayAmount(
-                                  item.installment
-                                    ? String(
-                                        Math.round(
-                                          item.total /
-                                          item.installment.total
-                                        )
-                                      )
-                                    : ''
-                                )
-                              }}
-                            >
-                              + ชำระ
-                            </button>
-                            
-                            <button
-                              onClick={() =>
-                                setDeleteId(item.id)
-                              }
-                              style={{
-                                width: '32px',
-                                height: '32px',
-                                borderRadius: '12px',
-                                border:
-                                  '1px solid rgba(255,0,0,.08)',
-                                background:
-                                  'rgba(255,240,240,.9)',
-                                color: '#C94B4B',
-                                fontSize: '18px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}
-                            >
-                              <DeleteOutlined />
-                            </button>
-                            )}
+      setPayAmount(
+        item.installment
+          ? String(
+              Math.round(
+                item.total /
+                  item.installment.total
+              )
+            )
+          : ''
+      )
+    }}
+  >
+    + ชำระ
+  </button>
+)}
+
+<button
+  onClick={() =>
+    setDeleteId(item.id)
+  }
+  style={{
+    width: '32px',
+    height: '32px',
+    borderRadius: '12px',
+    border:
+      '1px solid rgba(255,0,0,.08)',
+    background:
+      'rgba(255,240,240,.9)',
+    color: '#C94B4B',
+    fontSize: '18px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }}
+>
+  <DeleteOutlined />
+</button>
                           </TD>
                         </tr>
 

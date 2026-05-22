@@ -380,6 +380,8 @@ button:hover{
       line-height: 1.4;
       font-weight: 700;
       margin-bottom: 14px;
+      max-width: 180px;
+      padding-right: 8px;
     }
 
     .mobile-budget-meta {

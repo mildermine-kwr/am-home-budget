@@ -994,22 +994,56 @@ button:hover{
                   </div>
 
                   {item.paid < item.total && (
-  <button
-    className="mobile-action"
-    onClick={() => {
-      setPayingId(item.id)
+ <div
+  style={{
+    display: 'flex',
+    gap: '10px',
+    marginTop: '18px',
+  }}
+>
+  {item.paid < item.total && (
+    <button
+      className="mobile-action"
+      onClick={() => {
+        setPayingId(item.id)
 
-      setPayAmount(
-        item?.installmentPerMonth
-          ? String(
-              item.installmentPerMonth
-            )
-          : ''
-      )
+        setPayAmount(
+          item?.installmentPerMonth
+            ? String(
+                item.installmentPerMonth
+              )
+            : ''
+        )
+      }}
+    >
+      + ชำระ
+    </button>
+  )}
+
+  <button
+    onClick={() =>
+      setDeleteId(item.id)
+    }
+    style={{
+      width: '54px',
+      height: '54px',
+      borderRadius: '18px',
+      border:
+        '1px solid rgba(255,0,0,.08)',
+      background:
+        'rgba(255,240,240,.95)',
+      color: '#C94B4B',
+      fontSize: '18px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0,
     }}
   >
-    + ชำระ
+    <DeleteOutlined />
   </button>
+</div>
 )}
                 </div>
               )

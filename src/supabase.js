@@ -3,6 +3,6 @@ import { createClient }
 
 export const supabase =
   createClient(
-    'https://uyxsonpxogxoqqnkykzn.supabase.co/rest/v1/',
+    'https://uyxsonpxogxoqqnkykzn.supabase.co',
     'sb_publishable_royVseO0Ur2vD6p1zL5how_rDd2uO1-'
   )

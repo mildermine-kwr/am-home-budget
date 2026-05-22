@@ -1,3 +1,5 @@
+import { supabase }
+  from './supabase'
 import house3d from './image.png'
 
 import { useEffect, useMemo, useState } from 'react'
@@ -32,6 +34,20 @@ const FCATS = [
 ]
 
 export default function App() {
+  useEffect(() => {
+    testDB()
+  }, [])
+
+  const testDB = async () => {
+    const { data, error } =
+      await supabase
+        .from('budgets')
+        .select('*')
+
+    console.log(data)
+    console.log(error)
+  }
+  
   const [activeTab, setActiveTab] =
     useState('tort')
 

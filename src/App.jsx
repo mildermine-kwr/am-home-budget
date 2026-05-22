@@ -999,6 +999,7 @@ button:hover{
     display: 'flex',
     gap: '10px',
     marginTop: '18px',
+        alignItems: 'end'
   }}
 >
   {item.paid < item.total && (

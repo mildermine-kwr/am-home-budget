@@ -1944,6 +1944,8 @@ const fieldStyle = {
   height: '64px',
   outline: 'none',
   boxSizing: 'border-box',
+  appearance: 'none',
+WebkitAppearance: 'none',
 }
 
 function Field({

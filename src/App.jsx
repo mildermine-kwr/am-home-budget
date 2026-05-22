@@ -71,6 +71,9 @@ export default function App() {
     text: '',
   })
 
+  const [deleteId, setDeleteId] =
+    useState(null)
+
   const [data, setData] = useState({
   tort: [],
   furn: [],
@@ -325,6 +328,25 @@ if (item) {
 
     setPayingId(null)
     setPayAmount('')
+  }
+
+  const deleteItem = async (id) => {
+    await supabase
+      .from('budget')
+      .delete()
+      .eq('id', id)
+
+    setData((prev) => ({
+      ...prev,
+      [activeTab]:
+        prev[activeTab].filter(
+          (item) => item.id !== id
+        ),
+    }))
+
+    setDeleteId(null)
+
+    showToast('ลบรายการสำเร็จ')
   }
 
   const showToast = (text) => {
@@ -1110,6 +1132,29 @@ button:hover{
                                 </span>
                               </div>
                             )}
+
+                            <button
+                              onClick={() =>
+                                setDeleteId(item.id)
+                              }
+                              style={{
+                                width: '42px',
+                                height: '42px',
+                                borderRadius: '12px',
+                                border:
+                                  '1px solid rgba(255,0,0,.08)',
+                                background:
+                                  'rgba(255,240,240,.9)',
+                                color: '#C94B4B',
+                                fontSize: '18px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              🗑
+                            </button>
                           </TD>
 
                           <TD>
@@ -1137,6 +1182,11 @@ button:hover{
 
                           <TD
                             sticky
+                            style={{
+                              display: 'flex',
+                              gap: '10px',
+                              alignItems: 'center',
+                            }}
                           >
                              {item.paid < item.total && (
                             <button
@@ -1682,6 +1732,113 @@ button:hover{
 )}
 
 
+
+{deleteId && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background:
+        'rgba(15,15,15,.28)',
+      zIndex: 130,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backdropFilter: 'blur(10px)',
+      padding: '20px',
+    }}
+    onClick={() =>
+      setDeleteId(null)
+    }
+  >
+    <div
+      onClick={(e) =>
+        e.stopPropagation()
+      }
+      style={{
+        width: '100%',
+        maxWidth: '420px',
+        borderRadius: '32px',
+        padding: '30px',
+        background:
+          'rgba(255,255,255,.88)',
+        backdropFilter:
+          'blur(24px)',
+        boxShadow:
+          '0 30px 90px rgba(0,0,0,.12)',
+      }}
+    >
+      <div
+        style={{
+          fontSize: '22px',
+          fontWeight: 800,
+          marginBottom: '12px',
+          color: '#1B2430',
+        }}
+      >
+        ลบรายการ
+      </div>
+
+      <div
+        style={{
+          color: '#666',
+          lineHeight: 1.7,
+          marginBottom: '28px',
+        }}
+      >
+        คุณต้องการลบรายการนี้จริงใช่ไหม
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent:
+            'flex-end',
+          gap: '12px',
+        }}
+      >
+        <button
+          onClick={() =>
+            setDeleteId(null)
+          }
+          style={{
+            height: '50px',
+            padding: '0 20px',
+            borderRadius: '16px',
+            border:
+              '1px solid rgba(0,0,0,.08)',
+            background:
+              '#F5F5F5',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          ยกเลิก
+        </button>
+
+        <button
+          onClick={() =>
+            deleteItem(deleteId)
+          }
+          style={{
+            height: '50px',
+            padding: '0 22px',
+            borderRadius: '16px',
+            border: 'none',
+            background:
+              '#D64545',
+            color: '#fff',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          ลบรายการ
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 {toast.show && (
   <div
     style={{
@@ -1982,6 +2139,7 @@ function TH({
 function TD({
   children,
   sticky,
+  style = {},
 }) {
   return (
     <td
@@ -1998,6 +2156,7 @@ function TD({
         right: sticky
           ? 0
           : undefined,
+        ...style,
       }}
     >
       {children}

@@ -840,12 +840,27 @@ button:hover{
 
               return (
                 <div
-                  key={item.id}
-                  className="mobile-budget-card"
-                >
+  key={item.id}
+  className="mobile-budget-card"
+  style={{
+    position: 'relative',
+  }}
+>
                   <div className="mobile-budget-title">
-                    {item.note}
-                  </div>
+  {item.note}
+</div>
+
+<div
+  style={{
+    position: 'absolute',
+    top: '18px',
+    right: '18px',
+  }}
+>
+  <StatusBadge>
+    {statusText(item)}
+  </StatusBadge>
+</div>
 
                   <div className="mobile-budget-meta">
                     <div>

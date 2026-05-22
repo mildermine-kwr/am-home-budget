@@ -116,26 +116,11 @@ const loadBudgets = async () => {
   })
 }
 
-  const migrateLocalData =
+ const migrateLocalData =
   async () => {
     try {
-      const saved =
-        localStorage.getItem(
-          STORAGE_KEY
-        )
-
-      if (!saved) {
-        alert(
-          'ไม่พบข้อมูล local'
-        )
-        return
-      }
-
-      const parsed =
-        JSON.parse(saved)
-
       const tort =
-        (parsed.tort || []).map(
+        DEFAULT_TORT.map(
           (i) => ({
             ...i,
             type: 'tort',
@@ -143,7 +128,7 @@ const loadBudgets = async () => {
         )
 
       const furn =
-        (parsed.furn || []).map(
+        DEFAULT_FURN.map(
           (i) => ({
             ...i,
             type: 'furn',

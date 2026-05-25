@@ -71,17 +71,63 @@ const formatThaiDate = (dateValue) => {
   if (!dateValue) return '-'
 
   try {
+    // already formatted dd/mm/yyyy
+    if (
+      typeof dateValue === 'string' &&
+      /^\d{2}\/\d{2}\/\d{4}$/.test(dateValue)
+    ) {
+      const [, , year] = dateValue.split('/')
+
+      // already Buddhist year
+      if (Number(year) > 2500) {
+        return dateValue
+      }
+
+      return dateValue
+    }
+
+    // yyyy-mm-dd
+    if (
+      typeof dateValue === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(dateValue)
+    ) {
+      const [year, month, day] =
+        dateValue.split('-')
+
+      const christianYear =
+        Number(year)
+
+      const buddhistYear =
+        christianYear > 2500
+          ? christianYear
+          : christianYear + 543
+
+      return `${day}/${month}/${buddhistYear}`
+    }
+
     const date = new Date(dateValue)
 
     if (Number.isNaN(date.getTime())) {
       return '-'
     }
 
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear() + 543
+    const day = String(
+      date.getDate()
+    ).padStart(2, '0')
 
-    return `${day}/${month}/${year}`
+    const month = String(
+      date.getMonth() + 1
+    ).padStart(2, '0')
+
+    const rawYear =
+      date.getFullYear()
+
+    const buddhistYear =
+      rawYear > 2500
+        ? rawYear
+        : rawYear + 543
+
+    return `${day}/${month}/${buddhistYear}`
   } catch (e) {
     return '-'
   }

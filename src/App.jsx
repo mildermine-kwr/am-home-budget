@@ -357,7 +357,75 @@ const loadBudgets = async () => {
         filter === 'all' ||
         filter === status
 
-      return (
+      
+  const repairInstallments =
+    async () => {
+      const repaired =
+        items.map((item) => {
+          if (
+            !item.installment
+          )
+            return item
+
+          const monthly =
+            Number(
+              item.installment
+                ?.monthly || 0
+            )
+
+          if (!monthly)
+            return item
+
+          const paidCount =
+            Math.min(
+              Math.floor(
+                Number(
+                  item.paid || 0
+                ) / monthly
+              ),
+              Number(
+                item.installment
+                  ?.total || 0
+              )
+            )
+
+          return {
+            ...item,
+            installment: {
+              ...item.installment,
+              paid: paidCount,
+            },
+          }
+        })
+
+      setData((prev) => ({
+        ...prev,
+        [activeTab]:
+          repaired,
+      }))
+
+      for (const item of repaired) {
+        if (
+          item.installment
+        ) {
+          await supabase
+            .from('budget')
+            .update({
+              installment:
+                item.installment,
+            })
+            .eq('id', item.id)
+        }
+      }
+    }
+
+  useEffect(() => {
+    if (items.length) {
+      repairInstallments()
+    }
+  }, [items.length])
+
+return (
         matchSearch && matchFilter
       )
     })

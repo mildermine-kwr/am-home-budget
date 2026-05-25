@@ -433,7 +433,6 @@ const loadBudgets = async () => {
 
       await loadBudgets()
       setEditingId(null)
-      setOpenModal(false)
       showToast('แก้ไขรายการสำเร็จ')
     } else {
       const { error } = await supabase
@@ -489,7 +488,7 @@ const loadBudgets = async () => {
       date: item.date || '',
       category: item.category || '',
       note: item.note || '',
-      budget: item.budget || '',
+      budget: String(item.budget || ''),
       paid: item.paid || '',
       remark: item.remark || '',
       platform: isOther

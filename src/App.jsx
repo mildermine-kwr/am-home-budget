@@ -263,13 +263,18 @@ const loadBudgets = async () => {
     return
   }
 
+  const safeData =
+    Array.isArray(data)
+      ? data
+      : []
+
   const tort =
-    data.filter(
+    safeData.filter(
       (i) => i.type === 'tort'
     )
 
   const furn =
-    data.filter(
+    safeData.filter(
       (i) => i.type === 'furn'
     )
 
@@ -328,8 +333,8 @@ const loadBudgets = async () => {
 
   const items =
     activeTab === 'tort'
-      ? data.tort
-      : data.furn
+      ? data?.tort || []
+      : data?.furn || []
 
   const filteredItems = useMemo(() => {
     return (items || []).filter((item) => {

@@ -1932,7 +1932,7 @@ button:hover{
         >
           <input
             type="number"
-            value={form.total}
+            value={form.budget ?? ''}
             onChange={(e) =>
               setForm({
                 ...form,
@@ -1949,7 +1949,7 @@ button:hover{
         >
           <input
             type="number"
-            value={form.paid}
+            value={form.paid ?? ''}
             onChange={(e) =>
               setForm({
                 ...form,

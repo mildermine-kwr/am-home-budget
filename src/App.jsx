@@ -385,23 +385,51 @@ const loadBudgets = async () => {
   }
 
   const addItem = async () => {
-    if (!form.note || !form.total)
-      return
+    try {
+      if (!form.note || !form.budget) {
+        showToast('กรุณากรอกรายละเอียดและราคา')
+        return
+      }
 
-    const next = {
-      id: editingId || Date.now(),
-      date:
-        form.date || '—',
-      category: form.cat || 'อื่นๆ',
-      note: form.note,
-      budget: Number(form.total),
-      paid: Number(form.paid || 0),
-      remark: form.remark,
-      platform:
-        form.platform === 'อื่นๆ'
-          ? form.otherPlatform
-          : form.platform,
-    }
+      const budget =
+        Number(form.budget || 0)
+
+      const paid =
+        Number(form.paid || 0)
+
+      const remaining =
+        Math.max(
+          budget - paid,
+          0
+        )
+
+      const status =
+        paid <= 0
+          ? 'unpaid'
+          : remaining <= 0
+          ? 'paid'
+          : 'partial'
+
+      const next = {
+        id: editingId || Date.now(),
+        date:
+          form.date || '—',
+        category:
+          form.category || 'อื่นๆ',
+        title:
+          form.title ||
+          form.note,
+        note: form.note,
+        budget,
+        paid,
+        remaining,
+        status,
+        remark: form.remark,
+        platform:
+          form.platform === 'อื่นๆ'
+            ? form.otherPlatform
+            : form.platform,
+      }
 
     if (editingId) {
       const payload = {
@@ -431,7 +459,6 @@ const loadBudgets = async () => {
 
       await loadBudgets()
 
-      await loadBudgets()
       setEditingId(null)
       showToast('แก้ไขรายการสำเร็จ')
     } else {
@@ -467,6 +494,10 @@ const loadBudgets = async () => {
     })
 
     setEditingId(null)
+    } catch (error) {
+      console.log(error)
+      showToast('เกิดข้อผิดพลาดในการบันทึก')
+    }
   }
 
   const handleEdit = (item) => {

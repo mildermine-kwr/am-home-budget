@@ -420,10 +420,13 @@ const loadBudgets = async () => {
     }
 
   useEffect(() => {
-    if (items.length) {
+    if (
+      Array.isArray(items) &&
+      items.length > 0
+    ) {
       repairInstallments()
     }
-  }, [items.length])
+  }, [items])
 
 return (
         matchSearch && matchFilter

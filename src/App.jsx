@@ -1299,7 +1299,7 @@ button:hover{
                     หมายเหตุ
                   </TH>
                   <TH>
-                    งบ
+                    ราคาเต็ม
                   </TH>
                   <TH>
                     จ่ายแล้ว
@@ -1786,7 +1786,7 @@ button:hover{
         }}
       >
         <Field
-          label="ราคา / งบ (บาท)"
+          label="ราคา (บาท)"
         >
           <input
             type="number"

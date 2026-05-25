@@ -1442,12 +1442,15 @@ button:hover{
 
                           <TD
                             sticky
-                            style={{
-                              display: 'flex',
-                              gap: '10px',
-                              alignItems: 'center',
-                            }}
                           >
+                            <div
+                              style={{
+                                display: 'flex',
+                                gap: '10px',
+                                alignItems: 'center',
+                                height: '100%',
+                              }}
+                            >
                              {item.paid < item.budget && (
   <button
     style={{
@@ -1525,6 +1528,7 @@ button:hover{
 >
   <DeleteOutlined />
 </button>
+                            </div>
                           </TD>
                         </tr>
 

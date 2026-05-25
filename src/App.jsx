@@ -1257,9 +1257,19 @@ button:hover{
                           </TD>
 
                           <TD>
-                            {
-                              item.note
-                            }
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '10px',
+                                alignItems: 'flex-start',
+                              }}
+                            >
+                              <div>
+                                {
+                                  item.note
+                                }
+                              </div>
 
                             {item.installment && (
                               <div
@@ -1304,6 +1314,7 @@ button:hover{
                               </div>
                             )}
 
+                            </div>
                           </TD>
 
                           <TD>
@@ -2434,7 +2445,11 @@ function TD({
   return (
     <td
       style={{
-        padding: '14px',
+        paddingTop: '16px',
+        paddingBottom: '16px',
+        paddingLeft: '14px',
+        paddingRight: '14px',
+        verticalAlign: 'top',
         borderBottom:
           '1px solid rgba(0,0,0,.05)',
         transition: 'background .2s ease',

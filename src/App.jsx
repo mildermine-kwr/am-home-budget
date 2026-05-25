@@ -205,6 +205,20 @@ export default function App() {
   const [editingId, setEditingId] = useState(null)
   const [selectedItem, setSelectedItem] = useState(null)
 
+  
+
+  const [form, setForm] = useState({
+    date: '',
+    category: '',
+    title: '',
+    note: '',
+    budget: '',
+    paid: '',
+    remaining: '',
+    status: '',
+    platform: '',
+  })
+
   const hasFormChanges =
     !editingId ||
     JSON.stringify({
@@ -233,18 +247,6 @@ export default function App() {
         remark:
           selectedItem?.remark || '',
       });
-
-  const [form, setForm] = useState({
-    date: '',
-    category: '',
-    title: '',
-    note: '',
-    budget: '',
-    paid: '',
-    remaining: '',
-    status: '',
-    platform: '',
-  })
 
   useEffect(() => {
   loadBudgets()

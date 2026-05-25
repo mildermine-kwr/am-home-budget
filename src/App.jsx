@@ -520,7 +520,7 @@ const loadBudgets = async () => {
       date: item.date || '',
       category: item.category || '',
       note: item.note || '',
-      budget: String(item.budget || ''),
+      budget: item.budget != null ? String(item.budget) : '',
       paid: item.paid || '',
       remark: item.remark || '',
       platform: isOther

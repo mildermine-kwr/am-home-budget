@@ -203,6 +203,7 @@ export default function App() {
 })
 
   const [editingId, setEditingId] = useState(null)
+  const [selectedItem, setSelectedItem] = useState(null)
 
   const [form, setForm] = useState({
     date: '',
@@ -531,6 +532,7 @@ const loadBudgets = async () => {
     })
 
     setEditingId(item.id)
+    setSelectedItem(item)
     setOpen(true)
   }
 
@@ -1780,9 +1782,7 @@ button:hover{
             margin: 0,
             paddingRight: '48px',
           }}
-        >
-          + เพิ่มรายการ
-        </h3>
+        >{editingId ? 'แก้ไขรายการ' : '+ เพิ่มรายการ'}</h3>
       </div>
 
       <div
@@ -2063,22 +2063,67 @@ button:hover{
         </button>
 
         <button
-          onClick={addItem}
-          className="modal-save"
-          style={{
-            height: '58px',
-            padding: '0 36px',
-            border: 'none',
-            borderRadius: '22px',
-            background: '#4E82AD',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: 800,
-            cursor: 'pointer',
-            boxShadow:
-              '0 14px 30px rgba(78,130,173,.22)',
-          }}
-        >
+                    onClick={addItem}
+                    disabled={
+                      editingId &&
+                      JSON.stringify({
+                        date: form.date || '',
+                        category: form.category || '',
+                        note: form.note || '',
+                        budget: String(form.budget || ''),
+                        paid: String(form.paid || ''),
+                        platform: form.platform || '',
+                        remark: form.remark || '',
+                      }) ===
+                        JSON.stringify({
+                          date: selectedItem?.date || '',
+                          category:
+                            selectedItem?.category || '',
+                          note:
+                            selectedItem?.note || '',
+                          budget: String(
+                            selectedItem?.budget || ''
+                          ),
+                          paid: String(
+                            selectedItem?.paid || ''
+                          ),
+                          platform:
+                            selectedItem?.platform || '',
+                          remark:
+                            selectedItem?.remark || '',
+                        })
+                    }
+                    className={`transition ${
+                      editingId &&
+                      JSON.stringify({
+                        date: form.date || '',
+                        category: form.category || '',
+                        note: form.note || '',
+                        budget: String(form.budget || ''),
+                        paid: String(form.paid || ''),
+                        platform: form.platform || '',
+                        remark: form.remark || '',
+                      }) ===
+                        JSON.stringify({
+                          date: selectedItem?.date || '',
+                          category:
+                            selectedItem?.category || '',
+                          note:
+                            selectedItem?.note || '',
+                          budget: String(
+                            selectedItem?.budget || ''
+                          ),
+                          paid: String(
+                            selectedItem?.paid || ''
+                          ),
+                          platform:
+                            selectedItem?.platform || '',
+                          remark:
+                            selectedItem?.remark || '',
+                        })
+                        ? 'opacity-50 cursor-not-allowed'
+                        : ''
+                    }`}>
           บันทึก
         </button>
       </div>

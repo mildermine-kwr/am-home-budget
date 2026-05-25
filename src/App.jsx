@@ -389,7 +389,7 @@ const loadBudgets = async () => {
 
           const paidCount =
             Math.min(
-              Math.floor(
+              Math.round(
                 Number(
                   item.paid || 0
                 ) / monthly

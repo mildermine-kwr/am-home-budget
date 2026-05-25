@@ -1633,22 +1633,23 @@ button:hover{
       style={{
         position: 'relative',
         width: '100%',
-        maxWidth: window.innerWidth < 768 ? '100vw' : '820px',
-        borderRadius: window.innerWidth < 768 ? '0px' : '40px',
-        padding: window.innerWidth < 768 ? '28px 20px 40px' : '32px',
+        maxWidth: window.innerWidth < 768 ? '100%' : '820px',
+        borderRadius: window.innerWidth < 768 ? '28px 28px 0 0' : '40px',
         background:
-          'rgba(255,255,255,.82)',
+          'rgba(255,255,255,.92)',
         backdropFilter:
           'blur(24px)',
         border:
           '1px solid rgba(255,255,255,.6)',
         boxShadow:
           '0 30px 90px rgba(0,0,0,.12)',
-        height:
+        maxHeight:
           window.innerWidth < 768
-            ? '100vh'
-            : 'auto',
-        overflowY: 'auto',
+            ? '100dvh'
+            : 'calc(100vh - 48px)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
       }}
     >
       <button
@@ -1671,19 +1672,46 @@ button:hover{
         ✕
       </button>
 
-      <h3
+      <div
         style={{
-          fontSize: '42px',
-          lineHeight: 1,
-          fontWeight: 800,
-          letterSpacing:
-            '-0.05em',
-          color: '#6B4B2A',
-          marginBottom: '34px',
+          position: 'sticky',
+          top: 0,
+          zIndex: 2,
+          background: 'rgba(255,255,255,.94)',
+          backdropFilter: 'blur(16px)',
+          padding:
+            window.innerWidth < 768
+              ? '28px 20px 18px'
+              : '32px 32px 20px',
+          borderBottom: '1px solid rgba(0,0,0,.06)',
         }}
       >
-        + เพิ่มรายการ
-      </h3>
+        <h3
+          style={{
+            fontSize: window.innerWidth < 768 ? '32px' : '42px',
+            lineHeight: 1,
+            fontWeight: 800,
+            letterSpacing:
+              '-0.05em',
+            color: '#6B4B2A',
+            margin: 0,
+            paddingRight: '48px',
+          }}
+        >
+          + เพิ่มรายการ
+        </h3>
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding:
+            window.innerWidth < 768
+              ? '20px 20px 120px'
+              : '24px 32px 140px',
+        }}
+      >
 
       <div
         style={{
@@ -1911,13 +1939,24 @@ button:hover{
         </Field>
       </div>
 
+      </div>
+
       <div
         style={{
+          position: 'sticky',
+          bottom: 0,
+          zIndex: 3,
           display: 'flex',
           justifyContent:
             'flex-end',
           gap: '16px',
-          marginTop: '34px',
+          padding:
+            window.innerWidth < 768
+              ? '18px 20px calc(18px + env(safe-area-inset-bottom))'
+              : '22px 32px',
+          background: 'rgba(255,255,255,.96)',
+          backdropFilter: 'blur(16px)',
+          borderTop: '1px solid rgba(0,0,0,.06)',
         }}
       >
         <button

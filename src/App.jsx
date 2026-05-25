@@ -278,7 +278,7 @@ const loadBudgets = async () => {
     }
 
     if (editingId) {
-      await supabase
+      const { error } = await supabase
         .from('budget')
         .update({
           ...next,
@@ -286,31 +286,30 @@ const loadBudgets = async () => {
         })
         .eq('id', editingId)
 
-      setData((prev) => ({
-        ...prev,
-        [activeTab]: prev[activeTab].map((item) =>
-          item.id === editingId
-            ? next
-            : item
-        ),
-      }))
+      if (error) {
+        console.log(error)
+        showToast('แก้ไขไม่สำเร็จ')
+        return
+      }
+
+      await loadBudgets()
 
       showToast('แก้ไขรายการสำเร็จ')
     } else {
-      await supabase
+      const { error } = await supabase
         .from('budget')
         .insert({
           ...next,
           type: activeTab,
         })
 
-      setData((prev) => ({
-        ...prev,
-        [activeTab]: [
-          next,
-          ...prev[activeTab],
-        ],
-      }))
+      if (error) {
+        console.log(error)
+        showToast('บันทึกรายการไม่สำเร็จ')
+        return
+      }
+
+      await loadBudgets()
 
       showToast('บันทึกรายการสำเร็จ')
     }

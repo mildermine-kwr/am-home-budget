@@ -45,6 +45,21 @@ const PLATFORMS = [
 ]
 
 
+
+const convertThaiDate = (thaiDate) => {
+  try {
+    if (!thaiDate) return ""
+    if (!thaiDate.includes("/")) return thaiDate
+
+    const [d, m, y] = thaiDate.split("/")
+    const christianYear = Number(y) - 543
+
+    return `${christianYear}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`
+  } catch {
+    return ""
+  }
+}
+
 const formatThaiDate = (date) => {
   if (!date) return "-"
   try {
@@ -317,9 +332,9 @@ const loadBudgets = async () => {
       id: editingId || Date.now(),
       date:
         form.date || '—',
-      cat: form.cat || 'อื่นๆ',
+      category: form.cat || 'อื่นๆ',
       note: form.note,
-      total: Number(form.total),
+      budget: Number(form.total),
       paid: Number(form.paid || 0),
       remark: form.remark,
       platform:
@@ -358,7 +373,7 @@ const loadBudgets = async () => {
 
       await loadBudgets()
       setEditingId(null)
-      setIsModalOpen(false)
+      setOpenModal(false)
       showToast('แก้ไขรายการสำเร็จ')
     } else {
       const { error } = await supabase
@@ -383,9 +398,9 @@ const loadBudgets = async () => {
 
     setForm({
       date: '',
-      cat: '',
+      category: '',
       note: '',
-      total: '',
+      budget: '',
       paid: '',
       remark: '',
       platform: '',
@@ -412,9 +427,9 @@ const loadBudgets = async () => {
 
     setForm({
       date: item.date || '',
-      cat: item.category || '',
+      category: item.category || '',
       note: item.note || '',
-      total: item.budget || '',
+      budget: item.budget || '',
       paid: item.paid || '',
       remark: item.remark || '',
       platform: isOther
@@ -1037,12 +1052,12 @@ button:hover{
                   date: new Date()
                     .toISOString()
                     .slice(0, 10),
-                  cat:
+                  category:
                     activeTab === 'tort'
                       ? TCATS[0]
                       : FCATS[0],
                   note: '',
-                  total: '',
+                  budget: '',
                   paid: '',
                   remark: '',
                   platform: '',
@@ -1691,7 +1706,7 @@ button:hover{
             onChange={(e) =>
               setForm({
                 ...form,
-                cat:
+                category:
                   e.target.value,
               })
             }
@@ -1768,7 +1783,7 @@ button:hover{
             onChange={(e) =>
               setForm({
                 ...form,
-                total:
+                budget:
                   e.target.value,
               })
             }

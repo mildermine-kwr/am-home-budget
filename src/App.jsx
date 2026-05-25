@@ -4,7 +4,6 @@ import house3d from './image.png'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
 import { useEffect, useMemo, useState } from 'react'
-import dayjs from 'dayjs'
 import { TORT, FURN } from './data/items'
 
 const DEFAULT_TORT = TORT
@@ -44,6 +43,22 @@ const PLATFORMS = [
   'IKEA',
   'อื่นๆ',
 ]
+
+
+const formatThaiDate = (date) => {
+  if (!date) return "-"
+  try {
+    return new Date(date).toLocaleDateString("th-TH", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+  } catch (e) {
+    return "-"
+  }
+}
+
+const safeNumber = (value) => Number(value || 0).toLocaleString()
 
 export default function App() {
   useEffect(() => {
@@ -279,12 +294,8 @@ const loadBudgets = async () => {
     }
 
     if (editingId) {
-      const formattedDate = form.date
-        ? dayjs(form.date).format("YYYY-MM-DD")
-        : null
-
       const payload = {
-        date: formattedDate,
+        date: form.date || null,
         
         category: next.category,
         title: next.title,
@@ -1067,7 +1078,7 @@ button:hover{
                       </div>
 
                       <div className="mobile-budget-value">
-                        {dayjs(item.date).add(543, "year").format("DD/MM/YYYY")}
+                        {formatThaiDate(item.date)}
                       </div>
                     </div>
 
@@ -1087,7 +1098,7 @@ button:hover{
                       </div>
 
                       <div className="mobile-budget-value">
-                        ฿{item.paid.toLocaleString()}
+                        ฿{safeNumber(item.paid)}
                       </div>
                     </div>
 
@@ -1097,7 +1108,7 @@ button:hover{
                       </div>
 
                       <div className="mobile-budget-value">
-                        ฿{remain.toLocaleString()}
+                        ฿{safeNumber(remain)}
                       </div>
                     </div>
                   </div>
@@ -1351,17 +1362,17 @@ button:hover{
 
                           <TD>
                             ฿
-                            {item.total.toLocaleString()}
+                            {safeNumber(item.total)}
                           </TD>
 
                           <TD>
                             ฿
-                            {item.paid.toLocaleString()}
+                            {safeNumber(item.paid)}
                           </TD>
 
                           <TD>
                             ฿
-                            {remain.toLocaleString()}
+                            {safeNumber(remain)}
                           </TD>
 
                           <TD>
@@ -1627,7 +1638,7 @@ button:hover{
         <Field label="วันที่">
           <input
             type="date"
-            value={form.date ? dayjs(form.date).format("YYYY-MM-DD") : ""}
+            value={form.date || ""}
             onChange={(e) =>
               setForm({
                 ...form,
@@ -2329,7 +2340,7 @@ function SummaryCard({
         }}
       >
         ฿
-        {value.toLocaleString()}
+        {safeNumber(value)}
       </h2>
 
 

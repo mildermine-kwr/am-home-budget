@@ -332,7 +332,7 @@ const loadBudgets = async () => {
       : data.furn
 
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    return (items || []).filter((item) => {
       const q =
         (
           item.note + item.category
@@ -360,43 +360,58 @@ const loadBudgets = async () => {
       
   const repairInstallments =
     async () => {
+      const safeItems =
+        Array.isArray(items)
+          ? items
+          : []
+
+      if (!safeItems.length)
+        return
+
       const repaired =
-        items.map((item) => {
-          if (
-            !item.installment
-          )
-            return item
+        safeItems.map(
+          (item) => {
+            if (
+              !item?.installment
+            ) {
+              return item
+            }
 
-          const monthly =
-            Number(
-              item.installment
-                ?.monthly || 0
-            )
+            const monthly =
+              Number(
+                item.installment
+                  ?.monthly || 0
+              )
 
-          if (!monthly)
-            return item
+            if (!monthly) {
+              return item
+            }
 
-          const paidCount =
-            Math.min(
-              Math.floor(
-                Number(
-                  item.paid || 0
-                ) / monthly
-              ),
+            const total =
               Number(
                 item.installment
                   ?.total || 0
               )
-            )
 
-          return {
-            ...item,
-            installment: {
-              ...item.installment,
-              paid: paidCount,
-            },
+            const paidCount =
+              Math.min(
+                Math.floor(
+                  Number(
+                    item.paid || 0
+                  ) / monthly
+                ),
+                total
+              )
+
+            return {
+              ...item,
+              installment: {
+                ...item.installment,
+                paid: paidCount,
+              },
+            }
           }
-        })
+        )
 
       setData((prev) => ({
         ...prev,
@@ -406,7 +421,7 @@ const loadBudgets = async () => {
 
       for (const item of repaired) {
         if (
-          item.installment
+          item?.installment
         ) {
           await supabase
             .from('budget')
@@ -422,7 +437,7 @@ const loadBudgets = async () => {
   useEffect(() => {
     if (
       Array.isArray(items) &&
-      items.length > 0
+      (items || []).length > 0
     ) {
       repairInstallments()
     }
@@ -665,7 +680,7 @@ return (
         ),
     }))
     const item =
-  items.find((i) => i.id === id)
+  (items || []).find((i) => i.id === id)
 
 if (item) {
   await supabase

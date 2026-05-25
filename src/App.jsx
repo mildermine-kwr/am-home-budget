@@ -1339,7 +1339,7 @@ button:hover{
                         >
                           <TD>
                             {
-                              item.date
+                              formatThaiDate(item.date)
                             }
                           </TD>
 

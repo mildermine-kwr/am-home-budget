@@ -1099,8 +1099,7 @@ button:hover{
                     </div>
                   )}
 
-                  {item.paid < item.total && (
- <div
+                  <div
   style={{
     display: 'flex',
     gap: '10px',
@@ -1176,7 +1175,6 @@ button:hover{
     <DeleteOutlined />
   </button>
 </div>
-)}
                 </div>
               )
             })}
@@ -1384,6 +1382,29 @@ button:hover{
     + ชำระ
   </button>
 )}
+
+<button
+  onClick={() =>
+    handleEdit(item)
+  }
+  style={{
+    width: '32px',
+    height: '32px',
+    borderRadius: '12px',
+    border:
+      '1px solid rgba(0,0,0,.08)',
+    background:
+      'rgba(255,255,255,.92)',
+    color: '#111',
+    fontSize: '16px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }}
+>
+  <EditOutlined />
+</button>
 
 <button
   onClick={() =>

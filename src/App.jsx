@@ -63,7 +63,7 @@ const safeNumber = (value) => Number(value || 0).toLocaleString()
 
 const normalizeItem = (item) => ({
   ...item,
-  category: item.categoryegory || '',
+  category: item.category || '',
   budget: Number(item.budget || 0),
   paid: Number(item.paid || 0),
   remaining: Number(
@@ -258,19 +258,32 @@ const loadBudgets = async () => {
 
   const totals = useMemo(() => {
     const total = items.reduce(
-      (s, i) => s + i.total,
+      (s, i) =>
+        s + Number(i.budget || 0),
       0
     )
 
     const paid = items.reduce(
-      (s, i) => s + i.paid,
+      (s, i) =>
+        s + Number(i.paid || 0),
+      0
+    )
+
+    const remain = items.reduce(
+      (s, i) =>
+        s +
+        Number(
+          i.remaining ??
+            (Number(i.budget || 0) -
+              Number(i.paid || 0))
+        ),
       0
     )
 
     return {
       total,
       paid,
-      remain: total - paid,
+      remain,
     }
   }, [items])
 

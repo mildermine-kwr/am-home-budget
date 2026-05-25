@@ -1,7 +1,7 @@
 import { supabase }
   from './supabase'
 import house3d from './image.png'
-import { DeleteOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
 import { useEffect, useMemo, useState } from 'react'
 import { TORT, FURN } from './data/items'
@@ -89,6 +89,8 @@ export default function App() {
   tort: [],
   furn: [],
 })
+
+  const [editingId, setEditingId] = useState(null)
 
   const [form, setForm] = useState({
     date: '',
@@ -261,7 +263,7 @@ const loadBudgets = async () => {
       return
 
     const next = {
-      id: Date.now(),
+      id: editingId || Date.now(),
       date:
         form.date || '—',
       cat: form.cat || 'อื่นๆ',
@@ -275,22 +277,43 @@ const loadBudgets = async () => {
           : form.platform,
     }
 
-    await supabase
-  .from('budget')
-  .insert({
-    ...next,
-    type: activeTab,
-  })
+    if (editingId) {
+      await supabase
+        .from('budget')
+        .update({
+          ...next,
+          type: activeTab,
+        })
+        .eq('id', editingId)
 
-    setData((prev) => ({
-      ...prev,
-      [activeTab]: [
-        next,
-        ...prev[activeTab],
-      ],
-    }))
+      setData((prev) => ({
+        ...prev,
+        [activeTab]: prev[activeTab].map((item) =>
+          item.id === editingId
+            ? next
+            : item
+        ),
+      }))
 
-    showToast('บันทึกรายการสำเร็จ')
+      showToast('แก้ไขรายการสำเร็จ')
+    } else {
+      await supabase
+        .from('budget')
+        .insert({
+          ...next,
+          type: activeTab,
+        })
+
+      setData((prev) => ({
+        ...prev,
+        [activeTab]: [
+          next,
+          ...prev[activeTab],
+        ],
+      }))
+
+      showToast('บันทึกรายการสำเร็จ')
+    }
 
     setOpen(false)
 
@@ -304,6 +327,42 @@ const loadBudgets = async () => {
       platform: '',
       otherPlatform: '',
     })
+
+    setEditingId(null)
+  }
+
+  const handleEdit = (item) => {
+    const presetPlatforms = [
+      'Shopee',
+      'HomePro',
+      'ไทวัสดุ',
+      'บุญถาวร',
+      'IKEA',
+    ]
+
+    const isOther =
+      item.platform &&
+      !presetPlatforms.includes(
+        item.platform
+      )
+
+    setForm({
+      date: item.date || '',
+      cat: item.cat || '',
+      note: item.note || '',
+      total: item.total || '',
+      paid: item.paid || '',
+      remark: item.remark || '',
+      platform: isOther
+        ? 'อื่นๆ'
+        : item.platform || '',
+      otherPlatform: isOther
+        ? item.platform
+        : '',
+    })
+
+    setEditingId(item.id)
+    setOpen(true)
   }
 
   const confirmPayment = async (id) => {
@@ -939,7 +998,7 @@ button:hover{
                 transition: 'all .25s ease',
               }}
             >
-              + เพิ่มรายการ
+              {editingId ? 'บันทึกการแก้ไข' : '+ เพิ่มรายการ'}
             </button>
             
           </div>
@@ -1067,6 +1126,31 @@ button:hover{
       + ชำระ
     </button>
   )}
+
+
+  <button
+    onClick={() =>
+      handleEdit(item)
+    }
+    style={{
+      width: '54px',
+      height: '54px',
+      borderRadius: '18px',
+      border:
+        '1px solid rgba(0,0,0,.06)',
+      background:
+        'rgba(255,255,255,.95)',
+      color: '#111',
+      fontSize: '18px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0,
+    }}
+  >
+    <EditOutlined />
+  </button>
 
   <button
     onClick={() =>

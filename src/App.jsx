@@ -2096,11 +2096,28 @@ button:hover{
         <button
                   onClick={addItem}
                   disabled={!hasFormChanges}
-                  className={`min-w-[140px] h-[56px] px-8 rounded-2xl font-semibold text-white transition ${
-                    !hasFormChanges
-                      ? 'opacity-50 cursor-not-allowed bg-gray-300'
-                      : 'bg-[#5B95C9] hover:opacity-90'
-                  }`}
+                  style={{
+                    minWidth: '140px',
+                    height: '56px',
+                    padding: '0 32px',
+                    border: 'none',
+                    borderRadius: '18px',
+                    background:
+                      'linear-gradient(135deg,#6FA6E8,#4E82AD)',
+                    color: '#fff',
+                    fontSize: '16px',
+                    fontWeight: 700,
+                    cursor: !hasFormChanges
+                      ? 'not-allowed'
+                      : 'pointer',
+                    opacity: !hasFormChanges
+                      ? 0.55
+                      : 1,
+                    boxShadow:
+                      '0 10px 24px rgba(78,130,173,.22)',
+                    transition:
+                      'all .2s ease',
+                  }}
                 >
                   บันทึก
                 </button>

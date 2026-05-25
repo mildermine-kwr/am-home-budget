@@ -34,6 +34,16 @@ const FCATS = [
   'อื่นๆ',
 ]
 
+
+const PLATFORMS = [
+  'Shopee',
+  'HomePro',
+  'ไทวัสดุ',
+  'บุญถาวร',
+  'IKEA',
+  'อื่นๆ',
+]
+
 export default function App() {
   useEffect(() => {
     testDB()
@@ -87,6 +97,8 @@ export default function App() {
     total: '',
     paid: '',
     remark: '',
+    platform: '',
+    otherPlatform: '',
   })
 
   useEffect(() => {
@@ -256,6 +268,11 @@ const loadBudgets = async () => {
       note: form.note,
       total: Number(form.total),
       paid: Number(form.paid || 0),
+      remark: form.remark,
+      platform:
+        form.platform === 'อื่นๆ'
+          ? form.otherPlatform
+          : form.platform,
     }
 
     await supabase
@@ -283,6 +300,9 @@ const loadBudgets = async () => {
       note: '',
       total: '',
       paid: '',
+      remark: '',
+      platform: '',
+      otherPlatform: '',
     })
   }
 
@@ -902,6 +922,8 @@ button:hover{
                   total: '',
                   paid: '',
                   remark: '',
+                  platform: '',
+                  otherPlatform: '',
                 })
 
                 setOpen(true)
@@ -974,6 +996,16 @@ button:hover{
 
                     <div>
                       <div className="mobile-budget-label">
+                        ซื้อจาก
+                      </div>
+
+                      <div className="mobile-budget-value">
+                        {item.platform || '—'}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="mobile-budget-label">
                         จ่ายแล้ว
                       </div>
 
@@ -992,6 +1024,21 @@ button:hover{
                       </div>
                     </div>
                   </div>
+
+                  {item.remark && (
+                    <div
+                      style={{
+                        marginTop: '8px',
+                        padding: '12px',
+                        borderRadius: '14px',
+                        background: 'rgba(0,0,0,.04)',
+                        fontSize: '14px',
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      <strong>หมายเหตุ:</strong> {item.remark}
+                    </div>
+                  )}
 
                   {item.paid < item.total && (
  <div
@@ -1076,6 +1123,12 @@ button:hover{
                   </TH>
                   <TH>
                     รายละเอียด
+                  </TH>
+                  <TH>
+                    ซื้อจาก
+                  </TH>
+                  <TH>
+                    หมายเหตุ
                   </TH>
                   <TH>
                     งบ
@@ -1172,6 +1225,20 @@ button:hover{
                           </TD>
 
                           <TD>
+                            {item.platform || '—'}
+                          </TD>
+
+                          <TD
+                            style={{
+                              maxWidth: '220px',
+                              whiteSpace: 'pre-wrap',
+                              color: '#666',
+                            }}
+                          >
+                            {item.remark || '—'}
+                          </TD>
+
+                          <TD>
                             ฿
                             {item.total.toLocaleString()}
                           </TD>
@@ -1264,7 +1331,7 @@ button:hover{
                           <tr>
                             <td
                               colSpan={
-                                8
+                                10
                               }
                               style={{
                                 background:
@@ -1545,6 +1612,71 @@ button:hover{
             style={fieldStyle}
           />
         </Field>
+      </div>
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns:
+            window.innerWidth < 768
+              ? '1fr'
+              : '1fr 1fr',
+          gap: '16px',
+          marginBottom: '18px',
+        }}
+      >
+        <Field label="ซื้อจาก">
+          <select
+            value={form.platform}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                platform:
+                  e.target.value,
+              })
+            }
+            style={{
+              ...fieldStyle,
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              padding: '0 48px 0 22px',
+            }}
+          >
+            <option value="">
+              เลือก Platform
+            </option>
+
+            {PLATFORMS.map((p) => (
+              <option
+                key={p}
+                value={p}
+              >
+                {p}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        {form.platform ===
+          'อื่นๆ' && (
+          <Field label="ระบุร้าน / Platform">
+            <input
+              type="text"
+              placeholder="กรอกชื่อร้าน..."
+              value={
+                form.otherPlatform
+              }
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  otherPlatform:
+                    e.target.value,
+                })
+              }
+              style={fieldStyle}
+            />
+          </Field>
+        )}
       </div>
 
       <div

@@ -4,6 +4,7 @@ import house3d from './image.png'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
 import { useEffect, useMemo, useState } from 'react'
+import dayjs from 'dayjs'
 import { TORT, FURN } from './data/items'
 
 const DEFAULT_TORT = TORT
@@ -278,8 +279,13 @@ const loadBudgets = async () => {
     }
 
     if (editingId) {
+      const formattedDate = form.date
+        ? dayjs(form.date).format("YYYY-MM-DD")
+        : null
+
       const payload = {
-        date: next.date,
+        date: formattedDate,
+        
         category: next.category,
         title: next.title,
         note: next.note,
@@ -1061,7 +1067,7 @@ button:hover{
                       </div>
 
                       <div className="mobile-budget-value">
-                        {item.date}
+                        {dayjs(item.date).add(543, "year").format("DD/MM/YYYY")}
                       </div>
                     </div>
 
@@ -1621,7 +1627,7 @@ button:hover{
         <Field label="วันที่">
           <input
             type="date"
-            value={form.date}
+            value={form.date ? dayjs(form.date).format("YYYY-MM-DD") : ""}
             onChange={(e) =>
               setForm({
                 ...form,

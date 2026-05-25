@@ -205,6 +205,35 @@ export default function App() {
   const [editingId, setEditingId] = useState(null)
   const [selectedItem, setSelectedItem] = useState(null)
 
+  const hasFormChanges =
+    !editingId ||
+    JSON.stringify({
+      date: form.date || '',
+      category: form.category || '',
+      note: form.note || '',
+      budget: String(form.budget ?? ''),
+      paid: String(form.paid ?? ''),
+      platform: form.platform || '',
+      remark: form.remark || '',
+    }) !==
+      JSON.stringify({
+        date: selectedItem?.date || '',
+        category:
+          selectedItem?.category || '',
+        note:
+          selectedItem?.note || '',
+        budget: String(
+          selectedItem?.budget ?? ''
+        ),
+        paid: String(
+          selectedItem?.paid ?? ''
+        ),
+        platform:
+          selectedItem?.platform || '',
+        remark:
+          selectedItem?.remark || '',
+      });
+
   const [form, setForm] = useState({
     date: '',
     category: '',
@@ -1169,7 +1198,7 @@ button:hover{
                 transition: 'all .25s ease',
               }}
             >
-              {editingId ? 'บันทึกการแก้ไข' : '+ เพิ่มรายการ'}
+              {editingId ? 'แก้ไขรายการ' : '+ เพิ่มรายการ'}
             </button>
             
           </div>
@@ -2063,69 +2092,16 @@ button:hover{
         </button>
 
         <button
-                    onClick={addItem}
-                    disabled={
-                      editingId &&
-                      JSON.stringify({
-                        date: form.date || '',
-                        category: form.category || '',
-                        note: form.note || '',
-                        budget: String(form.budget || ''),
-                        paid: String(form.paid || ''),
-                        platform: form.platform || '',
-                        remark: form.remark || '',
-                      }) ===
-                        JSON.stringify({
-                          date: selectedItem?.date || '',
-                          category:
-                            selectedItem?.category || '',
-                          note:
-                            selectedItem?.note || '',
-                          budget: String(
-                            selectedItem?.budget || ''
-                          ),
-                          paid: String(
-                            selectedItem?.paid || ''
-                          ),
-                          platform:
-                            selectedItem?.platform || '',
-                          remark:
-                            selectedItem?.remark || '',
-                        })
-                    }
-                    className={`transition ${
-                      editingId &&
-                      JSON.stringify({
-                        date: form.date || '',
-                        category: form.category || '',
-                        note: form.note || '',
-                        budget: String(form.budget || ''),
-                        paid: String(form.paid || ''),
-                        platform: form.platform || '',
-                        remark: form.remark || '',
-                      }) ===
-                        JSON.stringify({
-                          date: selectedItem?.date || '',
-                          category:
-                            selectedItem?.category || '',
-                          note:
-                            selectedItem?.note || '',
-                          budget: String(
-                            selectedItem?.budget || ''
-                          ),
-                          paid: String(
-                            selectedItem?.paid || ''
-                          ),
-                          platform:
-                            selectedItem?.platform || '',
-                          remark:
-                            selectedItem?.remark || '',
-                        })
-                        ? 'opacity-50 cursor-not-allowed'
-                        : ''
-                    }`}>
-          บันทึก
-        </button>
+                  onClick={addItem}
+                  disabled={!hasFormChanges}
+                  className={`min-w-[140px] h-[56px] px-8 rounded-2xl font-semibold text-white transition ${
+                    !hasFormChanges
+                      ? 'opacity-50 cursor-not-allowed bg-gray-300'
+                      : 'bg-[#5B95C9] hover:opacity-90'
+                  }`}
+                >
+                  บันทึก
+                </button>
       </div>
     </div>
   </div>

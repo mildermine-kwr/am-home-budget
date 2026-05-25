@@ -60,6 +60,27 @@ const formatThaiDate = (date) => {
 
 const safeNumber = (value) => Number(value || 0).toLocaleString()
 
+
+const normalizeItem = (item) => ({
+  ...item,
+  category: item.categoryegory || '',
+  budget: Number(item.budget || 0),
+  paid: Number(item.paid || 0),
+  remaining: Number(
+    item.remaining ??
+    (Number(item.budget || 0) - Number(item.paid || 0))
+  ),
+  title: item.title || item.note || '',
+  platform: item.platform || '',
+  status:
+    item.status ||
+    (Number(item.paid || 0) >= Number(item.budget || 0)
+      ? 'paid'
+      : Number(item.paid || 0) > 0
+      ? 'partial'
+      : 'unpaid'),
+})
+
 export default function App() {
   useEffect(() => {
     testDB()
@@ -110,13 +131,14 @@ export default function App() {
 
   const [form, setForm] = useState({
     date: '',
-    cat: '',
+    category: '',
+    title: '',
     note: '',
-    total: '',
+    budget: '',
     paid: '',
-    remark: '',
+    remaining: '',
+    status: '',
     platform: '',
-    otherPlatform: '',
   })
 
   useEffect(() => {
@@ -206,7 +228,7 @@ const loadBudgets = async () => {
     return items.filter((item) => {
       const q =
         (
-          item.note + item.cat
+          item.note + item.category
         ).toLowerCase()
 
       const matchSearch =
@@ -215,7 +237,7 @@ const loadBudgets = async () => {
         )
 
       const remain =
-        item.total - item.paid
+        item.budget - item.paid
 
       const status =
         item.paid <= 0
@@ -263,7 +285,7 @@ const loadBudgets = async () => {
 
   const statusText = (item) => {
     const remain =
-      item.total - item.paid
+      item.budget - item.paid
 
     if (item.paid <= 0)
       return 'ยังไม่จ่าย'
@@ -377,9 +399,9 @@ const loadBudgets = async () => {
 
     setForm({
       date: item.date || '',
-      cat: item.cat || '',
+      cat: item.category || '',
       note: item.note || '',
-      total: item.total || '',
+      total: item.budget || '',
       paid: item.paid || '',
       remark: item.remark || '',
       platform: isOther
@@ -1035,7 +1057,7 @@ button:hover{
           
           <div className="mobile-cards">
             {filteredItems.map((item) => {
-              const remain = item.total - item.paid
+              const remain = item.budget - item.paid
 
               return (
                 <div
@@ -1068,7 +1090,7 @@ button:hover{
                       </div>
 
                       <div className="mobile-budget-value">
-                        {item.cat}
+                        {item.category}
                       </div>
                     </div>
 
@@ -1136,7 +1158,7 @@ button:hover{
         alignItems: 'end'
   }}
 >
-  {item.paid < item.total && (
+  {item.paid < item.budget && (
     <button
       className="mobile-action"
       onClick={() => {
@@ -1263,7 +1285,7 @@ button:hover{
                 {filteredItems.map(
                   (item) => {
                     const remain =
-                      item.total -
+                      item.budget -
                       item.paid
 
                     return (
@@ -1281,7 +1303,7 @@ button:hover{
 
                           <TD>
                             {
-                              item.cat
+                              item.category
                             }
                           </TD>
 
@@ -1335,7 +1357,7 @@ button:hover{
                                 <span>
                                   ฿
                                   {Math.round(
-                                    item.total /
+                                    item.budget /
                                     item.installment.total
                                   ).toLocaleString()}
                                   / งวด
@@ -1362,7 +1384,7 @@ button:hover{
 
                           <TD>
                             ฿
-                            {safeNumber(item.total)}
+                            {safeNumber(item.budget)}
                           </TD>
 
                           <TD>
@@ -1391,7 +1413,7 @@ button:hover{
                               alignItems: 'center',
                             }}
                           >
-                             {item.paid < item.total && (
+                             {item.paid < item.budget && (
   <button
     style={{
       border:
@@ -1411,7 +1433,7 @@ button:hover{
         item.installment
           ? String(
               Math.round(
-                item.total /
+                item.budget /
                   item.installment.total
               )
             )

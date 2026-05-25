@@ -49,12 +49,19 @@ const PLATFORMS = [
 const convertThaiDate = (thaiDate) => {
   try {
     if (!thaiDate) return ""
-    if (!thaiDate.includes("/")) return thaiDate
 
-    const [d, m, y] = thaiDate.split("/")
-    const christianYear = Number(y) - 543
+    if (/^\d{4}-\d{2}-\d{2}$/.test(thaiDate)) {
+      return thaiDate
+    }
 
-    return `${christianYear}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`
+    if (thaiDate.includes("/")) {
+      const [d, m, y] = thaiDate.split("/")
+      const christianYear = Number(y) - 543
+
+      return `${christianYear}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`
+    }
+
+    return ""
   } catch {
     return ""
   }
@@ -1688,7 +1695,7 @@ button:hover{
         <Field label="วันที่">
           <input
             type="date"
-            value={form.date || ""}
+            value={convertThaiDate(form.date || "")}
             onChange={(e) =>
               setForm({
                 ...form,

@@ -278,12 +278,22 @@ const loadBudgets = async () => {
     }
 
     if (editingId) {
+      const payload = {
+        date: next.date,
+        category: next.category,
+        title: next.title,
+        note: next.note,
+        platform: next.platform,
+        budget: Number(next.budget || 0),
+        paid: Number(next.paid || 0),
+        remaining: Number(next.remaining || 0),
+        status: next.status,
+        type: activeTab,
+      }
+
       const { error } = await supabase
         .from('budget')
-        .update({
-          ...next,
-          type: activeTab,
-        })
+        .update(payload)
         .eq('id', editingId)
 
       if (error) {
@@ -294,6 +304,9 @@ const loadBudgets = async () => {
 
       await loadBudgets()
 
+      await loadBudgets()
+      setEditingId(null)
+      setIsModalOpen(false)
       showToast('แก้ไขรายการสำเร็จ')
     } else {
       const { error } = await supabase

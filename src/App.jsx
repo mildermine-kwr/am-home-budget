@@ -362,7 +362,13 @@ const loadBudgets = async () => {
         filter === 'all' ||
         filter === status
 
-      
+      return (
+        matchSearch &&
+        matchFilter
+      )
+    })
+  }, [items, search, filter])
+
   const repairInstallments =
     async () => {
       const repaired =
@@ -433,11 +439,7 @@ const loadBudgets = async () => {
     }
   }, [items])
 
-return (
-        matchSearch && matchFilter
-      )
-    })
-  }, [items, search, filter])
+
 
   const totals = useMemo(() => {
     const total = items.reduce(

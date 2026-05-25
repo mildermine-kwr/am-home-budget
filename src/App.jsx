@@ -67,16 +67,23 @@ const convertThaiDate = (thaiDate) => {
   }
 }
 
-const formatThaiDate = (date) => {
-  if (!date) return "-"
+const formatThaiDate = (dateValue) => {
+  if (!dateValue) return '-'
+
   try {
-    return new Date(date).toLocaleDateString("th-TH", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    })
+    const date = new Date(dateValue)
+
+    if (Number.isNaN(date.getTime())) {
+      return '-'
+    }
+
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear() + 543
+
+    return `${day}/${month}/${year}`
   } catch (e) {
-    return "-"
+    return '-'
   }
 }
 

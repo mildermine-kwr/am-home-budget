@@ -1746,6 +1746,18 @@ button:hover{
       onClick={(e) =>
         e.stopPropagation()
       }
+      onKeyDown={(e) => {
+        if (
+          e.key === 'Enter' &&
+          e.target.tagName !== 'TEXTAREA'
+        ) {
+          e.preventDefault()
+
+          if (hasFormChanges) {
+            addItem()
+          }
+        }
+      }}
       style={{
         position: 'relative',
         width: '100%',
@@ -1817,9 +1829,9 @@ button:hover{
       </div>
 
       <div
-        style={{
-          flex: 1,
-          overflowY: 'auto',
+          style={{
+            flex: 1,
+            overflowY: 'auto',
           padding:
             window.innerWidth < 768
               ? '20px 20px 120px'
@@ -1892,7 +1904,8 @@ button:hover{
             ))}
           </select>
         </Field>
-      </div>
+        </div>
+      
 
       <div
         style={{
@@ -2094,6 +2107,7 @@ button:hover{
         </button>
 
         <button
+                  type="submit"
                   onClick={addItem}
                   disabled={!hasFormChanges}
                   style={{

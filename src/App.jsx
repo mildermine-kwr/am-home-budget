@@ -220,34 +220,35 @@ export default function App() {
     platform: '',
   })
 
-  const hasFormChanges =
-    !editingId ||
-    JSON.stringify({
-      date: form.date || '',
-      category: form.category || '',
-      title: form.title || '',
-      note: form.note || '',
-      budget: String(form.budget ?? ''),
-      paid: String(form.paid ?? ''),
-      platform: form.platform || '',
-    }) !==
-      JSON.stringify({
-        date: selectedItem?.date || '',
-        category:
-          selectedItem?.category || '',
-        title:
-          selectedItem?.title || '',
-        note:
-          selectedItem?.note || '',
-        budget: String(
-          selectedItem?.budget ?? ''
-        ),
-        paid: String(
-          selectedItem?.paid ?? ''
-        ),
-        platform:
-          selectedItem?.platform || '',
-      });
+  const normalizeValue = (v) =>
+    String(v ?? '').trim()
+
+  const hasFormChanges = useMemo(() => {
+    if (!editingId) return true
+
+    return (
+      normalizeValue(form.date) !==
+        normalizeValue(selectedItem?.date) ||
+
+      normalizeValue(form.category) !==
+        normalizeValue(selectedItem?.category) ||
+
+      normalizeValue(form.title) !==
+        normalizeValue(selectedItem?.title) ||
+
+      normalizeValue(form.note) !==
+        normalizeValue(selectedItem?.note) ||
+
+      Number(form.budget || 0) !==
+        Number(selectedItem?.budget || 0) ||
+
+      Number(form.paid || 0) !==
+        Number(selectedItem?.paid || 0) ||
+
+      normalizeValue(form.platform) !==
+        normalizeValue(selectedItem?.platform)
+    )
+  }, [form, selectedItem, editingId])
 
   useEffect(() => {
   loadBudgets()
@@ -556,13 +557,44 @@ const loadBudgets = async () => {
     }
 
     if (editingId) {
-      const { data: updated, error } =
+      const payload = {
+        date: form.date || null,
+        category:
+          form.category || 'อื่นๆ',
+        title:
+          form.title || '',
+        note:
+          form.note || '',
+        budget: Number(
+          form.budget || 0
+        ),
+        paid: Number(
+          form.paid || 0
+        ),
+        remaining: Math.max(
+          Number(form.budget || 0) -
+            Number(form.paid || 0),
+          0
+        ),
+        status:
+          Number(form.paid || 0) <= 0
+            ? 'unpaid'
+            : Number(form.budget || 0) -
+                Number(form.paid || 0) <= 0
+            ? 'paid'
+            : 'partial',
+        platform:
+          form.platform === 'อื่นๆ'
+            ? form.otherPlatform || ''
+            : form.platform || '',
+        type: activeTab,
+      }
+
+      const { error } =
         await supabase
           .from('budget')
-          .update(next)
+          .update(payload)
           .eq('id', editingId)
-          .select()
-          .single()
 
       if (error) {
         console.log(error)
@@ -1867,7 +1899,10 @@ button:hover{
         ) {
           e.preventDefault()
 
-          if (hasFormChanges) {
+          if (
+            !editingId ||
+            hasFormChanges
+          ) {
             addItem()
           }
         }
@@ -2223,7 +2258,10 @@ button:hover{
         <button
                   type="submit"
                   onClick={() => addItem()}
-                  disabled={!hasFormChanges}
+                  disabled={
+                    editingId &&
+                    !hasFormChanges
+                  }
                   style={{
                     minWidth: '140px',
                     height: '56px',
@@ -2235,12 +2273,17 @@ button:hover{
                     color: '#fff',
                     fontSize: '16px',
                     fontWeight: 700,
-                    cursor: !hasFormChanges
-                      ? 'not-allowed'
-                      : 'pointer',
-                    opacity: !hasFormChanges
-                      ? 0.55
-                      : 1,
+                    cursor:
+                      editingId &&
+                      !hasFormChanges
+                        ? 'not-allowed'
+                        : 'pointer',
+
+                    opacity:
+                      editingId &&
+                      !hasFormChanges
+                        ? 0.55
+                        : 1,
                     boxShadow:
                       '0 10px 24px rgba(78,130,173,.22)',
                     transition:

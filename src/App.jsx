@@ -269,15 +269,28 @@ const loadBudgets = async () => {
       ? data
       : []
 
-  const tort =
+  const sortNewest = (arr) =>
+    [...arr].sort(
+      (a, b) =>
+        new Date(
+          b.created_at || b.date || 0
+        ) -
+        new Date(
+          a.created_at || a.date || 0
+        )
+    )
+
+  const tort = sortNewest(
     safeData.filter(
       (i) => i.type === 'tort'
     )
+  )
 
-  const furn =
+  const furn = sortNewest(
     safeData.filter(
       (i) => i.type === 'furn'
     )
+  )
 
   setData({
     tort,
@@ -526,15 +539,12 @@ const loadBudgets = async () => {
       date: form.date || null,
       category:
         form.category || 'อื่นๆ',
-      title:
-        form.title,
+      title: form.title,
       note: form.note || '',
       budget,
       paid,
       remaining,
       status,
-      note:
-        form.note || '',
       platform:
         form.platform === 'อื่นๆ'
           ? form.otherPlatform
@@ -543,11 +553,15 @@ const loadBudgets = async () => {
     }
 
     if (editingId) {
-      const { error } =
-        await supabase
-          .from('budget')
-          .update(next)
-          .eq('id', editingId)
+      const {
+        data: updated,
+        error,
+      } = await supabase
+        .from('budget')
+        .update(next)
+        .eq('id', editingId)
+        .select()
+        .single()
 
       if (error) {
         console.log(error)
@@ -555,12 +569,30 @@ const loadBudgets = async () => {
         return
       }
 
+      setData((prev) => ({
+        ...prev,
+        [activeTab]: prev[
+          activeTab
+        ].map((item) =>
+          item.id === editingId
+            ? {
+                ...item,
+                ...updated,
+              }
+            : item
+        ),
+      }))
+
       showToast('แก้ไขรายการสำเร็จ')
     } else {
-      const { error } =
-        await supabase
-          .from('budget')
-          .insert(next)
+      const {
+        data: inserted,
+        error,
+      } = await supabase
+        .from('budget')
+        .insert(next)
+        .select()
+        .single()
 
       if (error) {
         console.log(error)
@@ -568,25 +600,28 @@ const loadBudgets = async () => {
         return
       }
 
+      setData((prev) => ({
+        ...prev,
+        [activeTab]: [
+          inserted,
+          ...prev[activeTab],
+        ],
+      }))
+
       showToast('บันทึกรายการสำเร็จ')
     }
 
-    await loadBudgets()
-
     setOpen(false)
-
     setEditingId(null)
+    setSelectedItem(null)
 
-    setEditingId(null)
-                setSelectedItem(null)
-
-                setForm({
+    setForm({
       date: '',
       category: '',
+      title: '',
       note: '',
       budget: '',
       paid: '',
-      note: '',
       platform: '',
       otherPlatform: '',
     })
@@ -662,8 +697,21 @@ const confirmPayment = async (id) => {
       return
     }
 
-    await loadBudgets()
-
+    setData((prev) => ({
+      ...prev,
+      [activeTab]: prev[
+        activeTab
+      ].map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              paid: updatedPaid,
+              remaining,
+              status,
+            }
+          : item
+      ),
+    }))
 
     showToast('บันทึกการชำระสำเร็จ')
 
@@ -1233,6 +1281,9 @@ button:hover{
 
             <button
               onClick={() => {
+                setEditingId(null)
+                setSelectedItem(null)
+
                 setForm({
                   date: new Date()
                     .toISOString()

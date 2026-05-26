@@ -495,71 +495,58 @@ const loadBudgets = async () => {
   }
 
   const addItem = async () => {
-    try {
-      if (!form.note || !form.budget) {
-        showToast('กรุณากรอกรายละเอียดและราคา')
-        return
-      }
+  try {
+    if (!form.note?.trim()) {
+      showToast('กรุณากรอกรายละเอียด')
+      return
+    }
 
-      const budget =
-        Number(form.budget || 0)
+    if (!form.budget) {
+      showToast('กรุณากรอกราคา')
+      return
+    }
 
-      const paid =
-        Number(form.paid || 0)
+    const budget = Number(form.budget || 0)
+    const paid = Number(form.paid || 0)
 
-      const remaining =
-        Math.max(
-          budget - paid,
-          0
-        )
+    const remaining = Math.max(
+      budget - paid,
+      0
+    )
 
-      const status =
-        paid <= 0
-          ? 'unpaid'
-          : remaining <= 0
-          ? 'paid'
-          : 'partial'
+    const status =
+      paid <= 0
+        ? 'unpaid'
+        : remaining <= 0
+        ? 'paid'
+        : 'partial'
 
-      const next = {
-        id: editingId || Date.now(),
-        date:
-          form.date || '—',
-        category:
-          form.category || 'อื่นๆ',
-        title:
-          form.title ||
-          form.note,
-        note: form.note,
-        budget,
-        paid,
-        remaining,
-        status,
-        remark: form.remark,
-        platform:
-          form.platform === 'อื่นๆ'
-            ? form.otherPlatform
-            : form.platform,
-      }
+    const next = {
+      date: form.date || null,
+      category:
+        form.category || 'อื่นๆ',
+      title:
+        form.title || form.note,
+      note: form.note,
+      budget,
+      paid,
+      remaining,
+      status,
+      remark:
+        form.remark || '',
+      platform:
+        form.platform === 'อื่นๆ'
+          ? form.otherPlatform
+          : form.platform,
+      type: activeTab,
+    }
 
     if (editingId) {
-      const payload = {
-        date: form.date || null,
-        
-        category: next.category,
-        title: next.title,
-        note: next.note,
-        platform: next.platform,
-        budget: Number(next.budget || 0),
-        paid: Number(next.paid || 0),
-        remaining: Number(next.remaining || 0),
-        status: next.status,
-        type: activeTab,
-      }
-
-      const { error } = await supabase
-        .from('budget')
-        .update(payload)
-        .eq('id', editingId)
+      const { error } =
+        await supabase
+          .from('budget')
+          .update(next)
+          .eq('id', editingId)
 
       if (error) {
         console.log(error)
@@ -567,17 +554,12 @@ const loadBudgets = async () => {
         return
       }
 
-      await loadBudgets()
-
-      setEditingId(null)
       showToast('แก้ไขรายการสำเร็จ')
     } else {
-      const { error } = await supabase
-        .from('budget')
-        .insert({
-          ...next,
-          type: activeTab,
-        })
+      const { error } =
+        await supabase
+          .from('budget')
+          .insert(next)
 
       if (error) {
         console.log(error)
@@ -585,12 +567,14 @@ const loadBudgets = async () => {
         return
       }
 
-      await loadBudgets()
-
       showToast('บันทึกรายการสำเร็จ')
     }
 
+    await loadBudgets()
+
     setOpen(false)
+
+    setEditingId(null)
 
     setForm({
       date: '',
@@ -602,86 +586,10 @@ const loadBudgets = async () => {
       platform: '',
       otherPlatform: '',
     })
-
-    setEditingId(null)
-    } catch (error) {
-      console.log(error)
-      showToast('เกิดข้อผิดพลาดในการบันทึก')
-    }
+  } catch (error) {
+    console.log(error)
+    showToast('เกิดข้อผิดพลาดในการบันทึก')
   }
-
-  const handleEdit = (item) => {
-    const presetPlatforms = [
-      'Shopee',
-      'HomePro',
-      'ไทวัสดุ',
-      'บุญถาวร',
-      'IKEA',
-    ]
-
-    const isOther =
-      item.platform &&
-      !presetPlatforms.includes(
-        item.platform
-      )
-
-    setForm({
-      date: item.date || '',
-      category: item.category || '',
-      note: item.note || '',
-      budget: item.budget != null ? String(item.budget) : '',
-      paid: item.paid || '',
-      remark: item.remark || '',
-      platform: isOther
-        ? 'อื่นๆ'
-        : item.platform || '',
-      otherPlatform: isOther
-        ? item.platform
-        : '',
-    })
-
-    setEditingId(item.id)
-    setSelectedItem(item)
-    setOpen(true)
-  }
-
-  const confirmPayment = async (id) => {
-    const amount =
-      Number(payAmount)
-
-    if (!amount) return
-
-    setData((prev) => ({
-      ...prev,
-      [activeTab]:
-        prev[activeTab].map(
-          (item) => {
-            if (
-              item.id === id
-            ) {
-              return {
-                ...item,
-                paid:
-                  item.paid +
-                  amount,
-              }
-            }
-
-            return item
-          }
-        ),
-    }))
-    const item =
-  items.find((i) => i.id === id)
-
-if (item) {
-  await supabase
-    .from('budget')
-    .update({
-      paid:
-        item.paid + amount,
-    })
-    .eq('id', id)
 }
 
     showToast('บันทึกการชำระสำเร็จ')
@@ -1945,7 +1853,7 @@ button:hover{
 
         <Field label="หมวดงาน / หมวดสินค้า">
           <select
-            value={form.cat}
+            value={form.category}
             onChange={(e) =>
               setForm({
                 ...form,
@@ -2186,7 +2094,7 @@ button:hover{
 
         <button
                   type="submit"
-                  onClick={addItem}
+                  onClick={() => addItem()}
                   disabled={!hasFormChanges}
                   style={{
                     minWidth: '140px',

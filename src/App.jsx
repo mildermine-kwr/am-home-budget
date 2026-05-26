@@ -610,7 +610,7 @@ const loadBudgets = async () => {
           item.id === editingId
             ? normalizeItem({
                 ...item,
-                ...updated,
+                ...payload,
               })
             : item
         ),
@@ -629,10 +629,16 @@ const loadBudgets = async () => {
         return
       }
 
+      const optimisticItem = normalizeItem({
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        ...next,
+      })
+
       setData((prev) => ({
         ...prev,
         [activeTab]: [
-          normalizeItem(inserted),
+          optimisticItem,
           ...prev[activeTab],
         ],
       }))

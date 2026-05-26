@@ -227,26 +227,13 @@ export default function App() {
     if (!editingId) return true
 
     return (
-      normalizeValue(form.date) !==
-        normalizeValue(selectedItem?.date) ||
-
-      normalizeValue(form.category) !==
-        normalizeValue(selectedItem?.category) ||
-
-      normalizeValue(form.title) !==
-        normalizeValue(selectedItem?.title) ||
-
-      normalizeValue(form.note) !==
-        normalizeValue(selectedItem?.note) ||
-
-      Number(form.budget || 0) !==
-        Number(selectedItem?.budget || 0) ||
-
-      Number(form.paid || 0) !==
-        Number(selectedItem?.paid || 0) ||
-
-      normalizeValue(form.platform) !==
-        normalizeValue(selectedItem?.platform)
+      normalizeValue(form.date) !== normalizeValue(selectedItem?.date) ||
+      normalizeValue(form.category) !== normalizeValue(selectedItem?.category) ||
+      normalizeValue(form.title) !== normalizeValue(selectedItem?.title) ||
+      normalizeValue(form.note) !== normalizeValue(selectedItem?.note) ||
+      Number(form.budget || 0) !== Number(selectedItem?.budget || 0) ||
+      Number(form.paid || 0) !== Number(selectedItem?.paid || 0) ||
+      normalizeValue(form.platform) !== normalizeValue(selectedItem?.platform)
     )
   }, [form, selectedItem, editingId])
 
@@ -445,14 +432,7 @@ const loadBudgets = async () => {
       }
     }
 
-  useEffect(() => {
-    if (
-      Array.isArray(items) &&
-      items.length > 0
-    ) {
-      repairInstallments()
-    }
-  }, [items])
+  
 
 
 
@@ -559,18 +539,11 @@ const loadBudgets = async () => {
     if (editingId) {
       const payload = {
         date: form.date || null,
-        category:
-          form.category || 'อื่นๆ',
-        title:
-          form.title || '',
-        note:
-          form.note || '',
-        budget: Number(
-          form.budget || 0
-        ),
-        paid: Number(
-          form.paid || 0
-        ),
+        category: form.category || '',
+        title: form.title || '',
+        note: form.note || '',
+        budget: Number(form.budget || 0),
+        paid: Number(form.paid || 0),
         remaining: Math.max(
           Number(form.budget || 0) -
             Number(form.paid || 0),
@@ -604,14 +577,12 @@ const loadBudgets = async () => {
 
       setData((prev) => ({
         ...prev,
-        [activeTab]: prev[
-          activeTab
-        ].map((item) =>
+        [activeTab]: (prev[activeTab] || []).map((item) =>
           item.id === editingId
-            ? normalizeItem({
+            ? {
                 ...item,
                 ...payload,
-              })
+              }
             : item
         ),
       }))
@@ -630,60 +601,31 @@ const loadBudgets = async () => {
       }
 
       const optimisticItem = {
-        id: crypto.randomUUID(),
-
-        created_at:
-          new Date().toISOString(),
-
+        id: Date.now(),
+        created_at: new Date().toISOString(),
         type: activeTab,
-
-        date: form.date || null,
-
-        category:
-          form.category || 'อื่นๆ',
-
-        title:
-          form.title || '',
-
-        note:
-          form.note || '',
-
-        platform:
-          form.platform === 'อื่นๆ'
-            ? form.otherPlatform || ''
-            : form.platform || '',
-
-        budget: Number(
-          form.budget || 0
-        ),
-
-        paid: Number(
-          form.paid || 0
-        ),
-
-        remaining: Math.max(
-          Number(form.budget || 0) -
-            Number(form.paid || 0),
-          0
-        ),
-
-        status:
-          Number(form.paid || 0) <= 0
-            ? 'unpaid'
-            : Number(form.budget || 0) -
-                Number(form.paid || 0) <=
-              0
-            ? 'paid'
-            : 'partial',
+        date: next.date || null,
+        category: next.category || '',
+        title: next.title || '',
+        note: next.note || '',
+        platform: next.platform || '',
+        budget: Number(next.budget || 0),
+        paid: Number(next.paid || 0),
+        remaining: Number(next.remaining || 0),
+        status: next.status || 'unpaid',
       }
 
-      setData((prev) => ({
-        ...prev,
-        [activeTab]: [
-          optimisticItem,
-          ...prev[activeTab],
-        ],
-      }))
+      setData((prev) => {
+        const updated = {
+          ...prev,
+          [activeTab]: [
+            optimisticItem,
+            ...(prev[activeTab] || []),
+          ],
+        }
+
+        return updated
+      })
 
       showToast('บันทึกรายการสำเร็จ')
     }
@@ -1947,10 +1889,7 @@ button:hover{
         ) {
           e.preventDefault()
 
-          if (
-            !editingId ||
-            hasFormChanges
-          ) {
+          if (hasFormChanges) {
             addItem()
           }
         }
@@ -2306,10 +2245,7 @@ button:hover{
         <button
                   type="submit"
                   onClick={() => addItem()}
-                  disabled={
-                    editingId &&
-                    !hasFormChanges
-                  }
+                  disabled={!hasFormChanges}
                   style={{
                     minWidth: '140px',
                     height: '56px',
@@ -2321,17 +2257,12 @@ button:hover{
                     color: '#fff',
                     fontSize: '16px',
                     fontWeight: 700,
-                    cursor:
-                      editingId &&
-                      !hasFormChanges
-                        ? 'not-allowed'
-                        : 'pointer',
-
-                    opacity:
-                      editingId &&
-                      !hasFormChanges
-                        ? 0.55
-                        : 1,
+                    cursor: !hasFormChanges
+                      ? 'not-allowed'
+                      : 'pointer',
+                    opacity: !hasFormChanges
+                      ? 0.55
+                      : 1,
                     boxShadow:
                       '0 10px 24px rgba(78,130,173,.22)',
                     transition:

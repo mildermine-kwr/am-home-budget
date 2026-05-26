@@ -618,7 +618,7 @@ const loadBudgets = async () => {
 
       showToast('แก้ไขรายการสำเร็จ')
     } else {
-      const { data: inserted, error } =
+      const { error } =
         await supabase
           .from('budget')
           .insert(next)
@@ -629,11 +629,53 @@ const loadBudgets = async () => {
         return
       }
 
-      const optimisticItem = normalizeItem({
+      const optimisticItem = {
         id: crypto.randomUUID(),
-        created_at: new Date().toISOString(),
-        ...next,
-      })
+
+        created_at:
+          new Date().toISOString(),
+
+        type: activeTab,
+
+        date: form.date || null,
+
+        category:
+          form.category || 'อื่นๆ',
+
+        title:
+          form.title || '',
+
+        note:
+          form.note || '',
+
+        platform:
+          form.platform === 'อื่นๆ'
+            ? form.otherPlatform || ''
+            : form.platform || '',
+
+        budget: Number(
+          form.budget || 0
+        ),
+
+        paid: Number(
+          form.paid || 0
+        ),
+
+        remaining: Math.max(
+          Number(form.budget || 0) -
+            Number(form.paid || 0),
+          0
+        ),
+
+        status:
+          Number(form.paid || 0) <= 0
+            ? 'unpaid'
+            : Number(form.budget || 0) -
+                Number(form.paid || 0) <=
+              0
+            ? 'paid'
+            : 'partial',
+      }
 
       setData((prev) => ({
         ...prev,

@@ -1844,7 +1844,7 @@ button:hover{
                                   alignItems:
                                     'center',
                                 }}
-                              >
+                              />
                                 <input
                                   type="number"
                                   value={
@@ -1882,8 +1882,49 @@ button:hover{
                                 >
                                   ยกเลิก
                                 </button>
-                              </div>
-                            </td>
+                              
+                {item.installment && (
+                  <div
+                    style={{
+                      marginTop: '10px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      height: '40px',
+                      padding: '0 18px',
+                      borderRadius: '999px',
+                      background:
+                        'rgba(92,141,196,.12)',
+                      color: '#4D7FB3',
+                      fontWeight: 700,
+                      fontSize: '15px',
+                    }}
+                  >
+                    ผ่อน{' '}
+                    {item.installment.paid}/
+                    {item.installment.total}
+
+                    <span
+                      style={{
+                        opacity: 0.45,
+                      }}
+                    >
+                      •
+                    </span>
+
+                    ฿
+                    {Math.round(
+                      Number(item.budget || 0) /
+                        Number(
+                          item.installment
+                            ?.total || 1
+                        )
+                    ).toLocaleString()}
+                    /งวด
+                  </div>
+                )}
+              </td>
+
                           </tr>
                         )}
                       </>

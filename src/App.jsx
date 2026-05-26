@@ -593,11 +593,84 @@ const loadBudgets = async () => {
   }
 }
 
+const handleEdit = (item) => {
+  setEditingId(item.id)
+  setSelectedItem(item)
+
+  setForm({
+    date: item.date || '',
+    category: item.category || '',
+    title: item.title || '',
+    note: item.note || '',
+    budget: String(item.budget || ''),
+    paid: String(item.paid || ''),
+    remaining: String(item.remaining || ''),
+    status: item.status || '',
+    platform: item.platform || '',
+    otherPlatform: '',
+  })
+
+  setOpen(true)
+}
+
+const confirmPayment = async (id) => {
+  try {
+    const amount = Number(payAmount || 0)
+
+    if (!amount || amount <= 0) {
+      showToast('กรุณากรอกจำนวนเงิน')
+      return
+    }
+
+    const currentItem = items.find((item) => item.id === id)
+
+    if (!currentItem) {
+      showToast('ไม่พบรายการ')
+      return
+    }
+
+    const updatedPaid =
+      Number(currentItem.paid || 0) + amount
+
+    const remaining = Math.max(
+      Number(currentItem.budget || 0) - updatedPaid,
+      0
+    )
+
+    const status =
+      updatedPaid <= 0
+        ? 'unpaid'
+        : remaining <= 0
+        ? 'paid'
+        : 'partial'
+
+    const { error } = await supabase
+      .from('budget')
+      .update({
+        paid: updatedPaid,
+        remaining,
+        status,
+      })
+      .eq('id', id)
+
+    if (error) {
+      console.log(error)
+      showToast('บันทึกการชำระไม่สำเร็จ')
+      return
+    }
+
+    await loadBudgets()
+
+
     showToast('บันทึกการชำระสำเร็จ')
 
     setPayingId(null)
     setPayAmount('')
+  } catch (error) {
+    console.log(error)
+    showToast('เกิดข้อผิดพลาดในการชำระเงิน')
   }
+}
 
   const deleteItem = async (id) => {
     await supabase
@@ -2443,7 +2516,7 @@ button:hover{
     </div>
     </>
   )
-
+}
 
 const fieldStyle = {
   width: '100%',

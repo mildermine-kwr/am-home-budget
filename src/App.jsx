@@ -1396,6 +1396,47 @@ button:hover{
   {item.title || item.note}
 </div>
 
+{item.installment && (
+  <div
+    style={{
+      marginTop: '10px',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px',
+      minHeight: '36px',
+      padding: '8px 14px',
+      borderRadius: '999px',
+      background:
+        'rgba(92,141,196,.12)',
+      color: '#4D7FB3',
+      fontWeight: 700,
+      fontSize: '13px',
+      flexWrap: 'wrap',
+    }}
+  >
+    ผ่อน{' '}
+    {item.installment.paid}/
+    {item.installment.total}
+
+    <span
+      style={{
+        opacity: 0.45,
+      }}
+    >
+      •
+    </span>
+
+    ฿
+    {Math.round(
+      Number(item.budget || 0) /
+        Number(
+          item.installment?.total || 1
+        )
+    ).toLocaleString()}
+    /งวด
+  </div>
+)}
+
 <div
   style={{
     position: 'absolute',

@@ -677,8 +677,24 @@ const handleEdit = (item) => {
     category: item.category || '',
     title: item.title || '',
     note: item.note || '',
+
+    paymentType:
+      item.installment
+        ? 'installment'
+        : Number(item.paid || 0) >=
+          Number(item.budget || 0)
+        ? 'full'
+        : 'partial',
+
     budget: String(item.budget || ''),
     paid: String(item.paid || ''),
+
+    installmentTotal:
+      item.installment?.total || '',
+
+    installmentPaid:
+      item.installment?.paid || '',
+
     remaining: String(item.remaining || ''),
     status: item.status || '',
     platform: item.platform || '',
@@ -1330,10 +1346,17 @@ button:hover{
                     activeTab === 'tort'
                       ? TCATS[0]
                       : FCATS[0],
+
+                  paymentType: 'full',
+
+                  title: '',
                   note: '',
                   budget: '',
                   paid: '',
-                  note: '',
+
+                  installmentTotal: '',
+                  installmentPaid: '',
+
                   platform: '',
                   otherPlatform: '',
                 })

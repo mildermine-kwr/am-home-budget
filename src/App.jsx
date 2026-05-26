@@ -449,9 +449,17 @@ const loadBudgets = async () => {
       Array.isArray(items) &&
       items.length > 0
     ) {
-      repairInstallments()
+      const hasBrokenInstallment = items.some(
+        (item) =>
+          item.installment &&
+          !item.installment.paid
+      )
+
+      if (hasBrokenInstallment) {
+        repairInstallments()
+      }
     }
-  }, [items])
+  }, [])
 
 
 
@@ -546,8 +554,6 @@ const loadBudgets = async () => {
       paid,
       remaining,
       status,
-      note:
-        form.note || '',
       platform:
         form.platform === 'อื่นๆ'
           ? form.otherPlatform
@@ -586,12 +592,10 @@ const loadBudgets = async () => {
 
       showToast('แก้ไขรายการสำเร็จ')
     } else {
-      const { data: inserted, error } =
+      const { error } =
         await supabase
           .from('budget')
           .insert(next)
-          .select()
-          .single()
 
       if (error) {
         console.log(error)
@@ -599,10 +603,16 @@ const loadBudgets = async () => {
         return
       }
 
+      const optimisticItem = normalizeItem({
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        ...next,
+      })
+
       setData((prev) => ({
         ...prev,
         [activeTab]: [
-          normalizeItem(inserted),
+          optimisticItem,
           ...prev[activeTab],
         ],
       }))
@@ -620,10 +630,10 @@ const loadBudgets = async () => {
                 setForm({
       date: '',
       category: '',
+      title: '',
       note: '',
       budget: '',
       paid: '',
-      note: '',
       platform: '',
       otherPlatform: '',
     })
@@ -1295,10 +1305,10 @@ button:hover{
                     activeTab === 'tort'
                       ? TCATS[0]
                       : FCATS[0],
+                  title: '',
                   note: '',
                   budget: '',
                   paid: '',
-                  note: '',
                   platform: '',
                   otherPlatform: '',
                 })

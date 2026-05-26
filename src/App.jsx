@@ -539,12 +539,15 @@ const loadBudgets = async () => {
       date: form.date || null,
       category:
         form.category || 'อื่นๆ',
-      title: form.title,
+      title:
+        form.title,
       note: form.note || '',
       budget,
       paid,
       remaining,
       status,
+      note:
+        form.note || '',
       platform:
         form.platform === 'อื่นๆ'
           ? form.otherPlatform
@@ -553,15 +556,13 @@ const loadBudgets = async () => {
     }
 
     if (editingId) {
-      const {
-        data: updated,
-        error,
-      } = await supabase
-        .from('budget')
-        .update(next)
-        .eq('id', editingId)
-        .select()
-        .single()
+      const { data: updated, error } =
+        await supabase
+          .from('budget')
+          .update(next)
+          .eq('id', editingId)
+          .select()
+          .single()
 
       if (error) {
         console.log(error)
@@ -575,24 +576,22 @@ const loadBudgets = async () => {
           activeTab
         ].map((item) =>
           item.id === editingId
-            ? {
+            ? normalizeItem({
                 ...item,
                 ...updated,
-              }
+              })
             : item
         ),
       }))
 
       showToast('แก้ไขรายการสำเร็จ')
     } else {
-      const {
-        data: inserted,
-        error,
-      } = await supabase
-        .from('budget')
-        .insert(next)
-        .select()
-        .single()
+      const { data: inserted, error } =
+        await supabase
+          .from('budget')
+          .insert(next)
+          .select()
+          .single()
 
       if (error) {
         console.log(error)
@@ -603,7 +602,7 @@ const loadBudgets = async () => {
       setData((prev) => ({
         ...prev,
         [activeTab]: [
-          inserted,
+          normalizeItem(inserted),
           ...prev[activeTab],
         ],
       }))
@@ -612,16 +611,19 @@ const loadBudgets = async () => {
     }
 
     setOpen(false)
-    setEditingId(null)
-    setSelectedItem(null)
 
-    setForm({
+    setEditingId(null)
+
+    setEditingId(null)
+                setSelectedItem(null)
+
+                setForm({
       date: '',
       category: '',
-      title: '',
       note: '',
       budget: '',
       paid: '',
+      note: '',
       platform: '',
       otherPlatform: '',
     })
@@ -712,6 +714,7 @@ const confirmPayment = async (id) => {
           : item
       ),
     }))
+
 
     showToast('บันทึกการชำระสำเร็จ')
 

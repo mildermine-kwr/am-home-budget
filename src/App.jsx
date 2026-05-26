@@ -225,16 +225,18 @@ export default function App() {
     JSON.stringify({
       date: form.date || '',
       category: form.category || '',
+      title: form.title || '',
       note: form.note || '',
       budget: String(form.budget ?? ''),
       paid: String(form.paid ?? ''),
       platform: form.platform || '',
-      note: form.note || '',
     }) !==
       JSON.stringify({
         date: selectedItem?.date || '',
         category:
           selectedItem?.category || '',
+        title:
+          selectedItem?.title || '',
         note:
           selectedItem?.note || '',
         budget: String(
@@ -245,8 +247,6 @@ export default function App() {
         ),
         platform:
           selectedItem?.platform || '',
-        note:
-          selectedItem?.note || '',
       });
 
   useEffect(() => {
@@ -497,7 +497,7 @@ const loadBudgets = async () => {
 
   const addItem = async () => {
   try {
-    if (!form.note?.trim()) {
+    if (!form.title?.trim()) {
       showToast('กรุณากรอกรายละเอียด')
       return
     }
@@ -527,8 +527,8 @@ const loadBudgets = async () => {
       category:
         form.category || 'อื่นๆ',
       title:
-        form.title || form.note,
-      note: form.note,
+        form.title,
+      note: form.note || '',
       budget,
       paid,
       remaining,
@@ -577,7 +577,10 @@ const loadBudgets = async () => {
 
     setEditingId(null)
 
-    setForm({
+    setEditingId(null)
+                setSelectedItem(null)
+
+                setForm({
       date: '',
       category: '',
       note: '',
@@ -1278,7 +1281,7 @@ button:hover{
   }}
 >
                   <div className="mobile-budget-title">
-  {item.note}
+  {item.title || item.note}
 </div>
 
 <div
@@ -1528,7 +1531,7 @@ button:hover{
                             >
                               <div>
                                 {
-                                  item.note
+                                  item.title || item.note
                                 }
                               </div>
 
@@ -1975,11 +1978,11 @@ button:hover{
           <input
             type="text"
             placeholder="ชื่อรายการ..."
-            value={form.note}
+            value={form.title}
             onChange={(e) =>
               setForm({
                 ...form,
-                note:
+                title:
                   e.target.value,
               })
             }

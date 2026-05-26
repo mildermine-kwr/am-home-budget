@@ -217,6 +217,9 @@ export default function App() {
     paid: '',
     remaining: '',
     status: '',
+    paymentType: 'full',
+    installmentTotal: '',
+    installmentPaid: '',
     platform: '',
   })
 
@@ -533,6 +536,18 @@ const loadBudgets = async () => {
         form.platform === 'อื่นๆ'
           ? form.otherPlatform
           : form.platform,
+      installment:
+        form.paymentType === 'installment'
+          ? {
+              total: Number(
+                form.installmentTotal || 0
+              ),
+              paid: Number(
+                form.installmentPaid || 0
+              ),
+            }
+          : null,
+
       type: activeTab,
     }
 
@@ -2067,49 +2082,196 @@ button:hover{
 
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns:
-            window.innerWidth < 768
-              ? '1fr'
-              : '1fr 1fr',
-          gap: '16px',
           marginBottom: '18px',
         }}
       >
-        <Field
-          label="ราคา (บาท)"
-        >
-          <input
-            type="number"
-            value={form.budget ?? ''}
+        <Field label="รูปแบบการชำระ">
+          <select
+            value={form.paymentType || 'full'}
             onChange={(e) =>
               setForm({
                 ...form,
-                budget:
+                paymentType:
                   e.target.value,
               })
             }
             style={fieldStyle}
-          />
-        </Field>
+          >
+            <option value="full">
+              ชำระเต็ม
+            </option>
 
-        <Field
-          label="จ่ายแล้ว (บาท)"
-        >
-          <input
-            type="number"
-            value={form.paid ?? ''}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                paid:
-                  e.target.value,
-              })
-            }
-            style={fieldStyle}
-          />
+            <option value="partial">
+              จ่ายบางส่วน
+            </option>
+
+            <option value="installment">
+              ผ่อน
+            </option>
+          </select>
         </Field>
       </div>
+
+      {form.paymentType === 'full' && (
+        <div
+          style={{
+            marginBottom: '18px',
+          }}
+        >
+          <Field label="ราคา (บาท)">
+            <input
+              type="number"
+              value={form.budget ?? ''}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  budget:
+                    e.target.value,
+                  paid:
+                    e.target.value,
+                })
+              }
+              style={fieldStyle}
+            />
+          </Field>
+        </div>
+      )}
+
+      {form.paymentType === 'partial' && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns:
+              window.innerWidth < 768
+                ? '1fr'
+                : '1fr 1fr',
+            gap: '16px',
+            marginBottom: '18px',
+          }}
+        >
+          <Field label="ราคาเต็ม (บาท)">
+            <input
+              type="number"
+              value={form.budget ?? ''}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  budget:
+                    e.target.value,
+                })
+              }
+              style={fieldStyle}
+            />
+          </Field>
+
+          <Field label="จ่ายแล้ว (บาท)">
+            <input
+              type="number"
+              value={form.paid ?? ''}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  paid:
+                    e.target.value,
+                })
+              }
+              style={fieldStyle}
+            />
+          </Field>
+        </div>
+      )}
+
+      {form.paymentType === 'installment' && (
+        <>
+          <div
+            style={{
+              marginBottom: '18px',
+            }}
+          >
+            <Field label="ราคาเต็ม (บาท)">
+              <input
+                type="number"
+                value={form.budget ?? ''}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    budget:
+                      e.target.value,
+                  })
+                }
+                style={fieldStyle}
+              />
+            </Field>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns:
+                window.innerWidth < 768
+                  ? '1fr'
+                  : '1fr 1fr',
+              gap: '16px',
+              marginBottom: '18px',
+            }}
+          >
+            <Field label="จำนวนงวดทั้งหมด">
+              <input
+                type="number"
+                value={
+                  form.installmentTotal ?? ''
+                }
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    installmentTotal:
+                      e.target.value,
+                  })
+                }
+                style={fieldStyle}
+              />
+            </Field>
+
+            <Field label="จ่ายแล้วกี่งวด">
+              <input
+                type="number"
+                value={
+                  form.installmentPaid ?? ''
+                }
+                onChange={(e) => {
+                  const paidInstallments =
+                    Number(
+                      e.target.value || 0
+                    )
+
+                  const totalInstallments =
+                    Number(
+                      form.installmentTotal || 0
+                    )
+
+                  const installmentAmount =
+                    totalInstallments > 0
+                      ? Number(form.budget || 0) /
+                        totalInstallments
+                      : 0
+
+                  setForm({
+                    ...form,
+                    installmentPaid:
+                      e.target.value,
+                    paid:
+                      Math.round(
+                        installmentAmount *
+                          paidInstallments
+                      ),
+                  })
+                }}
+                style={fieldStyle}
+              />
+            </Field>
+          </div>
+        </>
+      )}
 
       <div
         style={{

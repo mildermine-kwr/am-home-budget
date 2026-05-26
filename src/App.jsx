@@ -228,7 +228,7 @@ export default function App() {
       budget: String(form.budget ?? ''),
       paid: String(form.paid ?? ''),
       platform: form.platform || '',
-      remark: form.remark || '',
+      note: form.note || '',
     }) !==
       JSON.stringify({
         date: selectedItem?.date || '',
@@ -244,8 +244,8 @@ export default function App() {
         ),
         platform:
           selectedItem?.platform || '',
-        remark:
-          selectedItem?.remark || '',
+        note:
+          selectedItem?.note || '',
       });
 
   useEffect(() => {
@@ -532,8 +532,8 @@ const loadBudgets = async () => {
       paid,
       remaining,
       status,
-      remark:
-        form.remark || '',
+      note:
+        form.note || '',
       platform:
         form.platform === 'อื่นๆ'
           ? form.otherPlatform
@@ -582,7 +582,7 @@ const loadBudgets = async () => {
       note: '',
       budget: '',
       paid: '',
-      remark: '',
+      note: '',
       platform: '',
       otherPlatform: '',
     })
@@ -1168,7 +1168,7 @@ button:hover{
                   note: '',
                   budget: '',
                   paid: '',
-                  remark: '',
+                  note: '',
                   platform: '',
                   otherPlatform: '',
                 })
@@ -1272,7 +1272,7 @@ button:hover{
                     </div>
                   </div>
 
-                  {item.remark && (
+                  {item.note && (
                     <div
                       style={{
                         marginTop: '8px',
@@ -1283,7 +1283,7 @@ button:hover{
                         lineHeight: 1.5,
                       }}
                     >
-                      <strong>หมายเหตุ:</strong> {item.remark}
+                      <strong>หมายเหตุ:</strong> {item.note}
                     </div>
                   )}
 
@@ -1516,7 +1516,7 @@ button:hover{
                               color: '#666',
                             }}
                           >
-                            {item.remark || '—'}
+                            {item.note || '—'}
                           </TD>
 
                           <TD>
@@ -2034,11 +2034,11 @@ button:hover{
         <Field label="หมายเหตุ">
           <textarea
             placeholder="หมายเหตุเพิ่มเติม..."
-            value={form.remark}
+            value={form.note}
             onChange={(e) =>
               setForm({
                 ...form,
-                remark:
+                note:
                   e.target.value,
               })
             }

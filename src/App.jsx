@@ -2109,29 +2109,76 @@ button:hover{
         }}
       >
         <Field label="รูปแบบการชำระ">
-          <select
-            value={form.paymentType || 'full'}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                paymentType:
-                  e.target.value,
-              })
-            }
-            style={fieldStyle}
+          <div
+            style={{
+              display: 'flex',
+              background:
+                'rgba(0,0,0,.05)',
+              borderRadius: '18px',
+              padding: '6px',
+              gap: '6px',
+            }}
           >
-            <option value="full">
-              ชำระเต็ม
-            </option>
+            {[
+              {
+                key: 'full',
+                label: 'ชำระเต็ม',
+              },
+              {
+                key: 'partial',
+                label: 'จ่ายบางส่วน',
+              },
+              {
+                key: 'installment',
+                label: 'ผ่อน',
+              },
+            ].map((tab) => {
+              const active =
+                form.paymentType ===
+                tab.key
 
-            <option value="partial">
-              จ่ายบางส่วน
-            </option>
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() =>
+                    setForm({
+                      ...form,
+                      paymentType:
+                        tab.key,
+                    })
+                  }
+                  style={{
+                    flex: 1,
+                    height: '52px',
+                    border: 'none',
+                    borderRadius: '14px',
 
-            <option value="installment">
-              ผ่อน
-            </option>
-          </select>
+                    background: active
+                      ? 'linear-gradient(135deg,#6FA6E8,#4E82AD)'
+                      : 'transparent',
+
+                    color: active
+                      ? '#fff'
+                      : '#555',
+
+                    fontWeight: 700,
+                    fontSize: '15px',
+                    cursor: 'pointer',
+
+                    transition:
+                      'all .22s ease',
+
+                    boxShadow: active
+                      ? '0 8px 20px rgba(78,130,173,.22)'
+                      : 'none',
+                  }}
+                >
+                  {tab.label}
+                </button>
+              )
+            })}
+          </div>
         </Field>
       </div>
 

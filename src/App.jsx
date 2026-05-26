@@ -633,11 +633,11 @@ const loadBudgets = async () => {
 
   const resetData = () => {
 
-    setData({
-      tort: DEFAULT_TORT,
-      furn: DEFAULT_FURN,
-    })
-  }
+  setData({
+    tort: DEFAULT_TORT,
+    furn: DEFAULT_FURN,
+  })
+}
 
 return (
     <>

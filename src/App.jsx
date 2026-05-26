@@ -191,6 +191,7 @@ export default function App() {
 
   const [toast, setToast] = useState({
     show: false,
+    type: 'success',
     text: '',
   })
 
@@ -629,16 +630,16 @@ const loadBudgets = async () => {
         text: '',
       })
     }, 2200)
+  }
 
   const resetData = () => {
-
     setData({
       tort: DEFAULT_TORT,
       furn: DEFAULT_FURN,
     })
   }
 
-return (
+  return (
     <>
 
 
@@ -2734,4 +2735,3 @@ CLARIO THEME UPGRADE:
 - airy spacing
 - luxury table styling
 */
-}

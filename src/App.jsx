@@ -1374,7 +1374,7 @@ button:hover{
                 transition: 'all .25s ease',
               }}
             >
-              '+ เพิ่มรายการ'
+              + เพิ่มรายการ
             </button>
             
           </div>
@@ -2081,7 +2081,11 @@ button:hover{
             margin: 0,
             paddingRight: '48px',
           }}
-        >'+ เพิ่มรายการ'</h3>
+        >
+          {editingId
+            ? 'แก้ไขรายการ'
+            : '+ เพิ่มรายการ'}
+        </h3>
       </div>
 
       <div

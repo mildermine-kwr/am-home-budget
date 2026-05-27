@@ -913,12 +913,11 @@ button:hover{
     }
 
     .mobile-budget-card {
-      background: rgba(255,255,255,.75);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,.6);
-      border-radius: 24px;
+      background: #FFFFFF;
+      border: 1px solid #DDE6F0;
+      border-radius: 20px;
       padding: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.04);
+      box-shadow: 0 3px 14px rgba(30,45,61,.06);
     }
 
     .mobile-budget-title {
@@ -951,12 +950,13 @@ button:hover{
     .mobile-action {
       width: 100%;
       border: none;
-      background: #111;
+      background: linear-gradient(135deg,#22C4D0,#17A8B3);
       color: white;
       padding: 14px;
       border-radius: 16px;
       font-weight: 700;
       margin-top: 10px;
+      box-shadow: 0 6px 18px rgba(34,196,208,.28);
     }
   }
 
@@ -1017,13 +1017,12 @@ button:hover{
       style={{
         minHeight: '100vh',
         background: `
-          radial-gradient(circle at 15% 20%, rgba(217,196,169,.42), transparent 32%),
-          radial-gradient(circle at 80% 10%, rgba(186,215,255,.55), transparent 34%),
-          radial-gradient(circle at 50% 80%, rgba(255,240,220,.42), transparent 36%),
-          linear-gradient(180deg,#F8FAFF,#F8F4EF)
+          radial-gradient(circle at 15% 10%, rgba(34,196,208,.07), transparent 35%),
+          radial-gradient(circle at 85% 80%, rgba(34,196,208,.05), transparent 35%),
+          linear-gradient(160deg,#EEF3F9 0%,#F4F8FC 100%)
         `,
-        backgroundSize: '140% 140%',
-        animation: 'meshMove 18s ease infinite',
+        backgroundSize: '100% 100%',
+        animation: 'none',
         padding: '40px',
         fontFamily: "'IBM Plex Sans Thai', sans-serif",
       }}
@@ -1128,7 +1127,7 @@ button:hover{
       <div
         style={{
           display: 'flex',
-          background: '#EDE7D9',
+          background: '#DDE6F0',
           padding: '4px',
           borderRadius: '14px',
           fontSize: '16px'
@@ -1169,23 +1168,24 @@ button:hover{
           <SummaryCard
             title="จ่ายแล้ว"
             value={totals.paid}
-            color="#4A7A52"
+            color="#17A8B3"
           />
 
           <SummaryCard
             title="คงเหลือ"
             value={totals.remain}
-            color="#B07D2A"
+            color="#F5A623"
           />
         </div>
 
         <div
           style={{
-            background: 'rgba(255,255,255,.68)',
-            borderRadius: '36px',
-            padding: '20px',
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            padding: '20px 24px',
             marginBottom: '20px',
-            maxHeight: 'fit-content',
+            border: '1px solid #DDE6F0',
+            boxShadow: '0 2px 12px rgba(30,45,61,.05)',
           }}
         >
           <div
@@ -1207,18 +1207,12 @@ button:hover{
 
           <div
             style={{
-              height: '10px',
+              height: '8px',
               borderRadius:
                 '999px',
               background:
-                'rgba(0,0,0,.06)',
+                '#EEF3F9',
               overflow: 'hidden',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,.55)',
-            boxShadow: '0 18px 50px rgba(31,41,55,.06)',
-        transition: 'all .35s ease',
-        animation: 'floatCard 7s ease-in-out infinite',
-        transform: 'translateY(0px)',
             }}
           >
             <div
@@ -1226,7 +1220,7 @@ button:hover{
                 width: `${progress}%`,
                 height: '100%',
                 background:
-                  'linear-gradient(90deg,#6FA6E8,#B58A55)',
+                  'linear-gradient(90deg,#22C4D0,#17A8B3)',
               }}
             />
           </div>
@@ -1234,9 +1228,11 @@ button:hover{
 
         <div
           style={{
-            background: 'rgba(255,255,255,.68)',
-            borderRadius: '36px',
+            background: '#FFFFFF',
+            borderRadius: '20px',
             overflow: 'hidden',
+            border: '1px solid #DDE6F0',
+            boxShadow: '0 2px 12px rgba(30,45,61,.05)',
           }}
         >
           <div
@@ -1365,12 +1361,12 @@ button:hover{
               }}
               style={{
                 border: 'none',
-                background: 'linear-gradient(135deg,#6FA6E8,#4E82AD)',
+                background: 'linear-gradient(135deg,#22C4D0,#17A8B3)',
                 color: '#fff',
                 borderRadius: '36px',
                 padding: '12px 18px',
                 fontWeight: 700,
-                boxShadow: '0 8px 24px rgba(0,0,0,.12)',
+                boxShadow: '0 6px 20px rgba(34,196,208,.28)',
                 transition: 'all .25s ease',
               }}
             >
@@ -1407,8 +1403,8 @@ button:hover{
       padding: '8px 14px',
       borderRadius: '999px',
       background:
-        'rgba(92,141,196,.12)',
-      color: '#4D7FB3',
+        'rgba(34,196,208,.12)',
+      color: '#17A8B3',
       fontWeight: 700,
       fontSize: '13px',
       flexWrap: 'wrap',
@@ -1697,8 +1693,8 @@ button:hover{
                                   padding: '8px 14px',
                                   borderRadius: '999px',
                                   background:
-                                    'rgba(111,166,232,.14)',
-                                  color: '#4E82AD',
+                                    'rgba(34,196,208,.12)',
+                                  color: '#17A8B3',
                                   fontSize: '14px',
                                   fontWeight: 700,
                                   marginTop: '10px',
@@ -1872,7 +1868,7 @@ button:hover{
                               }
                               style={{
                                 background:
-                                  '#F2F8F3',
+                                  '#EEF9FB',
                                 padding:
                                   '14px',
                               }}
@@ -1935,8 +1931,8 @@ button:hover{
                       padding: '0 18px',
                       borderRadius: '999px',
                       background:
-                        'rgba(92,141,196,.12)',
-                      color: '#4D7FB3',
+                        'rgba(34,196,208,.12)',
+                      color: '#17A8B3',
                       fontWeight: 700,
                       fontSize: '15px',
                     }}
@@ -2077,7 +2073,7 @@ button:hover{
             fontWeight: 800,
             letterSpacing:
               '-0.05em',
-            color: '#6B4B2A',
+            color: '#1E2D3D',
             margin: 0,
             paddingRight: '48px',
           }}
@@ -2241,12 +2237,12 @@ button:hover{
                     borderRadius: '14px',
 
                     background: active
-                      ? 'linear-gradient(135deg,#6FA6E8,#4E82AD)'
+                      ? 'linear-gradient(135deg,#22C4D0,#17A8B3)'
                       : 'transparent',
 
                     color: active
                       ? '#fff'
-                      : '#555',
+                      : '#64748B',
 
                     fontWeight: 700,
                     fontSize: '15px',
@@ -2256,7 +2252,7 @@ button:hover{
                       'all .22s ease',
 
                     boxShadow: active
-                      ? '0 8px 20px rgba(78,130,173,.22)'
+                      ? '0 8px 20px rgba(34,196,208,.25)'
                       : 'none',
                   }}
                 >
@@ -2549,9 +2545,9 @@ button:hover{
             height: '58px',
             padding: '0 34px',
             borderRadius: '22px',
-            border: '1px solid #D8CCBB',
-            background: '#EFE7DB',
-            color: '#6F5B47',
+            border: '1px solid #DDE6F0',
+            background: '#EEF3F9',
+            color: '#5A7080',
             fontSize: '16px',
             fontWeight: 700,
             cursor: 'pointer',
@@ -2571,7 +2567,7 @@ button:hover{
                     border: 'none',
                     borderRadius: '18px',
                     background:
-                      'linear-gradient(135deg,#6FA6E8,#4E82AD)',
+                      'linear-gradient(135deg,#22C4D0,#17A8B3)',
                     color: '#fff',
                     fontSize: '16px',
                     fontWeight: 700,
@@ -2582,7 +2578,7 @@ button:hover{
                       ? 0.55
                       : 1,
                     boxShadow:
-                      '0 10px 24px rgba(78,130,173,.22)',
+                      '0 10px 24px rgba(34,196,208,.28)',
                     transition:
                       'all .2s ease',
                   }}
@@ -2692,7 +2688,7 @@ button:hover{
             marginBottom: '10px',
             fontSize: '15px',
             fontWeight: 600,
-            color: '#8B7A68',
+            color: '#8A9BB5',
           }}
         >
           จำนวนเงิน
@@ -2735,13 +2731,13 @@ button:hover{
           border: 'none',
           borderRadius: '22px',
           background:
-            'linear-gradient(135deg,#6FA6E8,#4E82AD)',
+            'linear-gradient(135deg,#22C4D0,#17A8B3)',
           color: '#fff',
           fontSize: '18px',
           fontWeight: 700,
           cursor: 'pointer',
           boxShadow:
-            '0 14px 30px rgba(78,130,173,.22)',
+            '0 10px 28px rgba(34,196,208,.28)',
         }}
       >
         บันทึกการชำระ
@@ -2915,10 +2911,10 @@ button:hover{
 
 const fieldStyle = {
   width: '100%',
-  borderRadius: '22px',
-  border: '1px solid rgba(255,255,255,.55)',
+  borderRadius: '14px',
+  border: '1px solid #DDE6F0',
   background:
-    'rgba(255,255,255,.88)',
+    '#FFFFFF',
   padding: '0 22px',
   fontSize: '16px',
   height: '64px',
@@ -2940,7 +2936,7 @@ function Field({
           marginBottom: '10px',
           fontSize: '16px',
           fontWeight: 600,
-          color: '#9A8873',
+          color: '#8A9BB5',
         }}
       >
         {label}
@@ -2957,7 +2953,7 @@ function Field({
 function SummaryCard({
   title,
   value,
-  color = '#2C5F82',
+  color = '#22C4D0',
 }) {
   return (
     <>
@@ -2997,22 +2993,22 @@ function SummaryCard({
     <div
       className="summary-card"
       style={{
-        background: 'rgba(255,255,255,.68)',
-        borderRadius: '36px',
-        padding: '40px',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,.5)',
-        boxShadow: '0 18px 50px rgba(31,41,55,.06)',
-        transition: 'all .35s ease',
-        animation: 'floatCard 7s ease-in-out infinite',
-        transform: 'translateY(0px)',
+        background: '#FFFFFF',
+        borderRadius: '24px',
+        padding: '32px',
+        border: '1px solid #DDE6F0',
+        boxShadow: '0 4px 20px rgba(30,45,61,.06)',
+        transition: 'all .25s ease',
       }}
     >
       <div
         style={{
-          color: '#8B8B8B',
-          fontSize: '16px',
-          marginBottom: '12px',
+          color: '#8A9BB5',
+          fontSize: '13px',
+          fontWeight: 500,
+          letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+          marginBottom: '10px',
         }}
       >
         {title}
@@ -3023,8 +3019,8 @@ function SummaryCard({
         style={{
           marginTop: '4px',
           color,
-          fontSize: 'clamp(36px,4vw,54px)',
-          letterSpacing: '-0.04em',
+          fontSize: 'clamp(32px,3.5vw,48px)',
+          letterSpacing: '-0.03em',
           fontWeight: 700,
           marginBottom: '0px',
         }}
@@ -3055,11 +3051,12 @@ function TabButton({
         borderRadius:
           '10px',
         background: active
-          ? '#111111'
+          ? '#22C4D0'
           : 'transparent',
         color: active
           ? '#fff'
-          : '#555',
+          : '#64748B',
+        fontWeight: 600,
       }}
     >
       {children}
@@ -3083,11 +3080,11 @@ function FilterButton({
         padding:
           '6px 14px',
         background: active
-          ? '#111111'
-          : 'rgba(255,255,255,.75)',
+          ? '#22C4D0'
+          : 'rgba(255,255,255,.85)',
         color: active
           ? '#fff'
-          : '#444',
+          : '#64748B',
         backdropFilter: 'blur(12px)',
       }}
     >
@@ -3101,17 +3098,17 @@ function StatusBadge({
   children,
 }) {
 
-  let bg = '#FFF1D6'
-  let color = '#A8741A'
+  let bg = 'rgba(245,166,35,.12)'
+  let color = '#B87D14'
 
   if (children === 'จ่ายครบแล้ว') {
-    bg = '#DDF5E4'
-    color = '#2E6B45'
+    bg = 'rgba(23,168,179,.12)'
+    color = '#17A8B3'
   }
 
   if (children === 'ยังไม่จ่าย') {
-    bg = '#FFE1E1'
-    color = '#A23B3B'
+    bg = 'rgba(239,68,68,.10)'
+    color = '#DC3545'
   }
 
   return (
@@ -3137,12 +3134,16 @@ function TH({
   return (
     <th
       style={{
-        padding: '14px',
+        padding: '12px 14px',
         background:
-          'rgba(255,255,255,.72)',
-        backdropFilter: 'blur(20px)',
+          '#F7FAFB',
         textAlign:
           'left',
+        color: '#8A9BB5',
+        fontSize: '12px',
+        fontWeight: 600,
+        letterSpacing: '0.04em',
+        textTransform: 'uppercase',
         position: sticky
           ? 'sticky'
           : 'static',
@@ -3164,16 +3165,16 @@ function TD({
   return (
     <td
       style={{
-        paddingTop: '16px',
-        paddingBottom: '16px',
+        paddingTop: '14px',
+        paddingBottom: '14px',
         paddingLeft: '14px',
         paddingRight: '14px',
         verticalAlign: 'top',
         borderBottom:
-          '1px solid rgba(0,0,0,.05)',
+          '1px solid #EEF3F9',
         transition: 'background .2s ease',
         background:
-          'rgba(255,255,255,.72)',
+          '#FFFFFF',
         position: sticky
           ? 'sticky'
           : 'static',

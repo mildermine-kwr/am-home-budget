@@ -1,13 +1,14 @@
 
 :root{
-  --bg:#f4f7fb;
+  --bg:#EEF3F9;
   --card:#ffffff;
-  --line:#e5e7eb;
-  --text:#111827;
-  --muted:#6b7280;
-  --primary:#3b82f6;
-  --green:#10b981;
-  --amber:#f59e0b;
+  --line:#DDE6F0;
+  --text:#1E2D3D;
+  --muted:#8A9BB5;
+  --primary:#22C4D0;
+  --primary-dark:#17A8B3;
+  --green:#17A8B3;
+  --amber:#F5A623;
 }
 
 *{box-sizing:border-box}
@@ -46,8 +47,8 @@ body{
 
 .nav button{
   border:none;
-  background:#eff6ff;
-  color:#2563eb;
+  background:rgba(34,196,208,.1);
+  color:#17A8B3;
   border-radius:16px;
   padding:14px;
   text-align:left;
@@ -249,7 +250,7 @@ gap: 12px;
 .nav button {
 width: 100%;
 border: none;
-background: #eef2ff;
+background: rgba(34,196,208,.1);
 padding: 16px;
 border-radius: 18px;
 font-weight: 600;
@@ -261,11 +262,11 @@ z-index: 2;
 }
 
 .nav button:hover {
-background: #dbeafe;
+background: rgba(34,196,208,.18);
 }
 
 .nav button.active {
-background: #2563eb;
+background: #22C4D0;
 color: white;
 }
 

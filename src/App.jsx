@@ -1542,11 +1542,18 @@ button:hover{
         setPayingId(item.id)
 
         setPayAmount(
-          item?.installmentPerMonth
+          item.installment
             ? String(
-                item.installmentPerMonth
+                Math.round(
+                  item.budget /
+                    item.installment.total
+                )
               )
-            : ''
+            : item?.installmentPerMonth
+              ? String(
+                  item.installmentPerMonth
+                )
+              : ''
         )
       }}
     >

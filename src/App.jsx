@@ -183,6 +183,17 @@ export default function App() {
   const [open, setOpen] =
     useState(false)
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [open])
+
   const [payingId, setPayingId] =
     useState(null)
 
@@ -1985,7 +1996,7 @@ button:hover{
         'rgba(20,20,30,.35)',
       zIndex: 100,
       display: 'flex',
-      alignItems: window.innerWidth < 768 ? 'flex-end' : 'center',
+      alignItems: window.innerWidth < 768 ? 'flex-start' : 'center',
       justifyContent: 'center',
       backdropFilter: 'blur(4px)',
       padding: window.innerWidth < 768 ? '0px' : '24px',
@@ -2014,13 +2025,14 @@ button:hover{
         position: 'relative',
         width: '100%',
         maxWidth: window.innerWidth < 768 ? '100%' : '620px',
-        borderRadius: window.innerWidth < 768 ? '28px 28px 0 0' : '28px',
+        borderRadius: window.innerWidth < 768 ? '0px' : '28px',
         background: '#FFFFFF',
         border: 'none',
-        boxShadow: '0 12px 60px rgba(0,0,0,.16)',
+        boxShadow: window.innerWidth < 768 ? 'none' : '0 12px 60px rgba(0,0,0,.16)',
+        height: window.innerWidth < 768 ? '100dvh' : 'auto',
         maxHeight:
           window.innerWidth < 768
-            ? '96dvh'
+            ? '100dvh'
             : 'calc(100vh - 48px)',
         display: 'flex',
         flexDirection: 'column',

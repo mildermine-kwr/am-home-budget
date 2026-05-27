@@ -1188,7 +1188,7 @@ button:hover{
   <SummaryCard
     title="คงเหลือ"
     value={totals.remain}
-    color="#F5A623"
+    color="#1E2D3D"
     sub="ยอดค้างจ่าย"
   />
 </div>
@@ -3164,8 +3164,8 @@ function StatusBadge({
   children,
 }) {
 
-  let bg = 'rgba(245,166,35,.12)'
-  let color = '#B87D14'
+  let bg = 'rgba(30,45,61,.10)'
+  let color = '#1E2D3D'
 
   if (children === 'จ่ายครบแล้ว') {
     bg = 'rgba(34,197,94,.12)'

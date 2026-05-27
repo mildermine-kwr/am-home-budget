@@ -5,9 +5,9 @@
   --line:#DDE6F0;
   --text:#1E2D3D;
   --muted:#8A9BB5;
-  --primary:#1B3C6E;
-  --primary-dark:#132D56;
-  --green:#132D56;
+  --primary:#111111;
+  --primary-dark:#000000;
+  --green:#000000;
   --amber:#F5A623;
 }
 
@@ -47,8 +47,8 @@ body{
 
 .nav button{
   border:none;
-  background:rgba(27,60,110,.1);
-  color:#132D56;
+  background:rgba(0,0,0,.1);
+  color:#000000;
   border-radius:16px;
   padding:14px;
   text-align:left;
@@ -250,7 +250,7 @@ gap: 12px;
 .nav button {
 width: 100%;
 border: none;
-background: rgba(27,60,110,.1);
+background: rgba(0,0,0,.1);
 padding: 16px;
 border-radius: 18px;
 font-weight: 600;
@@ -262,11 +262,11 @@ z-index: 2;
 }
 
 .nav button:hover {
-background: rgba(27,60,110,.18);
+background: rgba(0,0,0,.18);
 }
 
 .nav button.active {
-background: #1B3C6E;
+background: #111111;
 color: white;
 }
 

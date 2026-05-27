@@ -961,13 +961,13 @@ button:hover{
     .mobile-action {
       width: 100%;
       border: none;
-      background: linear-gradient(135deg,#1B3C6E,#132D56);
+      background: linear-gradient(135deg,#111111,#000000);
       color: white;
       padding: 14px;
       border-radius: 16px;
       font-weight: 700;
       margin-top: 10px;
-      box-shadow: 0 6px 18px rgba(27,60,110,.28);
+      box-shadow: 0 6px 18px rgba(0,0,0,.28);
     }
   }
 
@@ -1028,8 +1028,8 @@ button:hover{
       style={{
         minHeight: '100vh',
         background: `
-          radial-gradient(circle at 15% 10%, rgba(27,60,110,.07), transparent 35%),
-          radial-gradient(circle at 85% 80%, rgba(27,60,110,.05), transparent 35%),
+          radial-gradient(circle at 15% 10%, rgba(0,0,0,.07), transparent 35%),
+          radial-gradient(circle at 85% 80%, rgba(0,0,0,.05), transparent 35%),
           linear-gradient(160deg,#EEF3F9 0%,#F4F8FC 100%)
         `,
         backgroundSize: '100% 100%',
@@ -1175,14 +1175,14 @@ button:hover{
   <SummaryCard
     title="งบทั้งหมด"
     value={totals.total}
-    color="#1B3C6E"
+    color="#111111"
     large
     sub={`จ่ายไปแล้ว ${progress}% ของงบทั้งหมด`}
   />
   <SummaryCard
     title="จ่ายแล้ว"
     value={totals.paid}
-    color="#132D56"
+    color="#000000"
     sub="ยอดที่ชำระแล้ว"
   />
   <SummaryCard
@@ -1235,7 +1235,7 @@ button:hover{
                 width: `${progress}%`,
                 height: '100%',
                 background:
-                  'linear-gradient(90deg,#1B3C6E,#132D56)',
+                  'linear-gradient(90deg,#111111,#000000)',
               }}
             />
           </div>
@@ -1376,12 +1376,12 @@ button:hover{
               }}
               style={{
                 border: 'none',
-                background: 'linear-gradient(135deg,#1B3C6E,#132D56)',
+                background: 'linear-gradient(135deg,#111111,#000000)',
                 color: '#fff',
                 borderRadius: '36px',
                 padding: '12px 18px',
                 fontWeight: 700,
-                boxShadow: '0 6px 20px rgba(27,60,110,.28)',
+                boxShadow: '0 6px 20px rgba(0,0,0,.28)',
                 transition: 'all .25s ease',
               }}
             >
@@ -1418,8 +1418,8 @@ button:hover{
       padding: '8px 14px',
       borderRadius: '999px',
       background:
-        'rgba(27,60,110,.12)',
-      color: '#132D56',
+        'rgba(0,0,0,.12)',
+      color: '#000000',
       fontWeight: 700,
       fontSize: '13px',
       flexWrap: 'wrap',
@@ -1708,8 +1708,8 @@ button:hover{
                                   padding: '8px 14px',
                                   borderRadius: '999px',
                                   background:
-                                    'rgba(27,60,110,.12)',
-                                  color: '#132D56',
+                                    'rgba(0,0,0,.12)',
+                                  color: '#000000',
                                   fontSize: '14px',
                                   fontWeight: 700,
                                   marginTop: '10px',
@@ -1946,8 +1946,8 @@ button:hover{
                       padding: '0 18px',
                       borderRadius: '999px',
                       background:
-                        'rgba(27,60,110,.12)',
-                      color: '#132D56',
+                        'rgba(0,0,0,.12)',
+                      color: '#000000',
                       fontWeight: 700,
                       fontSize: '15px',
                     }}
@@ -2699,13 +2699,13 @@ button:hover{
           border: 'none',
           borderRadius: '22px',
           background:
-            'linear-gradient(135deg,#1B3C6E,#132D56)',
+            'linear-gradient(135deg,#111111,#000000)',
           color: '#fff',
           fontSize: '18px',
           fontWeight: 700,
           cursor: 'pointer',
           boxShadow:
-            '0 10px 28px rgba(27,60,110,.28)',
+            '0 10px 28px rgba(0,0,0,.28)',
         }}
       >
         บันทึกการชำระ
@@ -2981,9 +2981,9 @@ function CustomSelect({
                   padding: '13px 20px',
                   fontSize: '15px',
                   fontWeight: isSelected ? 600 : 400,
-                  color: isSelected ? '#1B3C6E' : '#333',
+                  color: isSelected ? '#111111' : '#333',
                   cursor: 'pointer',
-                  background: isSelected ? 'rgba(27,60,110,.07)' : 'transparent',
+                  background: isSelected ? 'rgba(0,0,0,.07)' : 'transparent',
                   borderBottom: i < options.length - 1 ? '1px solid #F5F7FA' : 'none',
                   transition: 'background .15s ease',
                 }}
@@ -2991,7 +2991,7 @@ function CustomSelect({
                   if (!isSelected) e.currentTarget.style.background = '#F7FAFB'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = isSelected ? 'rgba(27,60,110,.07)' : 'transparent'
+                  e.currentTarget.style.background = isSelected ? 'rgba(0,0,0,.07)' : 'transparent'
                 }}
               >
                 {optLabel}
@@ -3034,7 +3034,7 @@ function Field({
 function SummaryCard({
   title,
   value,
-  color = '#1B3C6E',
+  color = '#111111',
   large = false,
   sub,
 }) {
@@ -3117,7 +3117,7 @@ function TabButton({
         borderRadius:
           '10px',
         background: active
-          ? '#1B3C6E'
+          ? '#111111'
           : 'transparent',
         color: active
           ? '#fff'
@@ -3146,7 +3146,7 @@ function FilterButton({
         padding:
           '6px 14px',
         background: active
-          ? '#1B3C6E'
+          ? '#111111'
           : 'rgba(255,255,255,.85)',
         color: active
           ? '#fff'
@@ -3169,7 +3169,7 @@ function StatusBadge({
 
   if (children === 'จ่ายครบแล้ว') {
     bg = 'rgba(23,168,179,.12)'
-    color = '#132D56'
+    color = '#000000'
   }
 
   if (children === 'ยังไม่จ่าย') {

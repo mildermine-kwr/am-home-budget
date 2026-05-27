@@ -2029,24 +2029,38 @@ button:hover{
     >
       <button
         onClick={() => setOpen(false)}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = '#E4E7EC'
+          e.currentTarget.style.color = '#111'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = '#F2F4F7'
+          e.currentTarget.style.color = '#555'
+        }}
         style={{
           position: 'absolute',
-          top: '20px',
-          right: '20px',
+          top: window.innerWidth < 768 ? '18px' : '22px',
+          right: window.innerWidth < 768 ? '16px' : '22px',
           width: '36px',
           height: '36px',
           border: 'none',
           borderRadius: '999px',
           background: '#F2F4F7',
           cursor: 'pointer',
-          fontSize: '16px',
           color: '#555',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          flexShrink: 0,
+          transition: 'background .15s ease, color .15s ease',
+          zIndex: 10,
         }}
+        aria-label="ปิด"
       >
-        ✕
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
       </button>
 
       <div

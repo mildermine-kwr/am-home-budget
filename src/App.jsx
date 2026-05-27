@@ -1162,32 +1162,36 @@ button:hover{
 
 <div
   className="summary-grid"
-          style={{
-            display: 'grid',
-            gridTemplateColumns:
-              'repeat(auto-fit,minmax(240px,1fr))',
-            gap: '16px',
-            marginBottom: '20px',
-          
-          }}
-        >
-          <SummaryCard
-            title="งบทั้งหมด"
-            value={totals.total}
-          />
-
-          <SummaryCard
-            title="จ่ายแล้ว"
-            value={totals.paid}
-            color="#132D56"
-          />
-
-          <SummaryCard
-            title="คงเหลือ"
-            value={totals.remain}
-            color="#F5A623"
-          />
-        </div>
+  style={{
+    display: 'grid',
+    gridTemplateColumns:
+      window.innerWidth < 768
+        ? '1fr'
+        : '2fr 1fr 1fr',
+    gap: '16px',
+    marginBottom: '20px',
+  }}
+>
+  <SummaryCard
+    title="งบทั้งหมด"
+    value={totals.total}
+    color="#1B3C6E"
+    large
+    sub={`จ่ายไปแล้ว ${progress}% ของงบทั้งหมด`}
+  />
+  <SummaryCard
+    title="จ่ายแล้ว"
+    value={totals.paid}
+    color="#132D56"
+    sub="ยอดที่ชำระแล้ว"
+  />
+  <SummaryCard
+    title="คงเหลือ"
+    value={totals.remain}
+    color="#F5A623"
+    sub="ยอดค้างจ่าย"
+  />
+</div>
 
         <div
           style={{
@@ -3031,51 +3035,24 @@ function SummaryCard({
   title,
   value,
   color = '#1B3C6E',
+  large = false,
+  sub,
 }) {
+  const numStr = safeNumber(value)
+
   return (
-    <>
-
-      <style>
-        {`
-          @keyframes meshMove {
-            0% {
-              background-position: 0% 50%;
-            }
-
-            50% {
-              background-position: 100% 50%;
-            }
-
-            100% {
-              background-position: 0% 50%;
-            }
-          }
-
-          @keyframes floatCard {
-            0% {
-              transform: translateY(0px);
-            }
-
-            50% {
-              transform: translateY(-10px);
-            }
-
-            100% {
-              transform: translateY(0px);
-            }
-          }
-        `}
-      </style>
-
     <div
       className="summary-card"
       style={{
         background: '#FFFFFF',
-        borderRadius: '24px',
-        padding: '32px',
+        borderRadius: '20px',
+        padding: large ? '28px 32px 24px' : '24px 24px 20px',
         border: '1px solid #DDE6F0',
-        boxShadow: '0 4px 20px rgba(30,45,61,.06)',
-        transition: 'all .25s ease',
+        boxShadow: '0 2px 12px rgba(30,45,61,.05)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        minHeight: large ? '140px' : '120px',
       }}
     >
       <div
@@ -3083,33 +3060,45 @@ function SummaryCard({
           color: '#8A9BB5',
           fontSize: '13px',
           fontWeight: 500,
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
-          marginBottom: '10px',
+          letterSpacing: '0.02em',
+          marginBottom: large ? '12px' : '10px',
         }}
       >
         {title}
       </div>
 
-      <h2
-        className="summary-value"
-        style={{
-          marginTop: '4px',
-          color,
-          fontSize: 'clamp(32px,3.5vw,48px)',
-          letterSpacing: '-0.03em',
-          fontWeight: 700,
-          marginBottom: '0px',
-        }}
-      >
-        ฿
-        {safeNumber(value)}
-      </h2>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end' }}>
+        <span
+          style={{
+            color,
+            fontSize: large
+              ? 'clamp(36px, 4vw, 56px)'
+              : 'clamp(26px, 2.8vw, 38px)',
+            fontWeight: 700,
+            letterSpacing: '-0.03em',
+            lineHeight: 1,
+          }}
+        >
+          ฿{numStr}
+        </span>
+      </div>
 
-
-
+      {sub && (
+        <div
+          style={{
+            marginTop: '12px',
+            fontSize: '12px',
+            color: '#A0AEBF',
+            fontWeight: 400,
+            letterSpacing: '0.01em',
+            borderTop: '1px solid #F0F4F8',
+            paddingTop: '10px',
+          }}
+        >
+          {sub}
+        </div>
+      )}
     </div>
-    </>
   )
 }
 

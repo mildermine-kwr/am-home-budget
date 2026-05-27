@@ -1903,23 +1903,28 @@ button:hover{
                                   alignItems:
                                     'center',
                                 }}
-                              />
-                                <input
-                                  type="number"
-                                  value={
-                                    payAmount
-                                  }
-                                  onChange={(
-                                    e
-                                  ) =>
-                                    setPayAmount(
-                                      e
-                                        .target
-                                        .value
-                                    )
-                                  }
-                                  placeholder="จำนวนเงิน"
-                                />
+                              >
+                                <div style={{ position: 'relative', flex: 1 }}>
+                                  <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', fontWeight: 600, color: '#8A9BB5', pointerEvents: 'none' }}>฿</span>
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={payAmount ? Number(String(payAmount).replace(/\D/g, '')).toLocaleString('en-US') : ''}
+                                    onChange={(e) => setPayAmount(e.target.value.replace(/\D/g, ''))}
+                                    placeholder="จำนวนเงิน"
+                                    style={{
+                                      width: '100%',
+                                      height: '40px',
+                                      borderRadius: '12px',
+                                      border: '1px solid #DDE6F0',
+                                      background: '#FFFFFF',
+                                      padding: '0 12px 0 34px',
+                                      fontSize: '15px',
+                                      outline: 'none',
+                                      boxSizing: 'border-box',
+                                    }}
+                                  />
+                                </div>
 
                                 <button
                                   onClick={() =>
@@ -1941,8 +1946,9 @@ button:hover{
                                 >
                                   ยกเลิก
                                 </button>
-                              
-                {item.installment && (
+                              </div>
+
+                              {item.installment && (
                   <div
                     style={{
                       marginTop: '10px',
@@ -2273,19 +2279,15 @@ button:hover{
           }}
         >
           <Field label="ราคา (บาท)">
-            <input
-              type="number"
-              value={form.budget ?? ''}
-              onChange={(e) =>
+            <BahtInput
+              value={form.budget}
+              onChange={(val) =>
                 setForm({
                   ...form,
-                  budget:
-                    e.target.value,
-                  paid:
-                    e.target.value,
+                  budget: val,
+                  paid: val,
                 })
               }
-              style={fieldStyle}
             />
           </Field>
         </div>
@@ -2304,32 +2306,26 @@ button:hover{
           }}
         >
           <Field label="ราคาเต็ม (บาท)">
-            <input
-              type="number"
-              value={form.budget ?? ''}
-              onChange={(e) =>
+            <BahtInput
+              value={form.budget}
+              onChange={(val) =>
                 setForm({
                   ...form,
-                  budget:
-                    e.target.value,
+                  budget: val,
                 })
               }
-              style={fieldStyle}
             />
           </Field>
 
           <Field label="จ่ายแล้ว (บาท)">
-            <input
-              type="number"
-              value={form.paid ?? ''}
-              onChange={(e) =>
+            <BahtInput
+              value={form.paid}
+              onChange={(val) =>
                 setForm({
                   ...form,
-                  paid:
-                    e.target.value,
+                  paid: val,
                 })
               }
-              style={fieldStyle}
             />
           </Field>
         </div>
@@ -2343,17 +2339,14 @@ button:hover{
             }}
           >
             <Field label="ราคาเต็ม (บาท)">
-              <input
-                type="number"
-                value={form.budget ?? ''}
-                onChange={(e) =>
+              <BahtInput
+                value={form.budget}
+                onChange={(val) =>
                   setForm({
                     ...form,
-                    budget:
-                      e.target.value,
+                    budget: val,
                   })
                 }
-                style={fieldStyle}
               />
             </Field>
           </div>
@@ -2669,29 +2662,44 @@ button:hover{
           จำนวนเงิน
         </label>
 
-        <input
-          type="number"
-          value={payAmount}
-          onChange={(e) =>
-            setPayAmount(
-              e.target.value
-            )
-          }
-          placeholder="กรอกจำนวนเงิน"
-          style={{
-            width: '100%',
-            height: '62px',
-            borderRadius: '20px',
-            border:
-              '1px solid rgba(255,255,255,.5)',
-            background:
-              'rgba(255,255,255,.88)',
-            padding: '0 20px',
-            fontSize: '18px',
-            outline: 'none',
-            boxSizing: 'border-box',
-          }}
-        />
+        <div style={{ position: 'relative' }}>
+          <span
+            style={{
+              position: 'absolute',
+              left: '20px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              fontSize: '18px',
+              fontWeight: 600,
+              color: '#8A9BB5',
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+          >
+            ฿
+          </span>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={payAmount ? Number(String(payAmount).replace(/\D/g, '')).toLocaleString('en-US') : ''}
+            onChange={(e) => {
+              const clean = e.target.value.replace(/\D/g, '')
+              setPayAmount(clean)
+            }}
+            placeholder="กรอกจำนวนเงิน"
+            style={{
+              width: '100%',
+              height: '62px',
+              borderRadius: '20px',
+              border: '1px solid rgba(255,255,255,.5)',
+              background: 'rgba(255,255,255,.88)',
+              padding: '0 20px 0 44px',
+              fontSize: '18px',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
       </div>
 
       <button
@@ -2897,6 +2905,54 @@ const fieldStyle = {
   appearance: 'none',
   WebkitAppearance: 'none',
   color: '#1E2D3D',
+}
+
+function BahtInput({
+  value,
+  onChange,
+  placeholder = '',
+  style = {},
+}) {
+  const raw = String(value || '')
+  const digitsOnly = raw.replace(/\D/g, '')
+  const formatted = digitsOnly
+    ? Number(digitsOnly).toLocaleString('en-US')
+    : ''
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <span
+        style={{
+          position: 'absolute',
+          left: '22px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          fontSize: '15px',
+          fontWeight: 600,
+          color: '#8A9BB5',
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}
+      >
+        ฿
+      </span>
+      <input
+        type="text"
+        inputMode="numeric"
+        placeholder={placeholder}
+        value={formatted}
+        onChange={(e) => {
+          const clean = e.target.value.replace(/\D/g, '')
+          onChange(clean)
+        }}
+        style={{
+          ...fieldStyle,
+          paddingLeft: '40px',
+          ...style,
+        }}
+      />
+    </div>
+  )
 }
 
 function CustomSelect({

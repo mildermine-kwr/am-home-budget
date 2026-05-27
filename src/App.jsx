@@ -3168,8 +3168,8 @@ function StatusBadge({
   let color = '#B87D14'
 
   if (children === 'จ่ายครบแล้ว') {
-    bg = 'rgba(23,168,179,.12)'
-    color = '#000000'
+    bg = 'rgba(34,197,94,.12)'
+    color = '#15803D'
   }
 
   if (children === 'ยังไม่จ่าย') {

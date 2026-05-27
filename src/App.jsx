@@ -1982,12 +1982,12 @@ button:hover{
       position: 'fixed',
       inset: 0,
       background:
-        'rgba(15,15,15,.28)',
+        'rgba(20,20,30,.35)',
       zIndex: 100,
       display: 'flex',
-      alignItems: 'center',
+      alignItems: window.innerWidth < 768 ? 'flex-end' : 'center',
       justifyContent: 'center',
-      backdropFilter: 'blur(10px)',
+      backdropFilter: 'blur(4px)',
       padding: window.innerWidth < 768 ? '0px' : '24px',
     }}
     onClick={() =>
@@ -2013,19 +2013,14 @@ button:hover{
       style={{
         position: 'relative',
         width: '100%',
-        maxWidth: window.innerWidth < 768 ? '100%' : '820px',
-        borderRadius: window.innerWidth < 768 ? '28px 28px 0 0' : '40px',
-        background:
-          'rgba(255,255,255,.92)',
-        backdropFilter:
-          'blur(24px)',
-        border:
-          '1px solid rgba(255,255,255,.6)',
-        boxShadow:
-          '0 30px 90px rgba(0,0,0,.12)',
+        maxWidth: window.innerWidth < 768 ? '100%' : '620px',
+        borderRadius: window.innerWidth < 768 ? '28px 28px 0 0' : '28px',
+        background: '#FFFFFF',
+        border: 'none',
+        boxShadow: '0 12px 60px rgba(0,0,0,.16)',
         maxHeight:
           window.innerWidth < 768
-            ? '100dvh'
+            ? '96dvh'
             : 'calc(100vh - 48px)',
         display: 'flex',
         flexDirection: 'column',
@@ -2036,17 +2031,19 @@ button:hover{
         onClick={() => setOpen(false)}
         style={{
           position: 'absolute',
-          top: '18px',
-          right: '18px',
-          width: '42px',
-          height: '42px',
+          top: '20px',
+          right: '20px',
+          width: '36px',
+          height: '36px',
           border: 'none',
           borderRadius: '999px',
-          background: 'rgba(255,255,255,.82)',
-          backdropFilter: 'blur(12px)',
+          background: '#F2F4F7',
           cursor: 'pointer',
-          fontSize: '18px',
-          fontWeight: 700,
+          fontSize: '16px',
+          color: '#555',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         ✕
@@ -2057,23 +2054,21 @@ button:hover{
           position: 'sticky',
           top: 0,
           zIndex: 2,
-          background: 'rgba(255,255,255,.94)',
-          backdropFilter: 'blur(16px)',
+          background: '#FFFFFF',
           padding:
             window.innerWidth < 768
-              ? '28px 20px 18px'
-              : '32px 32px 20px',
-          borderBottom: '1px solid rgba(0,0,0,.06)',
+              ? '24px 20px 16px'
+              : '28px 28px 16px',
+          borderBottom: '1px solid #F0F2F5',
         }}
       >
         <h3
           style={{
-            fontSize: window.innerWidth < 768 ? '32px' : '42px',
-            lineHeight: 1,
-            fontWeight: 800,
-            letterSpacing:
-              '-0.05em',
-            color: '#1E2D3D',
+            fontSize: window.innerWidth < 768 ? '24px' : '28px',
+            lineHeight: 1.2,
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            color: '#111',
             margin: 0,
             paddingRight: '48px',
           }}
@@ -2090,8 +2085,8 @@ button:hover{
             overflowY: 'auto',
           padding:
             window.innerWidth < 768
-              ? '20px 20px 120px'
-              : '24px 32px 140px',
+              ? '20px 20px 110px'
+              : '24px 28px 130px',
         }}
       >
 
@@ -2102,8 +2097,8 @@ button:hover{
             window.innerWidth < 768
               ? '1fr'
               : '1fr 1fr',
-          gap: '16px',
-          marginBottom: '18px',
+          gap: '14px',
+          marginBottom: '16px',
         }}
       >
         <Field label="วันที่">
@@ -2194,11 +2189,10 @@ button:hover{
           <div
             style={{
               display: 'flex',
-              background:
-                'rgba(0,0,0,.05)',
-              borderRadius: '18px',
-              padding: '6px',
-              gap: '6px',
+              background: '#F2F4F7',
+              borderRadius: '999px',
+              padding: '5px',
+              gap: '4px',
             }}
           >
             {[
@@ -2232,27 +2226,26 @@ button:hover{
                   }
                   style={{
                     flex: 1,
-                    height: '52px',
+                    height: '44px',
                     border: 'none',
-                    borderRadius: '14px',
+                    borderRadius: '999px',
 
                     background: active
-                      ? 'linear-gradient(135deg,#22C4D0,#17A8B3)'
+                      ? '#FFFFFF'
                       : 'transparent',
 
                     color: active
-                      ? '#fff'
-                      : '#64748B',
+                      ? '#111'
+                      : '#8A9BB5',
 
-                    fontWeight: 700,
-                    fontSize: '15px',
+                    fontWeight: active ? 600 : 400,
+                    fontSize: '14px',
                     cursor: 'pointer',
 
-                    transition:
-                      'all .22s ease',
+                    transition: 'all .18s ease',
 
                     boxShadow: active
-                      ? '0 8px 20px rgba(34,196,208,.25)'
+                      ? '0 2px 8px rgba(0,0,0,.10)'
                       : 'none',
                   }}
                 >
@@ -2508,9 +2501,12 @@ button:hover{
             }
             style={{
               ...fieldStyle,
-              minHeight: '120px',
-              paddingTop: '18px',
+              borderRadius: '20px',
+              minHeight: '110px',
+              paddingTop: '16px',
+              paddingBottom: '16px',
               resize: 'none',
+              height: 'auto',
             }}
           />
         </Field>
@@ -2524,67 +2520,55 @@ button:hover{
           bottom: 0,
           zIndex: 3,
           display: 'flex',
-          justifyContent:
-            'flex-end',
-          gap: '16px',
+          justifyContent: 'flex-end',
+          gap: '12px',
           padding:
             window.innerWidth < 768
-              ? '18px 20px calc(18px + env(safe-area-inset-bottom))'
-              : '22px 32px',
-          background: 'rgba(255,255,255,.96)',
-          backdropFilter: 'blur(16px)',
-          borderTop: '1px solid rgba(0,0,0,.06)',
+              ? '16px 20px calc(16px + env(safe-area-inset-bottom))'
+              : '18px 28px',
+          background: '#FFFFFF',
+          borderTop: '1px solid #F0F2F5',
         }}
       >
         <button
-          onClick={() =>
-            setOpen(false)
-          }
+          onClick={() => setOpen(false)}
           className="modal-cancel"
           style={{
-            height: '58px',
-            padding: '0 34px',
-            borderRadius: '22px',
-            border: '1px solid #DDE6F0',
-            background: '#EEF3F9',
-            color: '#5A7080',
-            fontSize: '16px',
-            fontWeight: 700,
+            height: '52px',
+            padding: '0 28px',
+            borderRadius: '999px',
+            border: 'none',
+            background: '#F2F4F7',
+            color: '#555',
+            fontSize: '15px',
+            fontWeight: 500,
             cursor: 'pointer',
+            transition: 'all .18s ease',
           }}
         >
           ยกเลิก
         </button>
 
         <button
-                  type="submit"
-                  onClick={() => addItem()}
-                  disabled={!hasFormChanges}
-                  style={{
-                    minWidth: '140px',
-                    height: '56px',
-                    padding: '0 32px',
-                    border: 'none',
-                    borderRadius: '18px',
-                    background:
-                      'linear-gradient(135deg,#22C4D0,#17A8B3)',
-                    color: '#fff',
-                    fontSize: '16px',
-                    fontWeight: 700,
-                    cursor: !hasFormChanges
-                      ? 'not-allowed'
-                      : 'pointer',
-                    opacity: !hasFormChanges
-                      ? 0.55
-                      : 1,
-                    boxShadow:
-                      '0 10px 24px rgba(34,196,208,.28)',
-                    transition:
-                      'all .2s ease',
-                  }}
-                >
-                  บันทึก
-                </button>
+          type="submit"
+          onClick={() => addItem()}
+          disabled={!hasFormChanges}
+          style={{
+            minWidth: '130px',
+            height: '52px',
+            padding: '0 28px',
+            border: 'none',
+            borderRadius: '999px',
+            background: !hasFormChanges ? '#CCC' : '#111',
+            color: '#fff',
+            fontSize: '15px',
+            fontWeight: 600,
+            cursor: !hasFormChanges ? 'not-allowed' : 'pointer',
+            transition: 'all .18s ease',
+          }}
+        >
+          บันทึก
+        </button>
       </div>
     </div>
   </div>
@@ -2911,17 +2895,17 @@ button:hover{
 
 const fieldStyle = {
   width: '100%',
-  borderRadius: '14px',
-  border: '1px solid #DDE6F0',
-  background:
-    '#FFFFFF',
-  padding: '0 22px',
-  fontSize: '16px',
-  height: '64px',
+  borderRadius: '999px',
+  border: 'none',
+  background: '#F2F4F7',
+  padding: '0 20px',
+  fontSize: '15px',
+  height: '52px',
   outline: 'none',
   boxSizing: 'border-box',
   appearance: 'none',
-WebkitAppearance: 'none',
+  WebkitAppearance: 'none',
+  color: '#1E2D3D',
 }
 
 function Field({
@@ -2933,10 +2917,11 @@ function Field({
       <label
         style={{
           display: 'block',
-          marginBottom: '10px',
-          fontSize: '16px',
-          fontWeight: 600,
+          marginBottom: '8px',
+          fontSize: '13px',
+          fontWeight: 500,
           color: '#8A9BB5',
+          letterSpacing: '0.01em',
         }}
       >
         {label}

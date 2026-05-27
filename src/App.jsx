@@ -2106,13 +2106,14 @@ button:hover{
       </div>
 
       <div
+          className="modal-scroll"
           style={{
             flex: 1,
             overflowY: 'auto',
           padding:
             window.innerWidth < 768
-              ? '20px 20px 110px'
-              : '24px 28px 130px',
+              ? '20px 20px 24px'
+              : '24px 28px 28px',
         }}
       >
 

@@ -3,7 +3,7 @@ import { supabase }
 import house3d from './image.png'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { TORT, FURN } from './data/items'
 
 const DEFAULT_TORT = TORT
@@ -2117,43 +2117,14 @@ button:hover{
         </Field>
 
         <Field label="หมวดงาน / หมวดสินค้า">
-          <select
+          <CustomSelect
             value={form.category}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                category:
-                  e.target.value,
-              })
+            onChange={(val) =>
+              setForm({ ...form, category: val })
             }
-            style={{
-  ...fieldStyle,
-  appearance: 'none',
-  WebkitAppearance: 'none',
-  padding: '0 48px 0 22px',
-
-  backgroundImage:
-    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23666' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
-
-  backgroundRepeat: 'no-repeat',
-
-  backgroundPosition:
-    'right 20px center',
-}}
-          >
-            {(activeTab ===
-            'tort'
-              ? TCATS
-              : FCATS
-            ).map((c) => (
-              <option
-                key={c}
-                value={c}
-              >
-                {c}
-              </option>
-            ))}
-          </select>
+            options={activeTab === 'tort' ? TCATS : FCATS}
+            placeholder="เลือกหมวดหมู่..."
+          />
         </Field>
         </div>
       
@@ -2430,35 +2401,17 @@ button:hover{
         }}
       >
         <Field label="ซื้อจาก">
-          <select
+          <CustomSelect
             value={form.platform}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                platform:
-                  e.target.value,
-              })
+            onChange={(val) =>
+              setForm({ ...form, platform: val })
             }
-            style={{
-              ...fieldStyle,
-              appearance: 'none',
-              WebkitAppearance: 'none',
-              padding: '0 48px 0 22px',
-            }}
-          >
-            <option value="">
-              เลือก Platform
-            </option>
-
-            {PLATFORMS.map((p) => (
-              <option
-                key={p}
-                value={p}
-              >
-                {p}
-              </option>
-            ))}
-          </select>
+            options={[
+              { value: '', label: 'เลือก Platform' },
+              ...PLATFORMS.map((p) => ({ value: p, label: p })),
+            ]}
+            placeholder="เลือก Platform"
+          />
         </Field>
 
         {form.platform ===
@@ -2906,6 +2859,118 @@ const fieldStyle = {
   appearance: 'none',
   WebkitAppearance: 'none',
   color: '#1E2D3D',
+}
+
+function CustomSelect({
+  value,
+  onChange,
+  options,
+  placeholder = 'เลือก...',
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false)
+      }
+    }
+    if (open) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [open])
+
+  const selectedLabel =
+    options.find((o) => (o.value !== undefined ? o.value : o) === value)
+    ? (options.find((o) => (o.value !== undefined ? o.value : o) === value).label ||
+       options.find((o) => (o.value !== undefined ? o.value : o) === value))
+    : null
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          ...fieldStyle,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
+          textAlign: 'left',
+          color: selectedLabel ? '#1E2D3D' : '#A0AEC0',
+        }}
+      >
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {selectedLabel || placeholder}
+        </span>
+        <svg
+          width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="#8A9BB5" strokeWidth="2"
+          style={{
+            flexShrink: 0,
+            marginLeft: '8px',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform .2s ease',
+          }}
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+
+      {open && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 8px)',
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+            background: '#FFFFFF',
+            borderRadius: '18px',
+            boxShadow: '0 8px 40px rgba(0,0,0,.14)',
+            border: '1px solid #F0F2F5',
+            overflow: 'hidden',
+            maxHeight: '280px',
+            overflowY: 'auto',
+          }}
+        >
+          {options.map((opt, i) => {
+            const optValue = opt.value !== undefined ? opt.value : opt
+            const optLabel = opt.label !== undefined ? opt.label : opt
+            const isSelected = optValue === value
+            return (
+              <div
+                key={optValue || i}
+                onClick={() => {
+                  onChange(optValue)
+                  setOpen(false)
+                }}
+                style={{
+                  padding: '13px 20px',
+                  fontSize: '15px',
+                  fontWeight: isSelected ? 600 : 400,
+                  color: isSelected ? '#22C4D0' : '#333',
+                  cursor: 'pointer',
+                  background: isSelected ? 'rgba(34,196,208,.07)' : 'transparent',
+                  borderBottom: i < options.length - 1 ? '1px solid #F5F7FA' : 'none',
+                  transition: 'background .15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) e.currentTarget.style.background = '#F7FAFB'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = isSelected ? 'rgba(34,196,208,.07)' : 'transparent'
+                }}
+              >
+                {optLabel}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
 }
 
 function Field({

@@ -2053,7 +2053,9 @@ button:hover{
             : 'calc(100vh - 48px)',
         display: 'flex',
         flexDirection: 'column',
+        overflow: 'hidden',
         WebkitOverflowScrolling: 'touch',
+        transform: 'translateZ(0)',
       }}
     >
       <button

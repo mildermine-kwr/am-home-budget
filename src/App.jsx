@@ -2046,14 +2046,14 @@ button:hover{
         background: '#FFFFFF',
         border: 'none',
         boxShadow: window.innerWidth < 768 ? 'none' : '0 12px 60px rgba(0,0,0,.16)',
-        height: window.innerWidth < 768 ? '100dvh' : 'auto',
+        height: window.innerWidth < 768 ? '100%' : 'auto',
         maxHeight:
           window.innerWidth < 768
-            ? '100dvh'
+            ? '100%'
             : 'calc(100vh - 48px)',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
+        WebkitOverflowScrolling: 'touch',
       }}
     >
       <button
@@ -2094,8 +2094,7 @@ button:hover{
 
       <div
         style={{
-          position: 'sticky',
-          top: 0,
+          flexShrink: 0,
           zIndex: 2,
           background: '#FFFFFF',
           padding:
@@ -2495,13 +2494,11 @@ button:hover{
           />
         </Field>
       </div>
-
       </div>
 
       <div
         style={{
-          position: 'sticky',
-          bottom: 0,
+          flexShrink: 0,
           zIndex: 3,
           display: 'flex',
           justifyContent: 'flex-end',

@@ -133,7 +133,7 @@ const formatThaiDate = (dateValue) => {
   }
 }
 
-const safeNumber = (value) => Number(value || 0).toLocaleString()
+const safeNumber = (value) => Number(value || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
 
 
 const normalizeItem = (item) => ({
@@ -1443,7 +1443,7 @@ button:hover{
         Number(
           item.installment?.total || 1
         )
-    ).toLocaleString()}
+    ).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
     /งวด
   </div>
 )}
@@ -1743,7 +1743,7 @@ button:hover{
                                   {Math.round(
                                     item.budget /
                                     item.installment.total
-                                  ).toLocaleString()}
+                                  ).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                                   / งวด
                                 </span>
                               </div>
@@ -1909,7 +1909,7 @@ button:hover{
                                   <input
                                     type="text"
                                     inputMode="numeric"
-                                    value={payAmount ? Number(String(payAmount).replace(/\D/g, '')).toLocaleString('en-US') : ''}
+                                    value={payAmount ? Number(String(payAmount).replace(/\D/g, '')).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}
                                     onChange={(e) => setPayAmount(e.target.value.replace(/\D/g, ''))}
                                     placeholder="จำนวนเงิน"
                                     style={{
@@ -1984,7 +1984,7 @@ button:hover{
                           item.installment
                             ?.total || 1
                         )
-                    ).toLocaleString()}
+                    ).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                     /งวด
                   </div>
                 )}
@@ -2680,7 +2680,7 @@ button:hover{
           <input
             type="text"
             inputMode="numeric"
-            value={payAmount ? Number(String(payAmount).replace(/\D/g, '')).toLocaleString('en-US') : ''}
+            value={payAmount ? Number(String(payAmount).replace(/\D/g, '')).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}
             onChange={(e) => {
               const clean = e.target.value.replace(/\D/g, '')
               setPayAmount(clean)
@@ -2915,7 +2915,7 @@ function BahtInput({
   const raw = String(value || '')
   const digitsOnly = raw.replace(/\D/g, '')
   const formatted = digitsOnly
-    ? Number(digitsOnly).toLocaleString('en-US')
+    ? Number(digitsOnly).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
     : ''
 
   return (

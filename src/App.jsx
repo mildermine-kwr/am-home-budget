@@ -969,10 +969,38 @@ button:hover{
       margin-top: 10px;
       box-shadow: 0 6px 18px rgba(0,0,0,.28);
     }
+
+    .desktop-add-btn {
+      display: none !important;
+    }
+
+    .mobile-fab {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg,#111111,#000000);
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,.28);
+      z-index: 100;
+    }
   }
 
   @media (min-width: 769px) {
     .mobile-cards {
+      display: none !important;
+    }
+
+    .mobile-fab {
       display: none !important;
     }
   }
@@ -1345,6 +1373,7 @@ button:hover{
             />
 
             <button
+              className="desktop-add-btn"
               onClick={() => {
                 setEditingId(null)
                 setSelectedItem(null)
@@ -1614,6 +1643,37 @@ button:hover{
               )
             })}
           </div>
+
+          <button
+            className="mobile-fab"
+            onClick={() => {
+              setEditingId(null)
+              setSelectedItem(null)
+
+              setForm({
+                date: new Date()
+                  .toISOString()
+                  .slice(0, 10),
+                category:
+                  activeTab === 'tort'
+                    ? TCATS[0]
+                    : FCATS[0],
+                paymentType: 'full',
+                title: '',
+                note: '',
+                budget: '',
+                paid: '',
+                installmentTotal: '',
+                installmentPaid: '',
+                platform: '',
+                otherPlatform: '',
+              })
+
+              setOpen(true)
+            }}
+          >
+            +
+          </button>
 
 <div
             style={{

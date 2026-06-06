@@ -3174,7 +3174,7 @@ function SummaryCard({
             lineHeight: 1,
           }}
         >
-          ฿{integerPart}<span style={{ color: '#B0BEC5', fontWeight: 700 }}>{decimalPart}</span>
+          ฿{integerPart}<span style={{ color: '#111111', opacity: 0.2, fontSize: large ? '28px' : '20px', fontWeight: 700 }}>{decimalPart}</span>
         </span>
       </div>
 

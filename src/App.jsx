@@ -1906,11 +1906,9 @@ button:hover{
                               >
                                 <div style={{ position: 'relative', flex: 1 }}>
                                   <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', fontWeight: 600, color: '#8A9BB5', pointerEvents: 'none' }}>฿</span>
-                                  <input
-                                    type="text"
-                                    inputMode="numeric"
-                                    value={payAmount ? Number(String(payAmount).replace(/\D/g, '')).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}
-                                    onChange={(e) => setPayAmount(e.target.value.replace(/\D/g, ''))}
+                                  <PayInput
+                                    value={payAmount}
+                                    onChange={setPayAmount}
                                     placeholder="จำนวนเงิน"
                                     style={{
                                       width: '100%',
@@ -2677,14 +2675,9 @@ button:hover{
           >
             ฿
           </span>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={payAmount ? Number(String(payAmount).replace(/\D/g, '')).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}
-            onChange={(e) => {
-              const clean = e.target.value.replace(/\D/g, '')
-              setPayAmount(clean)
-            }}
+          <PayInput
+            value={payAmount}
+            onChange={setPayAmount}
             placeholder="กรอกจำนวนเงิน"
             style={{
               width: '100%',
@@ -2912,10 +2905,13 @@ function BahtInput({
   placeholder = '',
   style = {},
 }) {
+  const [focused, setFocused] = useState(false)
   const raw = String(value || '')
   const digitsOnly = raw.replace(/\D/g, '')
   const formatted = digitsOnly
-    ? Number(digitsOnly).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+    ? focused
+      ? Number(digitsOnly).toLocaleString('en-US')
+      : Number(digitsOnly).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
     : ''
 
   return (
@@ -2940,6 +2936,8 @@ function BahtInput({
         inputMode="numeric"
         placeholder={placeholder}
         value={formatted}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         onChange={(e) => {
           const clean = e.target.value.replace(/\D/g, '')
           onChange(clean)
@@ -2951,6 +2949,38 @@ function BahtInput({
         }}
       />
     </div>
+  )
+}
+
+function PayInput({
+  value,
+  onChange,
+  placeholder = '',
+  style = {},
+}) {
+  const [focused, setFocused] = useState(false)
+  const raw = String(value || '')
+  const digitsOnly = raw.replace(/\D/g, '')
+  const formatted = digitsOnly
+    ? focused
+      ? Number(digitsOnly).toLocaleString('en-US')
+      : Number(digitsOnly).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+    : ''
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      placeholder={placeholder}
+      value={formatted}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      onChange={(e) => {
+        const clean = e.target.value.replace(/\D/g, '')
+        onChange(clean)
+      }}
+      style={style}
+    />
   )
 }
 
@@ -3101,6 +3131,9 @@ function SummaryCard({
   sub,
 }) {
   const numStr = safeNumber(value)
+  const hasDecimal = numStr.endsWith('.00')
+  const integerPart = hasDecimal ? numStr.slice(0, -3) : numStr
+  const decimalPart = hasDecimal ? '.00' : ''
 
   return (
     <div
@@ -3141,7 +3174,7 @@ function SummaryCard({
             lineHeight: 1,
           }}
         >
-          ฿{numStr}
+          ฿{integerPart}<span style={{ color: '#B0BEC5', fontWeight: 700 }}>{decimalPart}</span>
         </span>
       </div>
 

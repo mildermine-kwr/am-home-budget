@@ -1403,6 +1403,18 @@ button:hover{
     position: 'relative',
   }}
 >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'flex-end',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <StatusBadge>
+                      {statusText(item)}
+                    </StatusBadge>
+                  </div>
+
                   <div className="mobile-budget-title">
   {item.title || item.note}
 </div>
@@ -1447,18 +1459,6 @@ button:hover{
     /งวด
   </div>
 )}
-
-<div
-  style={{
-    position: 'absolute',
-    top: '18px',
-    right: '18px',
-  }}
->
-  <StatusBadge>
-    {statusText(item)}
-  </StatusBadge>
-</div>
 
                   <div className="mobile-budget-meta">
                     <div>

@@ -1755,9 +1755,6 @@ button:hover{
                   <TH>
                     คงเหลือ
                   </TH>
-                  <TH>
-                    สถานะ
-                  </TH>
                   <TH sticky>
                     Action
                   </TH>
@@ -1880,25 +1877,22 @@ button:hover{
                             {safeNumber(remain)}
                           </TD>
 
-                          <TD>
-                            <StatusBadge>
-                              {statusText(
-                                item
-                              )}
-                            </StatusBadge>
-                          </TD>
-
                           <TD
                             sticky
                           >
                             <div
                               style={{
                                 display: 'flex',
-                                gap: '10px',
-                                alignItems: 'center',
+                                flexDirection: 'column',
+                                gap: '8px',
+                                alignItems: 'flex-end',
                                 height: '100%',
                               }}
                             >
+                              <StatusBadge>
+                                {statusText(item)}
+                              </StatusBadge>
+                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                              {item.paid < item.budget && (
   <button
     style={{
@@ -1976,6 +1970,7 @@ button:hover{
 >
   <DeleteOutlined />
 </button>
+                              </div>
                             </div>
                           </TD>
                         </tr>
@@ -3364,6 +3359,11 @@ function StatusBadge({
   if (children === 'จ่ายครบแล้ว') {
     bg = 'rgba(34,197,94,.12)'
     color = '#15803D'
+  }
+
+  if (children === 'ชำระบางส่วน') {
+    bg = 'rgba(234,179,8,.14)'
+    color = '#92650A'
   }
 
   if (children === 'ยังไม่จ่าย') {

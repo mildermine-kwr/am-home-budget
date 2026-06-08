@@ -1,859 +1,722 @@
-import { supabase }
-  from './supabase'
-import house3d from './image.png'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { supabase } from "./supabase";
+import house3d from "./image.png";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { TORT, FURN } from './data/items'
+import { useEffect, useMemo, useRef, useState } from "react";
+import { TORT, FURN } from "./data/items";
 
-const DEFAULT_TORT = TORT
+const DEFAULT_TORT = TORT;
 
-const DEFAULT_FURN = FURN
+const DEFAULT_FURN = FURN;
 
-const STORAGE_KEY =
-  'am-home-react-budget'
-
+const STORAGE_KEY = "am-home-react-budget";
 
 const TCATS = [
-  'ค่ามัดจำต่อเติม',
-  'เสาเข็ม',
-  'งานปูน',
-  'งานระบบ',
-  'หลังคา',
-  'งานโครงสร้าง',
-  'อื่นๆ',
-]
+  "ค่ามัดจำต่อเติม",
+  "เสาเข็ม",
+  "งานปูน",
+  "งานระบบ",
+  "หลังคา",
+  "งานโครงสร้าง",
+  "อื่นๆ",
+];
 
 const FCATS = [
-  'Home Appliances',
-  'Furniture',
-  'Building Materials / Repairs',
-  'Kitchenware',
-  'Bedding',
-  'Decorations',
-  'อื่นๆ',
-]
+  "Home Appliances",
+  "Furniture",
+  "Building Materials / Repairs",
+  "Kitchenware",
+  "Bedding",
+  "Decorations",
+  "อื่นๆ",
+];
 
-
-const PLATFORMS = [
-  'Shopee',
-  'HomePro',
-  'ไทวัสดุ',
-  'บุญถาวร',
-  'IKEA',
-  'อื่นๆ',
-]
-
-
+const PLATFORMS = ["Shopee", "HomePro", "ไทวัสดุ", "บุญถาวร", "IKEA", "อื่นๆ"];
 
 const convertThaiDate = (thaiDate) => {
   try {
-    if (!thaiDate) return ""
+    if (!thaiDate) return "";
 
     if (/^\d{4}-\d{2}-\d{2}$/.test(thaiDate)) {
-      return thaiDate
+      return thaiDate;
     }
 
     if (thaiDate.includes("/")) {
-      const [d, m, y] = thaiDate.split("/")
-      const christianYear = Number(y) - 543
+      const [d, m, y] = thaiDate.split("/");
+      const christianYear = Number(y) - 543;
 
-      return `${christianYear}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`
+      return `${christianYear}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
     }
 
-    return ""
+    return "";
   } catch {
-    return ""
+    return "";
   }
-}
+};
 
 const formatThaiDate = (dateValue) => {
-  if (!dateValue) return '-'
+  if (!dateValue) return "-";
 
   try {
     // already formatted dd/mm/yyyy
     if (
-      typeof dateValue === 'string' &&
+      typeof dateValue === "string" &&
       /^\d{2}\/\d{2}\/\d{4}$/.test(dateValue)
     ) {
-      const [, , year] = dateValue.split('/')
+      const [, , year] = dateValue.split("/");
 
       // already Buddhist year
       if (Number(year) > 2500) {
-        return dateValue
+        return dateValue;
       }
 
-      return dateValue
+      return dateValue;
     }
 
     // yyyy-mm-dd
     if (
-      typeof dateValue === 'string' &&
+      typeof dateValue === "string" &&
       /^\d{4}-\d{2}-\d{2}$/.test(dateValue)
     ) {
-      const [year, month, day] =
-        dateValue.split('-')
+      const [year, month, day] = dateValue.split("-");
 
-      const christianYear =
-        Number(year)
+      const christianYear = Number(year);
 
       const buddhistYear =
-        christianYear > 2500
-          ? christianYear
-          : christianYear + 543
+        christianYear > 2500 ? christianYear : christianYear + 543;
 
-      return `${day}/${month}/${buddhistYear}`
+      return `${day}/${month}/${buddhistYear}`;
     }
 
-    const date = new Date(dateValue)
+    const date = new Date(dateValue);
 
     if (Number.isNaN(date.getTime())) {
-      return '-'
+      return "-";
     }
 
-    const day = String(
-      date.getDate()
-    ).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, "0");
 
-    const month = String(
-      date.getMonth() + 1
-    ).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, "0");
 
-    const rawYear =
-      date.getFullYear()
+    const rawYear = date.getFullYear();
 
-    const buddhistYear =
-      rawYear > 2500
-        ? rawYear
-        : rawYear + 543
+    const buddhistYear = rawYear > 2500 ? rawYear : rawYear + 543;
 
-    return `${day}/${month}/${buddhistYear}`
+    return `${day}/${month}/${buddhistYear}`;
   } catch (e) {
-    return '-'
+    return "-";
   }
-}
+};
 
-const safeNumber = (value) => Number(value || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
-
+const safeNumber = (value) =>
+  Number(value || 0).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
 const normalizeItem = (item) => ({
   ...item,
-  category: item.category || '',
+  category: item.category || "",
   budget: Number(item.budget || 0),
   paid: Number(item.paid || 0),
   remaining: Number(
-    item.remaining ??
-    (Number(item.budget || 0) - Number(item.paid || 0))
+    item.remaining ?? Number(item.budget || 0) - Number(item.paid || 0),
   ),
-  title: item.title || item.note || '',
-  platform: item.platform || '',
+  title: item.title || item.note || "",
+  platform: item.platform || "",
   status:
     item.status ||
     (Number(item.paid || 0) >= Number(item.budget || 0)
-      ? 'paid'
+      ? "paid"
       : Number(item.paid || 0) > 0
-      ? 'partial'
-      : 'unpaid'),
-})
+        ? "partial"
+        : "unpaid"),
+});
 
 export default function App() {
   useEffect(() => {
-    testDB()
-  }, [])
+    testDB();
+  }, []);
 
   const testDB = async () => {
-    const { data, error } =
-      await supabase
-        .from('budget')
-        .select('*')
+    const { data, error } = await supabase.from("budget").select("*");
 
-    console.log(data)
-    console.log(error)
-  }
-  
-  const [activeTab, setActiveTab] =
-    useState('tort')
+    console.log(data);
+    console.log(error);
+  };
 
-  const [search, setSearch] =
-    useState('')
+  const [activeTab, setActiveTab] = useState("tort");
 
-  const [filter, setFilter] =
-    useState('all')
+  const [search, setSearch] = useState("");
 
+  const [filter, setFilter] = useState("all");
 
-  const [subFilter, setSubFilter] =
-    useState('all')
+  const [subFilter, setSubFilter] = useState("all");
 
   useEffect(() => {
-    setSubFilter('all')
-  }, [activeTab])
+    setSubFilter("all");
+  }, [activeTab]);
 
-
-  const [open, setOpen] =
-    useState(false)
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = ''
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = ''
-    }
-  }, [open])
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
-  const [payingId, setPayingId] =
-    useState(null)
+  const [payingId, setPayingId] = useState(null);
 
-  const [payAmount, setPayAmount] =
-    useState('')
+  const [payAmount, setPayAmount] = useState("");
 
   const [toast, setToast] = useState({
     show: false,
-    type: 'success',
-    text: '',
-  })
+    type: "success",
+    text: "",
+  });
 
-  const [deleteId, setDeleteId] =
-    useState(null)
+  const [deleteId, setDeleteId] = useState(null);
 
   const [data, setData] = useState({
-  tort: [],
-  furn: [],
-})
+    tort: [],
+    furn: [],
+  });
 
-  const [editingId, setEditingId] = useState(null)
-  const [selectedItem, setSelectedItem] = useState(null)
-
-  
+  const [editingId, setEditingId] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const [form, setForm] = useState({
-    date: '',
-    category: '',
-    title: '',
-    note: '',
-    budget: '',
-    paid: '',
-    remaining: '',
-    status: '',
-    paymentType: 'full',
-    installmentTotal: '',
-    installmentPaid: '',
-    platform: '',
-  })
+    date: "",
+    category: "",
+    title: "",
+    note: "",
+    budget: "",
+    paid: "",
+    remaining: "",
+    status: "",
+    paymentType: "full",
+    installmentTotal: "",
+    installmentPaid: "",
+    platform: "",
+  });
 
-  const normalizeValue = (v) =>
-    String(v ?? '').trim()
+  const normalizeValue = (v) => String(v ?? "").trim();
 
   const hasFormChanges = useMemo(() => {
-    if (!editingId) return true
+    if (!editingId) return true;
 
     return (
       normalizeValue(form.date) !== normalizeValue(selectedItem?.date) ||
-      normalizeValue(form.category) !== normalizeValue(selectedItem?.category) ||
+      normalizeValue(form.category) !==
+        normalizeValue(selectedItem?.category) ||
       normalizeValue(form.title) !== normalizeValue(selectedItem?.title) ||
       normalizeValue(form.note) !== normalizeValue(selectedItem?.note) ||
       Number(form.budget || 0) !== Number(selectedItem?.budget || 0) ||
       Number(form.paid || 0) !== Number(selectedItem?.paid || 0) ||
       normalizeValue(form.platform) !== normalizeValue(selectedItem?.platform)
-    )
-  }, [form, selectedItem, editingId])
+    );
+  }, [form, selectedItem, editingId]);
 
   useEffect(() => {
-  loadBudgets()
-}, [])
+    loadBudgets();
+  }, []);
 
-const loadBudgets = async () => {
-  const { data, error } =
-    await supabase
-      .from('budget')
-      .select('*')
+  const loadBudgets = async () => {
+    const { data, error } = await supabase.from("budget").select("*");
 
-  if (error) {
-    console.log(error)
-    return
-  }
+    if (error) {
+      console.log(error);
+      return;
+    }
 
-  const safeData =
-    Array.isArray(data)
-      ? data
-      : []
+    const safeData = Array.isArray(data) ? data : [];
 
-  const sortNewest = (arr) =>
-    [...arr].sort(
-      (a, b) =>
-        new Date(
-          b.created_at || b.date || 0
-        ) -
-        new Date(
-          a.created_at || a.date || 0
-        )
-    )
+    const sortNewest = (arr) =>
+      [...arr].sort(
+        (a, b) =>
+          new Date(b.created_at || b.date || 0) -
+          new Date(a.created_at || a.date || 0),
+      );
 
-  const tort = sortNewest(
-    safeData.filter(
-      (i) => i.type === 'tort'
-    )
-  )
+    const tort = sortNewest(safeData.filter((i) => i.type === "tort"));
 
-  const furn = sortNewest(
-    safeData.filter(
-      (i) => i.type === 'furn'
-    )
-  )
+    const furn = sortNewest(safeData.filter((i) => i.type === "furn"));
 
-  setData({
-    tort,
-    furn,
-  })
-}
+    setData({
+      tort,
+      furn,
+    });
+  };
 
- const migrateLocalData =
-  async () => {
+  const migrateLocalData = async () => {
     try {
-      const tort =
-        DEFAULT_TORT.map(
-          (i) => ({
-            ...i,
-            type: 'tort',
-          })
-        )
+      const tort = DEFAULT_TORT.map((i) => ({
+        ...i,
+        type: "tort",
+      }));
 
-      const furn =
-        DEFAULT_FURN.map(
-          (i) => ({
-            ...i,
-            type: 'furn',
-          })
-        )
+      const furn = DEFAULT_FURN.map((i) => ({
+        ...i,
+        type: "furn",
+      }));
 
-      const all = [
-        ...tort,
-        ...furn,
-      ]
+      const all = [...tort, ...furn];
 
-      const { error } =
-        await supabase
-          .from('budget')
-          .insert(all)
+      const { error } = await supabase.from("budget").insert(all);
 
       if (error) {
-        console.log(error)
-        alert('migrate fail')
-        return
+        console.log(error);
+        alert("migrate fail");
+        return;
       }
 
-      alert(
-        'migrate success'
-      )
+      alert("migrate success");
 
-      loadBudgets()
+      loadBudgets();
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
+  };
 
- 
-
-  const items =
-    activeTab === 'tort'
-      ? data?.tort || []
-      : data?.furn || []
-
+  const items = activeTab === "tort" ? data?.tort || [] : data?.furn || [];
 
   const MATERIAL_KEYWORDS = [
-    'TOA', 'สี', 'ปลั๊ก', 'สวิตช์', 'สายไฟ', 'หลอด', 'ทราย', 'ปูน',
-    'กระเบื้อง', 'ยาง', 'กาว', 'สกรู', 'ตะปู', 'กระจก', 'ไม้', 'แผ่น',
-    'เหล็ก', 'อิฐ', 'หิน', 'ซีเมนต์', 'ท่อ', 'อลูมิเนียม', 'พลาสติก',
-    'สแตนเลส', 'หลังคา', 'สุขภัณฑ์', 'ฝักบัว', 'ก๊อก', 'ซิงค์', 'แท้งค์',
-    'ถัง', 'เครื่อง', 'แอร์', 'เตา', 'อ่าง', 'พัดลม', 'วัสดุ', 'คอนกรีต', 'อะไหล่',
-  ]
+    "TOA",
+    "สี",
+    "ปลั๊ก",
+    "สวิตช์",
+    "สายไฟ",
+    "หลอด",
+    "ทราย",
+    "ปูน",
+    "กระเบื้อง",
+    "ยาง",
+    "กาว",
+    "สกรู",
+    "ตะปู",
+    "กระจก",
+    "ไม้",
+    "แผ่น",
+    "เหล็ก",
+    "อิฐ",
+    "หิน",
+    "ซีเมนต์",
+    "ท่อ",
+    "อลูมิเนียม",
+    "พลาสติก",
+    "สแตนเลส",
+    "หลังคา",
+    "สุขภัณฑ์",
+    "ฝักบัว",
+    "ก๊อก",
+    "ซิงค์",
+    "แท้งค์",
+    "ถัง",
+    "เครื่อง",
+    "แอร์",
+    "เตา",
+    "อ่าง",
+    "พัดลม",
+    "วัสดุ",
+    "คอนกรีต",
+    "อะไหล่",
+  ];
 
   const filteredItems = (() => {
-    let result = items || []
+    let result = items || [];
 
-    if (activeTab === 'tort' && subFilter !== 'all') {
+    if (activeTab === "tort" && subFilter !== "all") {
       result = result.filter((item) => {
         const isLabor =
-          item.note?.includes('[ต่อเติม]') ||
-          item.title?.includes('[ต่อเติม]')
-        if (subFilter === 'labor') return isLabor
-        if (subFilter === 'material') return !isLabor
-        return true
-      })
+          item.note?.includes("[ต่อเติม]") || item.title?.includes("[ต่อเติม]");
+        if (subFilter === "labor") return isLabor;
+        if (subFilter === "material") return !isLabor;
+        return true;
+      });
     }
 
-    if (filter !== 'all') {
+    if (filter !== "all") {
       result = result.filter((item) => {
-        if (filter === 'done')    return item.status === 'paid'
-        if (filter === 'partial') return item.status === 'partial'
-        if (filter === 'none')    return item.status === 'unpaid'
-        return true
-      })
+        if (filter === "done") return item.status === "paid";
+        if (filter === "partial") return item.status === "partial";
+        if (filter === "none") return item.status === "unpaid";
+        return true;
+      });
     }
 
     if (search.trim()) {
-      const q = search.trim().toLowerCase()
-      result = result.filter((item) =>
-        item.title?.toLowerCase().includes(q) ||
-        item.note?.toLowerCase().includes(q) ||
-        item.category?.toLowerCase().includes(q)
-      )
+      const q = search.trim().toLowerCase();
+      result = result.filter(
+        (item) =>
+          item.title?.toLowerCase().includes(q) ||
+          item.note?.toLowerCase().includes(q) ||
+          item.category?.toLowerCase().includes(q),
+      );
     }
 
-    return result
-  })()
+    return result;
+  })();
 
-  const repairInstallments =
-    async () => {
-      const repaired =
-        (items || []).map((item) => {
-          if (
-            !item.installment
-          )
-            return item
+  const repairInstallments = async () => {
+    const repaired = (items || []).map((item) => {
+      if (!item.installment) return item;
 
-          const monthly =
-            Number(
-              item.installment
-                ?.monthly || 0
-            )
+      const monthly = Number(item.installment?.monthly || 0);
 
-          if (!monthly)
-            return item
+      if (!monthly) return item;
 
-          const paidCount =
-            Math.min(
-              Math.round(
-                Number(
-                  item.paid || 0
-                ) / monthly
-              ),
-              Number(
-                item.installment
-                  ?.total || 0
-              )
-            )
+      const paidCount = Math.min(
+        Math.round(Number(item.paid || 0) / monthly),
+        Number(item.installment?.total || 0),
+      );
 
-          return {
-            ...item,
-            installment: {
-              ...item.installment,
-              paid: paidCount,
-            },
-          }
-        })
+      return {
+        ...item,
+        installment: {
+          ...item.installment,
+          paid: paidCount,
+        },
+      };
+    });
 
-      setData((prev) => ({
-        ...prev,
-        [activeTab]:
-          repaired,
-      }))
+    setData((prev) => ({
+      ...prev,
+      [activeTab]: repaired,
+    }));
 
-      for (const item of repaired) {
-        if (
-          item.installment
-        ) {
-          await supabase
-            .from('budget')
-            .update({
-              installment:
-                item.installment,
-            })
-            .eq('id', item.id)
-        }
+    for (const item of repaired) {
+      if (item.installment) {
+        await supabase
+          .from("budget")
+          .update({
+            installment: item.installment,
+          })
+          .eq("id", item.id);
       }
     }
-
-  
-
-
+  };
 
   const totals = useMemo(() => {
-    const total = items.reduce(
-      (s, i) =>
-        s + Number(i.budget || 0),
-      0
-    )
+    const total = items.reduce((s, i) => s + Number(i.budget || 0), 0);
 
-    const paid = items.reduce(
-      (s, i) =>
-        s + Number(i.paid || 0),
-      0
-    )
+    const paid = items.reduce((s, i) => s + Number(i.paid || 0), 0);
 
     const remain = items.reduce(
       (s, i) =>
-        s +
-        Number(
-          i.remaining ??
-            (Number(i.budget || 0) -
-              Number(i.paid || 0))
-        ),
-      0
-    )
+        s + Number(i.remaining ?? Number(i.budget || 0) - Number(i.paid || 0)),
+      0,
+    );
 
     return {
       total,
       paid,
       remain,
-    }
-  }, [items])
+    };
+  }, [items]);
 
   const progress =
-    totals.total > 0
-      ? Math.round(
-          (totals.paid /
-            totals.total) *
-            100
-        )
-      : 0
+    totals.total > 0 ? Math.round((totals.paid / totals.total) * 100) : 0;
 
   const statusText = (item) => {
-    const remain =
-      item.budget - item.paid
+    const remain = item.budget - item.paid;
 
-    if (item.paid <= 0)
-      return 'ยังไม่จ่าย'
+    if (item.paid <= 0) return "ยังไม่จ่าย";
 
-    if (remain <= 0)
-      return 'จ่ายครบแล้ว'
+    if (remain <= 0) return "จ่ายครบแล้ว";
 
-    return 'ชำระบางส่วน'
-  }
+    return "ชำระบางส่วน";
+  };
 
   const addItem = async () => {
-  try {
-    if (!form.title?.trim()) {
-      showToast('กรุณากรอกรายละเอียด')
-      return
-    }
-
-    if (!form.budget) {
-      showToast('กรุณากรอกราคา')
-      return
-    }
-
-    const budget = Number(form.budget || 0)
-    const paid = Number(form.paid || 0)
-
-    const remaining = Math.max(
-      budget - paid,
-      0
-    )
-
-    const status =
-      paid <= 0
-        ? 'unpaid'
-        : remaining <= 0
-        ? 'paid'
-        : 'partial'
-
-    const next = {
-      date: form.date || null,
-      category:
-        form.category || 'อื่นๆ',
-      title:
-        form.title,
-      note: form.note || '',
-      budget,
-      paid,
-      remaining,
-      status,
-      note:
-        form.note || '',
-      platform:
-        form.platform === 'อื่นๆ'
-          ? form.otherPlatform
-          : form.platform,
-      installment:
-        form.paymentType === 'installment'
-          ? {
-              total: Number(
-                form.installmentTotal || 0
-              ),
-              paid: Number(
-                form.installmentPaid || 0
-              ),
-            }
-          : null,
-
-      type: activeTab,
-    }
-
-    if (editingId) {
-      const payload = {
-        date: form.date || null,
-        category: form.category || '',
-        title: form.title || '',
-        note: form.note || '',
-        budget: Number(form.budget || 0),
-        paid: Number(form.paid || 0),
-        remaining: Math.max(
-          Number(form.budget || 0) -
-            Number(form.paid || 0),
-          0
-        ),
-        status:
-          Number(form.paid || 0) <= 0
-            ? 'unpaid'
-            : Number(form.budget || 0) -
-                Number(form.paid || 0) <= 0
-            ? 'paid'
-            : 'partial',
-        platform:
-          form.platform === 'อื่นๆ'
-            ? form.otherPlatform || ''
-            : form.platform || '',
-        type: activeTab,
+    try {
+      if (!form.title?.trim()) {
+        showToast("กรุณากรอกรายละเอียด");
+        return;
       }
 
-      const { error } =
-        await supabase
-          .from('budget')
+      if (!form.budget) {
+        showToast("กรุณากรอกราคา");
+        return;
+      }
+
+      const budget = Number(form.budget || 0);
+      const paid = Number(form.paid || 0);
+
+      const remaining = Math.max(budget - paid, 0);
+
+      const status = paid <= 0 ? "unpaid" : remaining <= 0 ? "paid" : "partial";
+
+      const next = {
+        date: form.date || null,
+        category: form.category || "อื่นๆ",
+        title: form.title,
+        note: form.note || "",
+        budget,
+        paid,
+        remaining,
+        status,
+        note: form.note || "",
+        platform:
+          form.platform === "อื่นๆ" ? form.otherPlatform : form.platform,
+        installment:
+          form.paymentType === "installment"
+            ? {
+                total: Number(form.installmentTotal || 0),
+                paid: Number(form.installmentPaid || 0),
+              }
+            : null,
+
+        type: activeTab,
+      };
+
+      if (editingId) {
+        const payload = {
+          date: form.date || null,
+          category: form.category || "",
+          title: form.title || "",
+          note: form.note || "",
+          budget: Number(form.budget || 0),
+          paid: Number(form.paid || 0),
+          remaining: Math.max(
+            Number(form.budget || 0) - Number(form.paid || 0),
+            0,
+          ),
+          status:
+            Number(form.paid || 0) <= 0
+              ? "unpaid"
+              : Number(form.budget || 0) - Number(form.paid || 0) <= 0
+                ? "paid"
+                : "partial",
+          platform:
+            form.platform === "อื่นๆ"
+              ? form.otherPlatform || ""
+              : form.platform || "",
+          type: activeTab,
+        };
+
+        const { error } = await supabase
+          .from("budget")
           .update(payload)
-          .eq('id', editingId)
+          .eq("id", editingId);
+
+        if (error) {
+          console.log(error);
+          showToast("แก้ไขไม่สำเร็จ");
+          return;
+        }
+
+        setData((prev) => ({
+          ...prev,
+          [activeTab]: (prev[activeTab] || []).map((item) =>
+            item.id === editingId
+              ? {
+                  ...item,
+                  ...payload,
+                }
+              : item,
+          ),
+        }));
+
+        showToast("แก้ไขรายการสำเร็จ");
+      } else {
+        const { error } = await supabase.from("budget").insert(next);
+
+        if (error) {
+          console.log(error);
+          showToast("บันทึกรายการไม่สำเร็จ");
+          return;
+        }
+
+        const optimisticItem = {
+          id: Date.now(),
+          created_at: new Date().toISOString(),
+          type: activeTab,
+          date: next.date || null,
+          category: next.category || "",
+          title: next.title || "",
+          note: next.note || "",
+          platform: next.platform || "",
+          budget: Number(next.budget || 0),
+          paid: Number(next.paid || 0),
+          remaining: Number(next.remaining || 0),
+          status: next.status || "unpaid",
+        };
+
+        setData((prev) => {
+          const updated = {
+            ...prev,
+            [activeTab]: [optimisticItem, ...(prev[activeTab] || [])],
+          };
+
+          return updated;
+        });
+
+        showToast("บันทึกรายการสำเร็จ");
+      }
+
+      setOpen(false);
+
+      setEditingId(null);
+
+      setEditingId(null);
+      setSelectedItem(null);
+
+      setForm({
+        date: "",
+        category: "",
+        note: "",
+        budget: "",
+        paid: "",
+        note: "",
+        platform: "",
+        otherPlatform: "",
+      });
+    } catch (error) {
+      console.log(error);
+      showToast("เกิดข้อผิดพลาดในการบันทึก");
+    }
+  };
+
+  const handleEdit = (item) => {
+    setEditingId(item.id);
+    setSelectedItem(item);
+
+    setForm({
+      date: item.date || "",
+      category: item.category || "",
+      title: item.title || "",
+      note: item.note || "",
+
+      paymentType: item.installment
+        ? "installment"
+        : Number(item.paid || 0) >= Number(item.budget || 0)
+          ? "full"
+          : "partial",
+
+      budget: String(item.budget || ""),
+      paid: String(item.paid || ""),
+
+      installmentTotal: item.installment?.total || "",
+
+      installmentPaid: item.installment?.paid || "",
+
+      remaining: String(item.remaining || ""),
+      status: item.status || "",
+      platform: item.platform || "",
+      otherPlatform: "",
+    });
+
+    setOpen(true);
+  };
+
+  const confirmPayment = async (id) => {
+    try {
+      const amount = Number(payAmount || 0);
+
+      if (!amount || amount <= 0) {
+        showToast("กรุณากรอกจำนวนเงิน");
+        return;
+      }
+
+      const currentItem = items.find((item) => item.id === id);
+
+      if (!currentItem) {
+        showToast("ไม่พบรายการ");
+        return;
+      }
+
+      const updatedPaid = Number(currentItem.paid || 0) + amount;
+
+      const remaining = Math.max(
+        Number(currentItem.budget || 0) - updatedPaid,
+        0,
+      );
+
+      const status =
+        updatedPaid <= 0 ? "unpaid" : remaining <= 0 ? "paid" : "partial";
+
+      const { error } = await supabase
+        .from("budget")
+        .update({
+          paid: updatedPaid,
+          remaining,
+          status,
+        })
+        .eq("id", id);
 
       if (error) {
-        console.log(error)
-        showToast('แก้ไขไม่สำเร็จ')
-        return
+        console.log(error);
+        showToast("บันทึกการชำระไม่สำเร็จ");
+        return;
       }
 
       setData((prev) => ({
         ...prev,
-        [activeTab]: (prev[activeTab] || []).map((item) =>
-          item.id === editingId
+        [activeTab]: prev[activeTab].map((item) =>
+          item.id === id
             ? {
                 ...item,
-                ...payload,
+                paid: updatedPaid,
+                remaining,
+                status,
               }
-            : item
+            : item,
         ),
-      }))
+      }));
 
-      showToast('แก้ไขรายการสำเร็จ')
-    } else {
-      const { error } =
-        await supabase
-          .from('budget')
-          .insert(next)
+      showToast("บันทึกการชำระสำเร็จ");
 
-      if (error) {
-        console.log(error)
-        showToast('บันทึกรายการไม่สำเร็จ')
-        return
-      }
-
-      const optimisticItem = {
-        id: Date.now(),
-        created_at: new Date().toISOString(),
-        type: activeTab,
-        date: next.date || null,
-        category: next.category || '',
-        title: next.title || '',
-        note: next.note || '',
-        platform: next.platform || '',
-        budget: Number(next.budget || 0),
-        paid: Number(next.paid || 0),
-        remaining: Number(next.remaining || 0),
-        status: next.status || 'unpaid',
-      }
-
-      setData((prev) => {
-        const updated = {
-          ...prev,
-          [activeTab]: [
-            optimisticItem,
-            ...(prev[activeTab] || []),
-          ],
-        }
-
-        return updated
-      })
-
-      showToast('บันทึกรายการสำเร็จ')
+      setPayingId(null);
+      setPayAmount("");
+    } catch (error) {
+      console.log(error);
+      showToast("เกิดข้อผิดพลาดในการชำระเงิน");
     }
-
-    setOpen(false)
-
-    setEditingId(null)
-
-    setEditingId(null)
-                setSelectedItem(null)
-
-                setForm({
-      date: '',
-      category: '',
-      note: '',
-      budget: '',
-      paid: '',
-      note: '',
-      platform: '',
-      otherPlatform: '',
-    })
-  } catch (error) {
-    console.log(error)
-    showToast('เกิดข้อผิดพลาดในการบันทึก')
-  }
-}
-
-const handleEdit = (item) => {
-  setEditingId(item.id)
-  setSelectedItem(item)
-
-  setForm({
-    date: item.date || '',
-    category: item.category || '',
-    title: item.title || '',
-    note: item.note || '',
-
-    paymentType:
-      item.installment
-        ? 'installment'
-        : Number(item.paid || 0) >=
-          Number(item.budget || 0)
-        ? 'full'
-        : 'partial',
-
-    budget: String(item.budget || ''),
-    paid: String(item.paid || ''),
-
-    installmentTotal:
-      item.installment?.total || '',
-
-    installmentPaid:
-      item.installment?.paid || '',
-
-    remaining: String(item.remaining || ''),
-    status: item.status || '',
-    platform: item.platform || '',
-    otherPlatform: '',
-  })
-
-  setOpen(true)
-}
-
-const confirmPayment = async (id) => {
-  try {
-    const amount = Number(payAmount || 0)
-
-    if (!amount || amount <= 0) {
-      showToast('กรุณากรอกจำนวนเงิน')
-      return
-    }
-
-    const currentItem = items.find((item) => item.id === id)
-
-    if (!currentItem) {
-      showToast('ไม่พบรายการ')
-      return
-    }
-
-    const updatedPaid =
-      Number(currentItem.paid || 0) + amount
-
-    const remaining = Math.max(
-      Number(currentItem.budget || 0) - updatedPaid,
-      0
-    )
-
-    const status =
-      updatedPaid <= 0
-        ? 'unpaid'
-        : remaining <= 0
-        ? 'paid'
-        : 'partial'
-
-    const { error } = await supabase
-      .from('budget')
-      .update({
-        paid: updatedPaid,
-        remaining,
-        status,
-      })
-      .eq('id', id)
-
-    if (error) {
-      console.log(error)
-      showToast('บันทึกการชำระไม่สำเร็จ')
-      return
-    }
-
-    setData((prev) => ({
-      ...prev,
-      [activeTab]: prev[
-        activeTab
-      ].map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              paid: updatedPaid,
-              remaining,
-              status,
-            }
-          : item
-      ),
-    }))
-
-
-    showToast('บันทึกการชำระสำเร็จ')
-
-    setPayingId(null)
-    setPayAmount('')
-  } catch (error) {
-    console.log(error)
-    showToast('เกิดข้อผิดพลาดในการชำระเงิน')
-  }
-}
+  };
 
   const deleteItem = async (id) => {
-    await supabase
-      .from('budget')
-      .delete()
-      .eq('id', id)
+    await supabase.from("budget").delete().eq("id", id);
 
     setData((prev) => ({
       ...prev,
-      [activeTab]:
-        prev[activeTab].filter(
-          (item) => item.id !== id
-        ),
-    }))
+      [activeTab]: prev[activeTab].filter((item) => item.id !== id),
+    }));
 
-    setDeleteId(null)
+    setDeleteId(null);
 
-    showToast('ลบรายการสำเร็จ')
-  }
+    showToast("ลบรายการสำเร็จ");
+  };
 
   const showToast = (text) => {
     setToast({
       show: true,
       text,
-    })
+    });
 
     setTimeout(() => {
       setToast({
         show: false,
-        text: '',
-      })
-    }, 2200)
-  }
+        text: "",
+      });
+    }, 2200);
+  };
 
   const resetData = () => {
     setData({
       tort: DEFAULT_TORT,
       furn: DEFAULT_FURN,
-    })
-  }
+    });
+  };
 
   return (
     <>
-
-
-<style>
-{`
+      <style>
+        {`
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap');
 
 *{
@@ -872,11 +735,10 @@ button:hover{
   transform:translateY(-2px);
 }
 `}
-</style>
+      </style>
 
-      
-<style>
-{`
+      <style>
+        {`
   @media (max-width: 1024px) {
     .hero-grid {
       grid-template-columns: 1fr !important;
@@ -1053,9 +915,9 @@ button:hover{
     }
   }
 `}
-</style>
+      </style>
 
-<style>
+      <style>
         {`
           @keyframes meshMove {
             0% {
@@ -1099,1929 +961,1721 @@ button:hover{
         `}
       </style>
 
-    <div
-      className="app-shell"
-      style={{
-        minHeight: '100vh',
-        background: `
+      <div
+        className="app-shell"
+        style={{
+          minHeight: "100vh",
+          background: `
           radial-gradient(circle at 15% 10%, rgba(0,0,0,.07), transparent 35%),
           radial-gradient(circle at 85% 80%, rgba(0,0,0,.05), transparent 35%),
           linear-gradient(160deg,#EEF3F9 0%,#F4F8FC 100%)
         `,
-        backgroundSize: '100% 100%',
-        animation: 'none',
-        padding: '40px',
-        fontFamily: "'IBM Plex Sans Thai', sans-serif",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
+          backgroundSize: "100% 100%",
+          animation: "none",
+          padding: "40px",
+          fontFamily: "'IBM Plex Sans Thai', sans-serif",
         }}
       >
-        
-<div
-  className="hero-grid"
-  style={{
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    alignItems: 'center',
-    gap: '40px',
-    marginBottom: '48px',
-    minHeight: '360px',
-  }}
->
-  <div
-    style={{
-      position: 'relative',
-      zIndex: 2,
-    }}
-  >
-    <h1
-      className="hero-title"
-      style={{
-        fontSize: 'clamp(52px,6vw,84px)',
-        lineHeight: '.95',
-        letterSpacing: '-0.04em',
-        margin: 0,
-        color: '#1B2430',
-        fontWeight: 800,
-      }}
-    >
-      AM Home
-      <br />
-      Budget
-    </h1>
-
-    <p
-      className="hero-subtitle"
-      style={{
-        color: '#7C8798',
-        marginTop: '18px',
-        fontSize: '16px',
-        lineHeight: 1.7,
-        maxWidth: '640px',
-      }}
-    >
-      Take control of your home budget with a
-      softer, more intentional experience —
-      from renovation plans to furniture,
-      appliances, and installment tracking.
-    </p>
-
-  </div>
-
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-    }}
-  >
-    <img
-      src={house3d}
-      alt="3D House"
-      style={{
-        position: 'relative',
-        width: '100%',
-        maxWidth: '760px',
-        objectFit: 'contain',
-        filter:
-          'drop-shadow(0 40px 80px rgba(0,0,0,.18))',
-        animation:
-          'floatCard 7s ease-in-out infinite',
-      }}
-    />
-  </div>
-</div>
-
-            <div
-      style={{
-        display: 'flex',
-        gap: '12px',
-        alignItems: 'right',
-        marginTop: '32px',
-        flexWrap: 'wrap',
-        marginBottom: '24px',
-    width: '100%',
-    justifyContent: 'flex-end',
-      }}
-    >
-      
-
-      <div
-        style={{
-          display: 'flex',
-          background: '#DDE6F0',
-          padding: '4px',
-          borderRadius: '14px',
-          fontSize: '16px'
-        }}
-      >
-        <TabButton
-          active={activeTab === 'tort'}
-          onClick={() => setActiveTab('tort')}
-        >
-          🔨 ต่อเติม
-        </TabButton>
-
-        <TabButton
-          active={activeTab === 'furn'}
-          onClick={() => setActiveTab('furn')}
-        >
-          🛋 ของแต่งบ้าน
-        </TabButton>
-      </div>
-    </div>
-
-<div
-  className="summary-grid"
-  style={{
-    display: 'grid',
-    gridTemplateColumns:
-      window.innerWidth < 768
-        ? '1fr'
-        : '2fr 1fr 1fr',
-    gap: '16px',
-    marginBottom: '20px',
-  }}
->
-  <SummaryCard
-    title="งบทั้งหมด"
-    value={totals.total}
-    color="#111111"
-    large
-    sub={`จ่ายไปแล้ว ${progress}% ของงบทั้งหมด`}
-  />
-  <SummaryCard
-    title="จ่ายแล้ว"
-    value={totals.paid}
-    color="#000000"
-    sub="ยอดที่ชำระแล้ว"
-  />
-  <SummaryCard
-    title="คงเหลือ"
-    value={totals.remain}
-    color="#1E2D3D"
-    sub="ยอดค้างจ่าย"
-  />
-</div>
-
         <div
           style={{
-            background: '#FFFFFF',
-            borderRadius: '20px',
-            padding: '20px 24px',
-            marginBottom: '20px',
-            border: '1px solid #DDE6F0',
-            boxShadow: '0 2px 12px rgba(30,45,61,.05)',
+            maxWidth: "1400px",
+            margin: "0 auto",
           }}
         >
           <div
+            className="hero-grid"
             style={{
-              display: 'flex',
-              justifyContent:
-                'space-between',
-              marginBottom: '10px',
-            }}
-          >
-            <span>
-              ความคืบหน้าการชำระ
-            </span>
-
-            <strong>
-              {progress}%
-            </strong>
-          </div>
-
-          <div
-            style={{
-              height: '8px',
-              borderRadius:
-                '999px',
-              background:
-                '#EEF3F9',
-              overflow: 'hidden',
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              alignItems: "center",
+              gap: "40px",
+              marginBottom: "48px",
+              minHeight: "360px",
             }}
           >
             <div
               style={{
-                width: `${progress}%`,
-                height: '100%',
-                background:
-                  'linear-gradient(90deg,#111111,#000000)',
-              }}
-            />
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: '#FFFFFF',
-            borderRadius: '20px',
-            overflow: 'hidden',
-            border: '1px solid #DDE6F0',
-            boxShadow: '0 2px 12px rgba(30,45,61,.05)',
-          }}
-        >
-          <div
-            className="table-toolbar"
-            style={{
-              padding: '16px',
-              borderBottom:
-                '1px solid rgba(255,255,255,.45)',
-              display: 'flex',
-              gap: '10px',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-            }}
-          >
-            <strong>
-              รายการทั้งหมด
-            </strong>
-
-            <input
-              value={search}
-              onChange={(e) =>
-                setSearch(
-                  e.target.value
-                )
-              }
-              placeholder="ค้นหา..."
-              style={{
-                marginLeft:
-                  'auto',
-                padding:
-                  '10px 14px',
-                borderRadius:
-                  '999px',
-                border:
-                  '1px solid rgba(0,0,0,.06)',
-                background: 'rgba(255,255,255,.75)',
-                backdropFilter: 'blur(16px)',
-              }}
-            />
-
-            <button
-              className="desktop-add-btn"
-              onClick={() => {
-                setEditingId(null)
-                setSelectedItem(null)
-
-                setForm({
-                  date: new Date()
-                    .toISOString()
-                    .slice(0, 10),
-                  category:
-                    activeTab === 'tort'
-                      ? TCATS[0]
-                      : FCATS[0],
-
-                  paymentType: 'full',
-
-                  title: '',
-                  note: '',
-                  budget: '',
-                  paid: '',
-
-                  installmentTotal: '',
-                  installmentPaid: '',
-
-                  platform: '',
-                  otherPlatform: '',
-                })
-
-                setOpen(true)
-              }}
-              style={{
-                border: 'none',
-                background: 'linear-gradient(135deg,#111111,#000000)',
-                color: '#fff',
-                borderRadius: '36px',
-                padding: '12px 18px',
-                fontWeight: 700,
-                boxShadow: '0 6px 20px rgba(0,0,0,.28)',
-                transition: 'all .25s ease',
+                position: "relative",
+                zIndex: 2,
               }}
             >
-              + เพิ่มรายการ
-            </button>
+              <h1
+                className="hero-title"
+                style={{
+                  fontSize: "clamp(52px,6vw,84px)",
+                  lineHeight: ".95",
+                  letterSpacing: "-0.04em",
+                  margin: 0,
+                  color: "#1B2430",
+                  fontWeight: 800,
+                }}
+              >
+                AM Home
+                <br />
+                Budget
+              </h1>
 
-            {activeTab === 'tort' && (
-              <div style={{
-                width: '100%',
-                display: 'flex',
-                gap: '8px',
-                borderTop: '1px solid rgba(0,0,0,.06)',
-                paddingTop: '10px',
-                marginTop: '2px',
-                alignItems: 'center',
-              }}>
-                <span style={{ fontSize: '13px', color: '#8B8B8B', whiteSpace: 'nowrap' }}>
-                  ประเภท:
-                </span>
-                {[['all','ทั้งหมด'],['labor','ค่าแรง'],['material','ค่าวัสดุ']].map(([val, label]) => (
-                  <FilterButton
-                    key={val}
-                    active={subFilter === val}
-                    onClick={() => setSubFilter(val)}
-                  >
-                    {label}
-                  </FilterButton>
-                ))}
-              </div>
-            )}
-
-            <div className="status-filter-row" style={{
-              width: '100%',
-              display: 'flex',
-              gap: '8px',
-              borderTop: '1px solid rgba(0,0,0,.06)',
-              paddingTop: '10px',
-              marginTop: '2px',
-              alignItems: 'center',
-            }}>
-              <span style={{ fontSize: '13px', color: '#8B8B8B', whiteSpace: 'nowrap' }}>
-                สถานะ:
-              </span>
-              <div className="status-chips-scroll">
-                {[['all','ทั้งหมด'],['done','จ่ายครบ'],['partial','บางส่วน'],['none','ยังไม่จ่าย']].map(([val, label]) => (
-                  <FilterButton
-                    key={val}
-                    active={filter === val}
-                    onClick={() => setFilter(val)}
-                  >
-                    {label}
-                  </FilterButton>
-                ))}
-              </div>
+              <p
+                className="hero-subtitle"
+                style={{
+                  color: "#7C8798",
+                  marginTop: "18px",
+                  fontSize: "16px",
+                  lineHeight: 1.7,
+                  maxWidth: "640px",
+                }}
+              >
+                Take control of your home budget with a softer, more intentional
+                experience — from renovation plans to furniture, appliances, and
+                installment tracking.
+              </p>
             </div>
-            
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <img
+                src={house3d}
+                alt="3D House"
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  maxWidth: "760px",
+                  objectFit: "contain",
+                  filter: "drop-shadow(0 40px 80px rgba(0,0,0,.18))",
+                  animation: "floatCard 7s ease-in-out infinite",
+                }}
+              />
+            </div>
           </div>
 
-          
-          <div className="mobile-cards">
-            {filteredItems.map((item) => {
-              const remain = item.budget - item.paid
+          <div
+            style={{
+              display: "flex",
+              gap: "12px",
+              alignItems: "right",
+              marginTop: "32px",
+              flexWrap: "wrap",
+              marginBottom: "24px",
+              width: "100%",
+              justifyContent: "flex-end",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                background: "#DDE6F0",
+                padding: "4px",
+                borderRadius: "14px",
+                fontSize: "16px",
+              }}
+            >
+              <TabButton
+                active={activeTab === "tort"}
+                onClick={() => setActiveTab("tort")}
+              >
+                🔨 ต่อเติม
+              </TabButton>
 
-              return (
+              <TabButton
+                active={activeTab === "furn"}
+                onClick={() => setActiveTab("furn")}
+              >
+                🛋 ของแต่งบ้าน
+              </TabButton>
+            </div>
+          </div>
+
+          <div
+            className="summary-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                window.innerWidth < 768 ? "1fr" : "2fr 1fr 1fr",
+              gap: "16px",
+              marginBottom: "20px",
+            }}
+          >
+            <SummaryCard
+              title="งบทั้งหมด"
+              value={totals.total}
+              color="#111111"
+              large
+              sub={`จ่ายไปแล้ว ${progress}% ของงบทั้งหมด`}
+            />
+            <SummaryCard
+              title="จ่ายแล้ว"
+              value={totals.paid}
+              color="#000000"
+              sub="ยอดที่ชำระแล้ว"
+            />
+            <SummaryCard
+              title="คงเหลือ"
+              value={totals.remain}
+              color="#1E2D3D"
+              sub="ยอดค้างจ่าย"
+            />
+          </div>
+
+          <div
+            style={{
+              background: "#FFFFFF",
+              borderRadius: "20px",
+              padding: "20px 24px",
+              marginBottom: "20px",
+              border: "1px solid #DDE6F0",
+              boxShadow: "0 2px 12px rgba(30,45,61,.05)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "10px",
+              }}
+            >
+              <span>ความคืบหน้าการชำระ</span>
+
+              <strong>{progress}%</strong>
+            </div>
+
+            <div
+              style={{
+                height: "8px",
+                borderRadius: "999px",
+                background: "#EEF3F9",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${progress}%`,
+                  height: "100%",
+                  background: "linear-gradient(90deg,#111111,#000000)",
+                }}
+              />
+            </div>
+          </div>
+
+          <div
+            style={{
+              background: "#FFFFFF",
+              borderRadius: "20px",
+              overflow: "hidden",
+              border: "1px solid #DDE6F0",
+              boxShadow: "0 2px 12px rgba(30,45,61,.05)",
+            }}
+          >
+            <div
+              className="table-toolbar"
+              style={{
+                padding: "16px",
+                borderBottom: "1px solid rgba(255,255,255,.45)",
+                display: "flex",
+                gap: "10px",
+                flexWrap: "wrap",
+                alignItems: "center",
+              }}
+            >
+              <strong>รายการทั้งหมด</strong>
+
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="ค้นหา..."
+                style={{
+                  marginLeft: "auto",
+                  padding: "10px 14px",
+                  borderRadius: "999px",
+                  border: "1px solid rgba(0,0,0,.06)",
+                  background: "rgba(255,255,255,.75)",
+                  backdropFilter: "blur(16px)",
+                }}
+              />
+
+              <button
+                className="desktop-add-btn"
+                onClick={() => {
+                  setEditingId(null);
+                  setSelectedItem(null);
+
+                  setForm({
+                    date: new Date().toISOString().slice(0, 10),
+                    category: activeTab === "tort" ? TCATS[0] : FCATS[0],
+
+                    paymentType: "full",
+
+                    title: "",
+                    note: "",
+                    budget: "",
+                    paid: "",
+
+                    installmentTotal: "",
+                    installmentPaid: "",
+
+                    platform: "",
+                    otherPlatform: "",
+                  });
+
+                  setOpen(true);
+                }}
+                style={{
+                  border: "none",
+                  background: "linear-gradient(135deg,#111111,#000000)",
+                  color: "#fff",
+                  borderRadius: "36px",
+                  padding: "12px 18px",
+                  fontWeight: 700,
+                  boxShadow: "0 6px 20px rgba(0,0,0,.28)",
+                  transition: "all .25s ease",
+                }}
+              >
+                + เพิ่มรายการ
+              </button>
+
+              {activeTab === "tort" && (
                 <div
-  key={item.id}
-  className="mobile-budget-card"
-  style={{
-    position: 'relative',
-  }}
->
-                  <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    gap: "8px",
+                    borderTop: "1px solid rgba(0,0,0,.06)",
+                    paddingTop: "10px",
+                    marginTop: "2px",
+                    alignItems: "center",
+                  }}
+                >
+                  <span
                     style={{
-                      display: 'flex',
-                      justifyContent: 'flex-start',
-                      marginBottom: '8px',
+                      fontSize: "13px",
+                      color: "#8B8B8B",
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    <StatusBadge>
-                      {statusText(item)}
-                    </StatusBadge>
-                  </div>
+                    ประเภท:
+                  </span>
+                  {[
+                    ["all", "ทั้งหมด"],
+                    ["labor", "ค่าแรง"],
+                    ["material", "ค่าวัสดุ"],
+                  ].map(([val, label]) => (
+                    <FilterButton
+                      key={val}
+                      active={subFilter === val}
+                      onClick={() => setSubFilter(val)}
+                    >
+                      {label}
+                    </FilterButton>
+                  ))}
+                </div>
+              )}
 
-                  <div className="mobile-budget-title">
-  {item.title || item.note}
-</div>
+              <div
+                className="status-filter-row"
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  gap: "8px",
+                  borderTop: "1px solid rgba(0,0,0,.06)",
+                  paddingTop: "10px",
+                  marginTop: "2px",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "13px",
+                    color: "#8B8B8B",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  สถานะ:
+                </span>
+                <div className="status-chips-scroll">
+                  {[
+                    ["all", "ทั้งหมด"],
+                    ["done", "จ่ายครบ"],
+                    ["partial", "บางส่วน"],
+                    ["none", "ยังไม่จ่าย"],
+                  ].map(([val, label]) => (
+                    <FilterButton
+                      key={val}
+                      active={filter === val}
+                      onClick={() => setFilter(val)}
+                    >
+                      {label}
+                    </FilterButton>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-{item.installment && (
-  <div
-    style={{
-      marginTop: '10px',
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '8px',
-      minHeight: '36px',
-      padding: '8px 14px',
-      borderRadius: '999px',
-      background:
-        'rgba(0,0,0,.12)',
-      color: '#000000',
-      fontWeight: 700,
-      fontSize: '13px',
-      flexWrap: 'wrap',
-    }}
-  >
-    ผ่อน{' '}
-    {item.installment.paid}/
-    {item.installment.total}
+            <div className="mobile-cards">
+              {filteredItems.map((item) => {
+                const remain = item.budget - item.paid;
 
-    <span
-      style={{
-        opacity: 0.45,
-      }}
-    >
-      •
-    </span>
-
-    ฿
-    {Math.round(
-      Number(item.budget || 0) /
-        Number(
-          item.installment?.total || 1
-        )
-    ).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-    /งวด
-  </div>
-)}
-
-                  <div className="mobile-budget-meta">
-                    <div>
-                      <div className="mobile-budget-label">
-                        หมวด
-                      </div>
-
-                      <div className="mobile-budget-value">
-                        {item.category}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="mobile-budget-label">
-                        วันที่
-                      </div>
-
-                      <div className="mobile-budget-value">
-                        {formatThaiDate(item.date)}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="mobile-budget-label">
-                        ซื้อจาก
-                      </div>
-
-                      <div className="mobile-budget-value">
-                        {item.platform || '—'}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="mobile-budget-label">
-                        จ่ายแล้ว
-                      </div>
-
-                      <div className="mobile-budget-value">
-                        ฿{safeNumber(item.paid)}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="mobile-budget-label">
-                        คงเหลือ
-                      </div>
-
-                      <div className="mobile-budget-value">
-                        ฿{safeNumber(remain)}
-                      </div>
-                    </div>
-                  </div>
-
-                  {item.note && (
+                return (
+                  <div
+                    key={item.id}
+                    className="mobile-budget-card"
+                    style={{
+                      position: "relative",
+                    }}
+                  >
                     <div
                       style={{
-                        marginTop: '8px',
-                        padding: '12px',
-                        borderRadius: '14px',
-                        background: 'rgba(0,0,0,.04)',
-                        fontSize: '14px',
-                        lineHeight: 1.5,
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        marginBottom: "8px",
                       }}
                     >
-                      <strong>หมายเหตุ:</strong> {item.note}
+                      <StatusBadge>{statusText(item)}</StatusBadge>
                     </div>
-                  )}
 
-                  <div
-  style={{
-    display: 'flex',
-    gap: '10px',
-    marginTop: '18px',
-        alignItems: 'end'
-  }}
->
-  {item.paid < item.budget && (
-    <button
-      className="mobile-action"
-      onClick={() => {
-        setPayingId(item.id)
+                    <div className="mobile-budget-title">
+                      {item.title || item.note}
+                    </div>
 
-        setPayAmount(
-          item.installment
-            ? String(
-                Math.round(
-                  item.budget /
-                    item.installment.total
-                )
-              )
-            : item?.installmentPerMonth
-              ? String(
-                  item.installmentPerMonth
-                )
-              : ''
-        )
-      }}
-    >
-      + ชำระ
-    </button>
-  )}
+                    {item.installment && (
+                      <div
+                        style={{
+                          marginTop: "10px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          minHeight: "36px",
+                          padding: "8px 14px",
+                          borderRadius: "999px",
+                          background: "rgba(0,0,0,.12)",
+                          color: "#000000",
+                          fontWeight: 700,
+                          fontSize: "13px",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        ผ่อน {item.installment.paid}/{item.installment.total}
+                        <span
+                          style={{
+                            opacity: 0.45,
+                          }}
+                        >
+                          •
+                        </span>
+                        ฿
+                        {Math.round(
+                          Number(item.budget || 0) /
+                            Number(item.installment?.total || 1),
+                        ).toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                        /งวด
+                      </div>
+                    )}
 
+                    <div className="mobile-budget-meta">
+                      <div>
+                        <div className="mobile-budget-label">หมวด</div>
 
-  <button
-    onClick={() =>
-      handleEdit(item)
-    }
-    style={{
-      width: '54px',
-      height: '54px',
-      borderRadius: '18px',
-      border:
-        '1px solid rgba(0,0,0,.06)',
-      background:
-        'rgba(255,255,255,.95)',
-      color: '#111',
-      fontSize: '18px',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexShrink: 0,
-    }}
-  >
-    <EditOutlined />
-  </button>
+                        <div className="mobile-budget-value">
+                          {item.category}
+                        </div>
+                      </div>
 
-  <button
-    onClick={() =>
-      setDeleteId(item.id)
-    }
-    style={{
-      width: '54px',
-      height: '54px',
-      borderRadius: '18px',
-      border:
-        '1px solid rgba(255,0,0,.08)',
-      background:
-        'rgba(255,240,240,.95)',
-      color: '#C94B4B',
-      fontSize: '18px',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexShrink: 0,
-    }}
-  >
-    <DeleteOutlined />
-  </button>
-</div>
-                </div>
-              )
-            })}
-          </div>
+                      <div>
+                        <div className="mobile-budget-label">วันที่</div>
 
-          <button
-            className="mobile-fab"
-            onClick={() => {
-              setEditingId(null)
-              setSelectedItem(null)
+                        <div className="mobile-budget-value">
+                          {formatThaiDate(item.date)}
+                        </div>
+                      </div>
 
-              setForm({
-                date: new Date()
-                  .toISOString()
-                  .slice(0, 10),
-                category:
-                  activeTab === 'tort'
-                    ? TCATS[0]
-                    : FCATS[0],
-                paymentType: 'full',
-                title: '',
-                note: '',
-                budget: '',
-                paid: '',
-                installmentTotal: '',
-                installmentPaid: '',
-                platform: '',
-                otherPlatform: '',
-              })
+                      <div>
+                        <div className="mobile-budget-label">ซื้อจาก</div>
 
-              setOpen(true)
-            }}
-          >
-            +
-          </button>
+                        <div className="mobile-budget-value">
+                          {item.platform || "—"}
+                        </div>
+                      </div>
 
-<div
-            style={{
-              overflowX: 'auto',
-            }}
-          >
-            <table
-              className="desktop-table"
-              style={{
-                width: '100%',
-                minWidth:
-                  '1000px',
-                borderCollapse:
-                  'collapse',
+                      <div>
+                        <div className="mobile-budget-label">จ่ายแล้ว</div>
+
+                        <div className="mobile-budget-value">
+                          ฿{safeNumber(item.paid)}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="mobile-budget-label">คงเหลือ</div>
+
+                        <div className="mobile-budget-value">
+                          ฿{safeNumber(remain)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {item.note && (
+                      <div
+                        style={{
+                          marginTop: "8px",
+                          padding: "12px",
+                          borderRadius: "14px",
+                          background: "rgba(0,0,0,.04)",
+                          fontSize: "14px",
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        <strong>หมายเหตุ:</strong> {item.note}
+                      </div>
+                    )}
+
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "10px",
+                        marginTop: "18px",
+                        alignItems: "end",
+                      }}
+                    >
+                      {item.paid < item.budget && (
+                        <button
+                          className="mobile-action"
+                          onClick={() => {
+                            setPayingId(item.id);
+
+                            setPayAmount(
+                              item.installment
+                                ? String(
+                                    Math.round(
+                                      item.budget / item.installment.total,
+                                    ),
+                                  )
+                                : item?.installmentPerMonth
+                                  ? String(item.installmentPerMonth)
+                                  : "",
+                            );
+                          }}
+                        >
+                          + ชำระ
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => handleEdit(item)}
+                        style={{
+                          width: "54px",
+                          height: "54px",
+                          borderRadius: "18px",
+                          border: "1px solid rgba(0,0,0,.06)",
+                          background: "rgba(255,255,255,.95)",
+                          color: "#111",
+                          fontSize: "18px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <EditOutlined />
+                      </button>
+
+                      <button
+                        onClick={() => setDeleteId(item.id)}
+                        style={{
+                          width: "54px",
+                          height: "54px",
+                          borderRadius: "18px",
+                          border: "1px solid rgba(255,0,0,.08)",
+                          background: "rgba(255,240,240,.95)",
+                          color: "#C94B4B",
+                          fontSize: "18px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <DeleteOutlined />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              className="mobile-fab"
+              onClick={() => {
+                setEditingId(null);
+                setSelectedItem(null);
+
+                setForm({
+                  date: new Date().toISOString().slice(0, 10),
+                  category: activeTab === "tort" ? TCATS[0] : FCATS[0],
+                  paymentType: "full",
+                  title: "",
+                  note: "",
+                  budget: "",
+                  paid: "",
+                  installmentTotal: "",
+                  installmentPaid: "",
+                  platform: "",
+                  otherPlatform: "",
+                });
+
+                setOpen(true);
               }}
             >
-              <thead>
-                <tr>
-                  <TH>
-                    วันที่
-                  </TH>
-                  <TH>
-                    หมวด
-                  </TH>
-                  <TH>
-                    รายละเอียด
-                  </TH>
-                  <TH>
-                    ซื้อจาก
-                  </TH>
-                  <TH>
-                    หมายเหตุ
-                  </TH>
-                  <TH>
-                    ราคาเต็ม
-                  </TH>
-                  <TH>
-                    จ่ายแล้ว
-                  </TH>
-                  <TH>
-                    คงเหลือ
-                  </TH>
-                  <TH sticky>
-                    Action
-                  </TH>
-                </tr>
-              </thead>
+              +
+            </button>
 
-              <tbody>
-                {filteredItems.map(
-                  (item) => {
-                    const remain =
-                      item.budget -
-                      item.paid
+            <div
+              style={{
+                overflowX: "auto",
+              }}
+            >
+              <table
+                className="desktop-table"
+                style={{
+                  width: "100%",
+                  minWidth: "1000px",
+                  borderCollapse: "collapse",
+                }}
+              >
+                <thead>
+                  <tr>
+                    <TH>วันที่</TH>
+                    <TH>หมวด</TH>
+                    <TH>รายละเอียด</TH>
+                    <TH>ซื้อจาก</TH>
+                    <TH>หมายเหตุ</TH>
+                    <TH>ราคาเต็ม</TH>
+                    <TH>จ่ายแล้ว</TH>
+                    <TH>คงเหลือ</TH>
+                    <TH sticky>Action</TH>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredItems.map((item) => {
+                    const remain = item.budget - item.paid;
 
                     return (
                       <>
-                        <tr
-                          key={
-                            item.id
-                          }
-                        >
-                          <TD>
-                            {
-                              formatThaiDate(item.date)
-                            }
-                          </TD>
+                        <tr key={item.id}>
+                          <TD>{formatThaiDate(item.date)}</TD>
 
-                          <TD>
-                            {
-                              item.category
-                            }
-                          </TD>
+                          <TD>{item.category}</TD>
 
                           <TD>
                             <div
                               style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '10px',
-                                alignItems: 'flex-start',
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "10px",
+                                alignItems: "flex-start",
                               }}
                             >
-                              <div>
-                                {
-                                  item.title || item.note
-                                }
-                              </div>
+                              <div>{item.title || item.note}</div>
 
-                            {item.installment && (
-                              <div
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '8px',
-                                  padding: '8px 14px',
-                                  borderRadius: '999px',
-                                  background:
-                                    'rgba(0,0,0,.12)',
-                                  color: '#000000',
-                                  fontSize: '14px',
-                                  fontWeight: 700,
-                                  marginTop: '10px',
-                                  flexWrap: 'wrap',
-                                }}
-                              >
-                                <span>
-                                  ผ่อน{' '}
-                                  {item.installment.paid}/
-                                  {item.installment.total}
-                                </span>
-
-                                <span
+                              {item.installment && (
+                                <div
                                   style={{
-                                    opacity: 0.45,
-                                    fontWeight: 500,
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    padding: "8px 14px",
+                                    borderRadius: "999px",
+                                    background: "rgba(0,0,0,.12)",
+                                    color: "#000000",
+                                    fontSize: "14px",
+                                    fontWeight: 700,
+                                    marginTop: "10px",
+                                    flexWrap: "wrap",
                                   }}
                                 >
-                                  •
-                                </span>
+                                  <span>
+                                    ผ่อน {item.installment.paid}/
+                                    {item.installment.total}
+                                  </span>
 
-                                <span>
-                                  ฿
-                                  {Math.round(
-                                    item.budget /
-                                    item.installment.total
-                                  ).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                                  / งวด
-                                </span>
-                              </div>
-                            )}
+                                  <span
+                                    style={{
+                                      opacity: 0.45,
+                                      fontWeight: 500,
+                                    }}
+                                  >
+                                    •
+                                  </span>
 
+                                  <span>
+                                    ฿
+                                    {Math.round(
+                                      item.budget / item.installment.total,
+                                    ).toLocaleString("en-US", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })}
+                                    / งวด
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </TD>
 
-                          <TD>
-                            {item.platform || '—'}
-                          </TD>
+                          <TD>{item.platform || "—"}</TD>
 
                           <TD
                             style={{
-                              maxWidth: '220px',
-                              whiteSpace: 'pre-wrap',
-                              color: '#666',
+                              maxWidth: "220px",
+                              whiteSpace: "pre-wrap",
+                              color: "#666",
                             }}
                           >
-                            {item.note || '—'}
+                            {item.note || "—"}
                           </TD>
 
-                          <TD>
-                            ฿
-                            {safeNumber(item.budget)}
-                          </TD>
+                          <TD>฿{safeNumber(item.budget)}</TD>
 
-                          <TD>
-                            ฿
-                            {safeNumber(item.paid)}
-                          </TD>
+                          <TD>฿{safeNumber(item.paid)}</TD>
 
-                          <TD>
-                            ฿
-                            {safeNumber(remain)}
-                          </TD>
+                          <TD>฿{safeNumber(remain)}</TD>
 
-                          <TD
-                            sticky
-                          >
+                          <TD sticky>
                             <div
                               style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                gap: '8px',
-                                alignItems: 'center',
-                                justifyContent: 'flex-end',
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "8px",
+                                alignItems: "center",
+                                justifyContent: "flex-end",
                               }}
                             >
-                              <StatusBadge>
-                                {statusText(item)}
-                              </StatusBadge>
-                             {item.paid < item.budget && (
-  <button
-    style={{
-      border:
-        '1px solid rgba(0,0,0,.08)',
-      background:
-        'rgba(255,255,255,.92)',
-      boxShadow:
-        '0 4px 14px rgba(0,0,0,.06)',
-      borderRadius: '12px',
-      padding: '8px 12px',
-      whiteSpace: 'nowrap',
-    }}
-    onClick={() => {
-      setPayingId(item.id)
+                              <StatusBadge>{statusText(item)}</StatusBadge>
+                              {item.paid < item.budget && (
+                                <button
+                                  style={{
+                                    border: "1px solid rgba(0,0,0,.08)",
+                                    background: "rgba(255,255,255,.92)",
+                                    boxShadow: "0 4px 14px rgba(0,0,0,.06)",
+                                    borderRadius: "12px",
+                                    padding: "8px 12px",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                  onClick={() => {
+                                    setPayingId(item.id);
 
-      setPayAmount(
-        item.installment
-          ? String(
-              Math.round(
-                item.budget /
-                  item.installment.total
-              )
-            )
-          : ''
-      )
-    }}
-  >
-    + ชำระ
-  </button>
-)}
+                                    setPayAmount(
+                                      item.installment
+                                        ? String(
+                                            Math.round(
+                                              item.budget /
+                                                item.installment.total,
+                                            ),
+                                          )
+                                        : "",
+                                    );
+                                  }}
+                                >
+                                  + ชำระ
+                                </button>
+                              )}
 
-<button
-  onClick={() =>
-    handleEdit(item)
-  }
-  style={{
-    width: '32px',
-    height: '32px',
-    borderRadius: '12px',
-    border:
-      '1px solid rgba(0,0,0,.08)',
-    background:
-      'rgba(255,255,255,.92)',
-    color: '#111',
-    fontSize: '16px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}
->
-  <EditOutlined />
-</button>
+                              <button
+                                onClick={() => handleEdit(item)}
+                                style={{
+                                  width: "32px",
+                                  height: "32px",
+                                  borderRadius: "12px",
+                                  border: "1px solid rgba(0,0,0,.08)",
+                                  background: "rgba(255,255,255,.92)",
+                                  color: "#111",
+                                  fontSize: "16px",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <EditOutlined />
+                              </button>
 
-<button
-  onClick={() =>
-    setDeleteId(item.id)
-  }
-  style={{
-    width: '32px',
-    height: '32px',
-    borderRadius: '12px',
-    border:
-      '1px solid rgba(255,0,0,.08)',
-    background:
-      'rgba(255,240,240,.9)',
-    color: '#C94B4B',
-    fontSize: '18px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}
->
-  <DeleteOutlined />
-</button>
+                              <button
+                                onClick={() => setDeleteId(item.id)}
+                                style={{
+                                  width: "32px",
+                                  height: "32px",
+                                  borderRadius: "12px",
+                                  border: "1px solid rgba(255,0,0,.08)",
+                                  background: "rgba(255,240,240,.9)",
+                                  color: "#C94B4B",
+                                  fontSize: "18px",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <DeleteOutlined />
+                              </button>
                             </div>
                           </TD>
                         </tr>
 
-                        {payingId ===
-                          item.id && (
+                        {payingId === item.id && (
                           <tr>
                             <td
-                              colSpan={
-                                10
-                              }
+                              colSpan={10}
                               style={{
-                                background:
-                                  '#EEF9FB',
-                                padding:
-                                  '14px',
+                                background: "#EEF9FB",
+                                padding: "14px",
                               }}
                             >
                               <div
                                 style={{
-                                  display:
-                                    'flex',
-                                  gap: '10px',
-                                  alignItems:
-                                    'center',
+                                  display: "flex",
+                                  gap: "10px",
+                                  alignItems: "center",
                                 }}
                               >
-                                <div style={{ position: 'relative', flex: 1 }}>
-                                  <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', fontWeight: 600, color: '#8A9BB5', pointerEvents: 'none' }}>฿</span>
+                                <div style={{ position: "relative", flex: 1 }}>
+                                  <span
+                                    style={{
+                                      position: "absolute",
+                                      left: "12px",
+                                      top: "50%",
+                                      transform: "translateY(-50%)",
+                                      fontSize: "15px",
+                                      fontWeight: 600,
+                                      color: "#8A9BB5",
+                                      pointerEvents: "none",
+                                    }}
+                                  >
+                                    ฿
+                                  </span>
                                   <PayInput
                                     value={payAmount}
                                     onChange={setPayAmount}
                                     placeholder="จำนวนเงิน"
                                     style={{
-                                      width: '100%',
-                                      height: '40px',
-                                      borderRadius: '12px',
-                                      border: '1px solid #DDE6F0',
-                                      background: '#FFFFFF',
-                                      padding: '0 12px 0 34px',
-                                      fontSize: '15px',
-                                      outline: 'none',
-                                      boxSizing: 'border-box',
+                                      width: "100%",
+                                      height: "40px",
+                                      borderRadius: "12px",
+                                      border: "1px solid #DDE6F0",
+                                      background: "#FFFFFF",
+                                      padding: "0 12px 0 34px",
+                                      fontSize: "15px",
+                                      outline: "none",
+                                      boxSizing: "border-box",
                                     }}
                                   />
                                 </div>
 
-                                <button
-                                  onClick={() =>
-                                    confirmPayment(
-                                      item.id
-                                    )
-                                  }
-                                >
-                                  ✓
-                                  บันทึก
+                                <button onClick={() => confirmPayment(item.id)}>
+                                  ✓ บันทึก
                                 </button>
 
-                                <button
-                                  onClick={() =>
-                                    setPayingId(
-                                      null
-                                    )
-                                  }
-                                >
+                                <button onClick={() => setPayingId(null)}>
                                   ยกเลิก
                                 </button>
                               </div>
 
                               {item.installment && (
-                  <div
-                    style={{
-                      marginTop: '10px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      height: '40px',
-                      padding: '0 18px',
-                      borderRadius: '999px',
-                      background:
-                        'rgba(0,0,0,.12)',
-                      color: '#000000',
-                      fontWeight: 700,
-                      fontSize: '15px',
-                    }}
-                  >
-                    ผ่อน{' '}
-                    {item.installment.paid}/
-                    {item.installment.total}
-
-                    <span
-                      style={{
-                        opacity: 0.45,
-                      }}
-                    >
-                      •
-                    </span>
-
-                    ฿
-                    {Math.round(
-                      Number(item.budget || 0) /
-                        Number(
-                          item.installment
-                            ?.total || 1
-                        )
-                    ).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                    /งวด
-                  </div>
-                )}
-              </td>
-
+                                <div
+                                  style={{
+                                    marginTop: "10px",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    height: "40px",
+                                    padding: "0 18px",
+                                    borderRadius: "999px",
+                                    background: "rgba(0,0,0,.12)",
+                                    color: "#000000",
+                                    fontWeight: 700,
+                                    fontSize: "15px",
+                                  }}
+                                >
+                                  ผ่อน {item.installment.paid}/
+                                  {item.installment.total}
+                                  <span
+                                    style={{
+                                      opacity: 0.45,
+                                    }}
+                                  >
+                                    •
+                                  </span>
+                                  ฿
+                                  {Math.round(
+                                    Number(item.budget || 0) /
+                                      Number(item.installment?.total || 1),
+                                  ).toLocaleString("en-US", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })}
+                                  /งวด
+                                </div>
+                              )}
+                            </td>
                           </tr>
                         )}
                       </>
-                    )
-                  }
-                )}
-              </tbody>
-            </table>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
 
-      
-
-{open && (
-  <div
-    style={{
-      position: 'fixed',
-      inset: 0,
-      background:
-        'rgba(20,20,30,.35)',
-      zIndex: 100,
-      display: 'flex',
-      alignItems: window.innerWidth < 768 ? 'flex-start' : 'center',
-      justifyContent: 'center',
-      backdropFilter: 'blur(4px)',
-      padding: window.innerWidth < 768 ? '0px' : '24px',
-    }}
-    onClick={() =>
-      setOpen(false)
-    }
-  >
-    <div
-      onClick={(e) =>
-        e.stopPropagation()
-      }
-      onKeyDown={(e) => {
-        if (
-          e.key === 'Enter' &&
-          e.target.tagName !== 'TEXTAREA'
-        ) {
-          e.preventDefault()
-
-          if (hasFormChanges) {
-            addItem()
-          }
-        }
-      }}
-      style={{
-        position: 'relative',
-        width: '100%',
-        maxWidth: window.innerWidth < 768 ? '100%' : '620px',
-        borderRadius: window.innerWidth < 768 ? '0px' : '28px',
-        background: '#FFFFFF',
-        border: 'none',
-        boxShadow: window.innerWidth < 768 ? 'none' : '0 12px 60px rgba(0,0,0,.16)',
-        height: window.innerWidth < 768 ? '100%' : 'auto',
-        maxHeight:
-          window.innerWidth < 768
-            ? '100%'
-            : 'calc(100vh - 48px)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        WebkitOverflowScrolling: 'touch',
-        transform: 'translateZ(0)',
-      }}
-    >
-      <button
-        onClick={() => setOpen(false)}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = '#E4E7EC'
-          e.currentTarget.style.color = '#111'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = '#F2F4F7'
-          e.currentTarget.style.color = '#555'
-        }}
-        style={{
-          position: 'absolute',
-          top: window.innerWidth < 768 ? '18px' : '22px',
-          right: window.innerWidth < 768 ? '16px' : '22px',
-          width: '36px',
-          height: '36px',
-          border: 'none',
-          borderRadius: '999px',
-          background: '#F2F4F7',
-          cursor: 'pointer',
-          color: '#555',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          transition: 'background .15s ease, color .15s ease',
-          zIndex: 10,
-        }}
-        aria-label="ปิด"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
-
-      <div
-        style={{
-          flexShrink: 0,
-          zIndex: 2,
-          background: '#FFFFFF',
-          padding:
-            window.innerWidth < 768
-              ? '24px 20px 16px'
-              : '28px 28px 16px',
-          borderBottom: '1px solid #F0F2F5',
-        }}
-      >
-        <h3
-          style={{
-            fontSize: window.innerWidth < 768 ? '24px' : '28px',
-            lineHeight: 1.2,
-            fontWeight: 700,
-            letterSpacing: '-0.02em',
-            color: '#111',
-            margin: 0,
-            paddingRight: '48px',
-          }}
-        >
-          {editingId
-            ? 'แก้ไขรายการ'
-            : '+ เพิ่มรายการ'}
-        </h3>
-      </div>
-
-      <div
-          className="modal-scroll"
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-          padding:
-            window.innerWidth < 768
-              ? '20px 20px 24px'
-              : '24px 28px 28px',
-        }}
-      >
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns:
-            window.innerWidth < 768
-              ? '1fr'
-              : '1fr 1fr',
-          gap: '14px',
-          marginBottom: '16px',
-        }}
-      >
-        <Field label="วันที่">
-          <input
-            type="date"
-            value={convertThaiDate(form.date || "")}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                date:
-                  e.target.value,
-              })
-            }
-            style={fieldStyle}
-          />
-        </Field>
-
-        <Field label="หมวดงาน / หมวดสินค้า">
-          <CustomSelect
-            value={form.category}
-            onChange={(val) =>
-              setForm({ ...form, category: val })
-            }
-            options={activeTab === 'tort' ? TCATS : FCATS}
-            placeholder="เลือกหมวดหมู่..."
-          />
-        </Field>
-        </div>
-      
-
-      <div
-        style={{
-          marginBottom: '18px',
-        }}
-      >
-        <Field label="รายละเอียด">
-          <input
-            type="text"
-            placeholder="ชื่อรายการ..."
-            value={form.title}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                title:
-                  e.target.value,
-              })
-            }
-            style={fieldStyle}
-          />
-        </Field>
-      </div>
-
-      <div
-        style={{
-          marginBottom: '18px',
-        }}
-      >
-        <Field label="รูปแบบการชำระ">
+        {open && (
           <div
             style={{
-              display: 'flex',
-              background: '#F2F4F7',
-              borderRadius: '999px',
-              padding: '5px',
-              gap: '4px',
+              position: "fixed",
+              inset: 0,
+              background: "rgba(20,20,30,.35)",
+              zIndex: 100,
+              display: "flex",
+              alignItems: window.innerWidth < 768 ? "flex-start" : "center",
+              justifyContent: "center",
+              backdropFilter: "blur(4px)",
+              padding: window.innerWidth < 768 ? "0px" : "24px",
             }}
+            onClick={() => setOpen(false)}
           >
-            {[
-              {
-                key: 'full',
-                label: 'ชำระเต็ม',
-              },
-              {
-                key: 'partial',
-                label: 'จ่ายบางส่วน',
-              },
-              {
-                key: 'installment',
-                label: 'ผ่อน',
-              },
-            ].map((tab) => {
-              const active =
-                form.paymentType ===
-                tab.key
+            <div
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+                  e.preventDefault();
 
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() =>
-                    setForm({
-                      ...form,
-                      paymentType:
-                        tab.key,
-                    })
+                  if (hasFormChanges) {
+                    addItem();
                   }
+                }
+              }}
+              style={{
+                position: "relative",
+                width: "100%",
+                maxWidth: window.innerWidth < 768 ? "100%" : "620px",
+                borderRadius: window.innerWidth < 768 ? "0px" : "28px",
+                background: "#FFFFFF",
+                border: "none",
+                boxShadow:
+                  window.innerWidth < 768
+                    ? "none"
+                    : "0 12px 60px rgba(0,0,0,.16)",
+                height: window.innerWidth < 768 ? "100%" : "auto",
+                maxHeight:
+                  window.innerWidth < 768 ? "100%" : "calc(100vh - 48px)",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                WebkitOverflowScrolling: "touch",
+                transform: "translateZ(0)",
+              }}
+            >
+              <button
+                onClick={() => setOpen(false)}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#E4E7EC";
+                  e.currentTarget.style.color = "#111";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#F2F4F7";
+                  e.currentTarget.style.color = "#555";
+                }}
+                style={{
+                  position: "absolute",
+                  top: window.innerWidth < 768 ? "18px" : "22px",
+                  right: window.innerWidth < 768 ? "16px" : "22px",
+                  width: "36px",
+                  height: "36px",
+                  border: "none",
+                  borderRadius: "999px",
+                  background: "#F2F4F7",
+                  cursor: "pointer",
+                  color: "#555",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  transition: "background .15s ease, color .15s ease",
+                  zIndex: 10,
+                }}
+                aria-label="ปิด"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+
+              <div
+                style={{
+                  flexShrink: 0,
+                  zIndex: 2,
+                  background: "#FFFFFF",
+                  padding:
+                    window.innerWidth < 768
+                      ? "24px 20px 16px"
+                      : "28px 28px 16px",
+                  borderBottom: "1px solid #F0F2F5",
+                }}
+              >
+                <h3
                   style={{
-                    flex: 1,
-                    height: '44px',
-                    border: 'none',
-                    borderRadius: '999px',
-
-                    background: active
-                      ? '#FFFFFF'
-                      : 'transparent',
-
-                    color: active
-                      ? '#111'
-                      : '#8A9BB5',
-
-                    fontWeight: active ? 600 : 400,
-                    fontSize: '14px',
-                    cursor: 'pointer',
-
-                    transition: 'all .18s ease',
-
-                    boxShadow: active
-                      ? '0 2px 8px rgba(0,0,0,.10)'
-                      : 'none',
+                    fontSize: window.innerWidth < 768 ? "24px" : "28px",
+                    lineHeight: 1.2,
+                    fontWeight: 700,
+                    letterSpacing: "-0.02em",
+                    color: "#111",
+                    margin: 0,
+                    paddingRight: "48px",
                   }}
                 >
-                  {tab.label}
-                </button>
-              )
-            })}
-          </div>
-        </Field>
-      </div>
+                  {editingId ? "แก้ไขรายการ" : "+ เพิ่มรายการ"}
+                </h3>
+              </div>
 
-      {form.paymentType === 'full' && (
-        <div
-          style={{
-            marginBottom: '18px',
-          }}
-        >
-          <Field label="ราคา (บาท)">
-            <BahtInput
-              value={form.budget}
-              onChange={(val) =>
-                setForm({
-                  ...form,
-                  budget: val,
-                  paid: val,
-                })
-              }
-            />
-          </Field>
-        </div>
-      )}
-
-      {form.paymentType === 'partial' && (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns:
-              window.innerWidth < 768
-                ? '1fr'
-                : '1fr 1fr',
-            gap: '16px',
-            marginBottom: '18px',
-          }}
-        >
-          <Field label="ราคาเต็ม (บาท)">
-            <BahtInput
-              value={form.budget}
-              onChange={(val) =>
-                setForm({
-                  ...form,
-                  budget: val,
-                })
-              }
-            />
-          </Field>
-
-          <Field label="จ่ายแล้ว (บาท)">
-            <BahtInput
-              value={form.paid}
-              onChange={(val) =>
-                setForm({
-                  ...form,
-                  paid: val,
-                })
-              }
-            />
-          </Field>
-        </div>
-      )}
-
-      {form.paymentType === 'installment' && (
-        <>
-          <div
-            style={{
-              marginBottom: '18px',
-            }}
-          >
-            <Field label="ราคาเต็ม (บาท)">
-              <BahtInput
-                value={form.budget}
-                onChange={(val) =>
-                  setForm({
-                    ...form,
-                    budget: val,
-                  })
-                }
-              />
-            </Field>
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns:
-                window.innerWidth < 768
-                  ? '1fr'
-                  : '1fr 1fr',
-              gap: '16px',
-              marginBottom: '18px',
-            }}
-          >
-            <Field label="จำนวนงวดทั้งหมด">
-              <input
-                type="number"
-                value={
-                  form.installmentTotal ?? ''
-                }
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    installmentTotal:
-                      e.target.value,
-                  })
-                }
-                style={fieldStyle}
-              />
-            </Field>
-
-            <Field label="จ่ายแล้วกี่งวด">
-              <input
-                type="number"
-                value={
-                  form.installmentPaid ?? ''
-                }
-                onChange={(e) => {
-                  const paidInstallments =
-                    Number(
-                      e.target.value || 0
-                    )
-
-                  const totalInstallments =
-                    Number(
-                      form.installmentTotal || 0
-                    )
-
-                  const installmentAmount =
-                    totalInstallments > 0
-                      ? Number(form.budget || 0) /
-                        totalInstallments
-                      : 0
-
-                  setForm({
-                    ...form,
-                    installmentPaid:
-                      e.target.value,
-                    paid:
-                      Math.round(
-                        installmentAmount *
-                          paidInstallments
-                      ),
-                  })
+              <div
+                className="modal-scroll"
+                style={{
+                  flex: 1,
+                  overflowY: "auto",
+                  padding:
+                    window.innerWidth < 768
+                      ? "20px 20px 24px"
+                      : "24px 28px 28px",
                 }}
-                style={fieldStyle}
-              />
-            </Field>
+              >
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      window.innerWidth < 768 ? "1fr" : "1fr 1fr",
+                    gap: "14px",
+                    marginBottom: "16px",
+                  }}
+                >
+                  <Field label="วันที่">
+                    <input
+                      type="date"
+                      value={convertThaiDate(form.date || "")}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          date: e.target.value,
+                        })
+                      }
+                      style={fieldStyle}
+                    />
+                  </Field>
+
+                  <Field label="หมวดงาน / หมวดสินค้า">
+                    <CustomSelect
+                      value={form.category}
+                      onChange={(val) => setForm({ ...form, category: val })}
+                      options={activeTab === "tort" ? TCATS : FCATS}
+                      placeholder="เลือกหมวดหมู่..."
+                    />
+                  </Field>
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "18px",
+                  }}
+                >
+                  <Field label="รายละเอียด">
+                    <input
+                      type="text"
+                      placeholder="ชื่อรายการ..."
+                      value={form.title}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          title: e.target.value,
+                        })
+                      }
+                      style={fieldStyle}
+                    />
+                  </Field>
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "18px",
+                  }}
+                >
+                  <Field label="รูปแบบการชำระ">
+                    <div
+                      style={{
+                        display: "flex",
+                        background: "#F2F4F7",
+                        borderRadius: "999px",
+                        padding: "5px",
+                        gap: "4px",
+                      }}
+                    >
+                      {[
+                        {
+                          key: "full",
+                          label: "ชำระเต็ม",
+                        },
+                        {
+                          key: "partial",
+                          label: "จ่ายบางส่วน",
+                        },
+                        {
+                          key: "installment",
+                          label: "ผ่อน",
+                        },
+                      ].map((tab) => {
+                        const active = form.paymentType === tab.key;
+
+                        return (
+                          <button
+                            key={tab.key}
+                            type="button"
+                            onClick={() =>
+                              setForm({
+                                ...form,
+                                paymentType: tab.key,
+                              })
+                            }
+                            style={{
+                              flex: 1,
+                              height: "44px",
+                              border: "none",
+                              borderRadius: "999px",
+
+                              background: active ? "#FFFFFF" : "transparent",
+
+                              color: active ? "#111" : "#8A9BB5",
+
+                              fontWeight: active ? 600 : 400,
+                              fontSize: "14px",
+                              cursor: "pointer",
+
+                              transition: "all .18s ease",
+
+                              boxShadow: active
+                                ? "0 2px 8px rgba(0,0,0,.10)"
+                                : "none",
+                            }}
+                          >
+                            {tab.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </Field>
+                </div>
+
+                {form.paymentType === "full" && (
+                  <div
+                    style={{
+                      marginBottom: "18px",
+                    }}
+                  >
+                    <Field label="ราคา (บาท)">
+                      <BahtInput
+                        value={form.budget}
+                        onChange={(val) =>
+                          setForm({
+                            ...form,
+                            budget: val,
+                            paid: val,
+                          })
+                        }
+                      />
+                    </Field>
+                  </div>
+                )}
+
+                {form.paymentType === "partial" && (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        window.innerWidth < 768 ? "1fr" : "1fr 1fr",
+                      gap: "16px",
+                      marginBottom: "18px",
+                    }}
+                  >
+                    <Field label="ราคาเต็ม (บาท)">
+                      <BahtInput
+                        value={form.budget}
+                        onChange={(val) =>
+                          setForm({
+                            ...form,
+                            budget: val,
+                          })
+                        }
+                      />
+                    </Field>
+
+                    <Field label="จ่ายแล้ว (บาท)">
+                      <BahtInput
+                        value={form.paid}
+                        onChange={(val) =>
+                          setForm({
+                            ...form,
+                            paid: val,
+                          })
+                        }
+                      />
+                    </Field>
+                  </div>
+                )}
+
+                {form.paymentType === "installment" && (
+                  <>
+                    <div
+                      style={{
+                        marginBottom: "18px",
+                      }}
+                    >
+                      <Field label="ราคาเต็ม (บาท)">
+                        <BahtInput
+                          value={form.budget}
+                          onChange={(val) =>
+                            setForm({
+                              ...form,
+                              budget: val,
+                            })
+                          }
+                        />
+                      </Field>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns:
+                          window.innerWidth < 768 ? "1fr" : "1fr 1fr",
+                        gap: "16px",
+                        marginBottom: "18px",
+                      }}
+                    >
+                      <Field label="จำนวนงวดทั้งหมด">
+                        <input
+                          type="number"
+                          value={form.installmentTotal ?? ""}
+                          onChange={(e) =>
+                            setForm({
+                              ...form,
+                              installmentTotal: e.target.value,
+                            })
+                          }
+                          style={fieldStyle}
+                        />
+                      </Field>
+
+                      <Field label="จ่ายแล้วกี่งวด">
+                        <input
+                          type="number"
+                          value={form.installmentPaid ?? ""}
+                          onChange={(e) => {
+                            const paidInstallments = Number(
+                              e.target.value || 0,
+                            );
+
+                            const totalInstallments = Number(
+                              form.installmentTotal || 0,
+                            );
+
+                            const installmentAmount =
+                              totalInstallments > 0
+                                ? Number(form.budget || 0) / totalInstallments
+                                : 0;
+
+                            setForm({
+                              ...form,
+                              installmentPaid: e.target.value,
+                              paid: Math.round(
+                                installmentAmount * paidInstallments,
+                              ),
+                            });
+                          }}
+                          style={fieldStyle}
+                        />
+                      </Field>
+                    </div>
+                  </>
+                )}
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      window.innerWidth < 768 ? "1fr" : "1fr 1fr",
+                    gap: "16px",
+                    marginBottom: "18px",
+                  }}
+                >
+                  <Field label="ซื้อจาก">
+                    <CustomSelect
+                      value={form.platform}
+                      onChange={(val) => setForm({ ...form, platform: val })}
+                      options={[
+                        { value: "", label: "เลือก Platform" },
+                        ...PLATFORMS.map((p) => ({ value: p, label: p })),
+                      ]}
+                      placeholder="เลือก Platform"
+                    />
+                  </Field>
+
+                  {form.platform === "อื่นๆ" && (
+                    <Field label="ระบุร้าน / Platform">
+                      <input
+                        type="text"
+                        placeholder="กรอกชื่อร้าน..."
+                        value={form.otherPlatform}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            otherPlatform: e.target.value,
+                          })
+                        }
+                        style={fieldStyle}
+                      />
+                    </Field>
+                  )}
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "18px",
+                  }}
+                >
+                  <Field label="หมายเหตุ">
+                    <textarea
+                      placeholder="หมายเหตุเพิ่มเติม..."
+                      value={form.note}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          note: e.target.value,
+                        })
+                      }
+                      style={{
+                        ...fieldStyle,
+                        borderRadius: "20px",
+                        minHeight: "110px",
+                        paddingTop: "16px",
+                        paddingBottom: "16px",
+                        resize: "none",
+                        height: "auto",
+                      }}
+                    />
+                  </Field>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  flexShrink: 0,
+                  zIndex: 3,
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "12px",
+                  padding:
+                    window.innerWidth < 768
+                      ? "16px 20px calc(16px + env(safe-area-inset-bottom))"
+                      : "18px 28px",
+                  background: "#FFFFFF",
+                  borderTop: "1px solid #F0F2F5",
+                }}
+              >
+                <button
+                  onClick={() => setOpen(false)}
+                  className="modal-cancel"
+                  style={{
+                    height: "52px",
+                    padding: "0 28px",
+                    borderRadius: "999px",
+                    border: "none",
+                    background: "#F2F4F7",
+                    color: "#555",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    transition: "all .18s ease",
+                  }}
+                >
+                  ยกเลิก
+                </button>
+
+                <button
+                  type="submit"
+                  onClick={() => addItem()}
+                  disabled={!hasFormChanges}
+                  style={{
+                    minWidth: "130px",
+                    height: "52px",
+                    padding: "0 28px",
+                    border: "none",
+                    borderRadius: "999px",
+                    background: !hasFormChanges ? "#CCC" : "#111",
+                    color: "#fff",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    cursor: !hasFormChanges ? "not-allowed" : "pointer",
+                    transition: "all .18s ease",
+                  }}
+                >
+                  บันทึก
+                </button>
+              </div>
+            </div>
           </div>
-        </>
-      )}
+        )}
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns:
-            window.innerWidth < 768
-              ? '1fr'
-              : '1fr 1fr',
-          gap: '16px',
-          marginBottom: '18px',
-        }}
-      >
-        <Field label="ซื้อจาก">
-          <CustomSelect
-            value={form.platform}
-            onChange={(val) =>
-              setForm({ ...form, platform: val })
-            }
-            options={[
-              { value: '', label: 'เลือก Platform' },
-              ...PLATFORMS.map((p) => ({ value: p, label: p })),
-            ]}
-            placeholder="เลือก Platform"
-          />
-        </Field>
+        {payingId && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(15,15,15,.28)",
+              zIndex: 120,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backdropFilter: "blur(10px)",
+              padding: window.innerWidth < 768 ? "18px" : "24px",
+            }}
+            onClick={() => {
+              setPayingId(null);
+              setPayAmount("");
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: "100%",
+                maxWidth: "460px",
+                borderRadius: window.innerWidth < 768 ? "32px" : "36px",
+                padding: window.innerWidth < 768 ? "28px 22px" : "32px",
+                background: "rgba(255,255,255,.82)",
+                backdropFilter: "blur(24px)",
+                border: "1px solid rgba(255,255,255,.6)",
+                boxShadow: "0 30px 90px rgba(0,0,0,.12)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "24px",
+                }}
+              >
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: "32px",
+                    fontWeight: 800,
+                    color: "#1B2430",
+                    letterSpacing: "-0.04em",
+                  }}
+                >
+                  ชำระเงิน
+                </h3>
 
-        {form.platform ===
-          'อื่นๆ' && (
-          <Field label="ระบุร้าน / Platform">
-            <input
-              type="text"
-              placeholder="กรอกชื่อร้าน..."
-              value={
-                form.otherPlatform
-              }
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  otherPlatform:
-                    e.target.value,
-                })
-              }
-              style={fieldStyle}
-            />
-          </Field>
+                <button
+                  onClick={() => {
+                    setPayingId(null);
+                    setPayAmount("");
+                  }}
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "999px",
+                    border: "none",
+                    background: "rgba(255,255,255,.8)",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div
+                style={{
+                  marginBottom: "20px",
+                }}
+              >
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "10px",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    color: "#8A9BB5",
+                  }}
+                >
+                  จำนวนเงิน
+                </label>
+
+                <div style={{ position: "relative" }}>
+                  <span
+                    style={{
+                      position: "absolute",
+                      left: "20px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      color: "#8A9BB5",
+                      pointerEvents: "none",
+                      userSelect: "none",
+                    }}
+                  >
+                    ฿
+                  </span>
+                  <PayInput
+                    value={payAmount}
+                    onChange={setPayAmount}
+                    placeholder="กรอกจำนวนเงิน"
+                    style={{
+                      width: "100%",
+                      height: "62px",
+                      borderRadius: "20px",
+                      border: "1px solid rgba(255,255,255,.5)",
+                      background: "rgba(255,255,255,.88)",
+                      padding: "0 20px 0 44px",
+                      fontSize: "18px",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  confirmPayment(payingId);
+                }}
+                style={{
+                  width: "100%",
+                  height: "60px",
+                  border: "none",
+                  borderRadius: "22px",
+                  background: "linear-gradient(135deg,#111111,#000000)",
+                  color: "#fff",
+                  fontSize: "18px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  boxShadow: "0 10px 28px rgba(0,0,0,.28)",
+                }}
+              >
+                บันทึกการชำระ
+              </button>
+            </div>
+          </div>
+        )}
+
+        {deleteId && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(15,15,15,.28)",
+              zIndex: 130,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backdropFilter: "blur(10px)",
+              padding: "20px",
+            }}
+            onClick={() => setDeleteId(null)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: "100%",
+                maxWidth: "420px",
+                borderRadius: "32px",
+                padding: "30px",
+                background: "rgba(255,255,255,.88)",
+                backdropFilter: "blur(24px)",
+                boxShadow: "0 30px 90px rgba(0,0,0,.12)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "22px",
+                  fontWeight: 800,
+                  marginBottom: "12px",
+                  color: "#1B2430",
+                }}
+              >
+                ลบรายการ
+              </div>
+
+              <div
+                style={{
+                  color: "#666",
+                  lineHeight: 1.7,
+                  marginBottom: "28px",
+                }}
+              >
+                คุณต้องการลบรายการนี้จริงใช่ไหม
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "12px",
+                }}
+              >
+                <button
+                  onClick={() => setDeleteId(null)}
+                  style={{
+                    height: "50px",
+                    padding: "0 20px",
+                    borderRadius: "16px",
+                    border: "1px solid rgba(0,0,0,.08)",
+                    background: "#F5F5F5",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  ยกเลิก
+                </button>
+
+                <button
+                  onClick={() => deleteItem(deleteId)}
+                  style={{
+                    height: "50px",
+                    padding: "0 22px",
+                    borderRadius: "16px",
+                    border: "none",
+                    background: "#D64545",
+                    color: "#fff",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  ลบรายการ
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {toast.show && (
+          <div
+            style={{
+              position: "fixed",
+              top: "24px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 99999,
+              animation: "toastSlide .38s cubic-bezier(.22,1,.36,1)",
+            }}
+          >
+            <div
+              style={{
+                background: "rgba(22,22,22,.92)",
+                color: "#fff",
+                padding: "14px 18px",
+                borderRadius: "18px",
+                backdropFilter: "blur(18px)",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                fontWeight: 700,
+                boxShadow: "0 18px 50px rgba(0,0,0,.18)",
+              }}
+            >
+              <div
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "999px",
+                  background: "#DDF5E4",
+                  color: "#2E6B45",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "13px",
+                  fontWeight: 900,
+                }}
+              >
+                ✓
+              </div>
+
+              {toast.text}
+            </div>
+          </div>
         )}
       </div>
-
-      <div
-        style={{
-          marginBottom: '18px',
-        }}
-      >
-        <Field label="หมายเหตุ">
-          <textarea
-            placeholder="หมายเหตุเพิ่มเติม..."
-            value={form.note}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                note:
-                  e.target.value,
-              })
-            }
-            style={{
-              ...fieldStyle,
-              borderRadius: '20px',
-              minHeight: '110px',
-              paddingTop: '16px',
-              paddingBottom: '16px',
-              resize: 'none',
-              height: 'auto',
-            }}
-          />
-        </Field>
-      </div>
-      </div>
-
-      <div
-        style={{
-          flexShrink: 0,
-          zIndex: 3,
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '12px',
-          padding:
-            window.innerWidth < 768
-              ? '16px 20px calc(16px + env(safe-area-inset-bottom))'
-              : '18px 28px',
-          background: '#FFFFFF',
-          borderTop: '1px solid #F0F2F5',
-        }}
-      >
-        <button
-          onClick={() => setOpen(false)}
-          className="modal-cancel"
-          style={{
-            height: '52px',
-            padding: '0 28px',
-            borderRadius: '999px',
-            border: 'none',
-            background: '#F2F4F7',
-            color: '#555',
-            fontSize: '15px',
-            fontWeight: 500,
-            cursor: 'pointer',
-            transition: 'all .18s ease',
-          }}
-        >
-          ยกเลิก
-        </button>
-
-        <button
-          type="submit"
-          onClick={() => addItem()}
-          disabled={!hasFormChanges}
-          style={{
-            minWidth: '130px',
-            height: '52px',
-            padding: '0 28px',
-            border: 'none',
-            borderRadius: '999px',
-            background: !hasFormChanges ? '#CCC' : '#111',
-            color: '#fff',
-            fontSize: '15px',
-            fontWeight: 600,
-            cursor: !hasFormChanges ? 'not-allowed' : 'pointer',
-            transition: 'all .18s ease',
-          }}
-        >
-          บันทึก
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-{payingId && (
-  <div
-    style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(15,15,15,.28)',
-      zIndex: 120,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backdropFilter: 'blur(10px)',
-      padding:
-        window.innerWidth < 768
-          ? '18px'
-          : '24px',
-    }}
-    onClick={() => {
-      setPayingId(null)
-      setPayAmount('')
-    }}
-  >
-    <div
-      onClick={(e) =>
-        e.stopPropagation()
-      }
-      style={{
-        width: '100%',
-        maxWidth: '460px',
-        borderRadius:
-          window.innerWidth < 768
-            ? '32px'
-            : '36px',
-        padding:
-          window.innerWidth < 768
-            ? '28px 22px'
-            : '32px',
-        background:
-          'rgba(255,255,255,.82)',
-        backdropFilter: 'blur(24px)',
-        border:
-          '1px solid rgba(255,255,255,.6)',
-        boxShadow:
-          '0 30px 90px rgba(0,0,0,.12)',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent:
-            'space-between',
-          alignItems: 'center',
-          marginBottom: '24px',
-        }}
-      >
-        <h3
-          style={{
-            margin: 0,
-            fontSize: '32px',
-            fontWeight: 800,
-            color: '#1B2430',
-            letterSpacing:
-              '-0.04em',
-          }}
-        >
-          ชำระเงิน
-        </h3>
-
-        <button
-          onClick={() => {
-            setPayingId(null)
-            setPayAmount('')
-          }}
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '999px',
-            border: 'none',
-            background:
-              'rgba(255,255,255,.8)',
-            cursor: 'pointer',
-            fontSize: '18px',
-          }}
-        >
-          ✕
-        </button>
-      </div>
-
-      <div
-        style={{
-          marginBottom: '20px',
-        }}
-      >
-        <label
-          style={{
-            display: 'block',
-            marginBottom: '10px',
-            fontSize: '15px',
-            fontWeight: 600,
-            color: '#8A9BB5',
-          }}
-        >
-          จำนวนเงิน
-        </label>
-
-        <div style={{ position: 'relative' }}>
-          <span
-            style={{
-              position: 'absolute',
-              left: '20px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              fontSize: '18px',
-              fontWeight: 600,
-              color: '#8A9BB5',
-              pointerEvents: 'none',
-              userSelect: 'none',
-            }}
-          >
-            ฿
-          </span>
-          <PayInput
-            value={payAmount}
-            onChange={setPayAmount}
-            placeholder="กรอกจำนวนเงิน"
-            style={{
-              width: '100%',
-              height: '62px',
-              borderRadius: '20px',
-              border: '1px solid rgba(255,255,255,.5)',
-              background: 'rgba(255,255,255,.88)',
-              padding: '0 20px 0 44px',
-              fontSize: '18px',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-        </div>
-      </div>
-
-      <button
-        onClick={() => {
-          confirmPayment(
-            payingId
-          )
-        }}
-        style={{
-          width: '100%',
-          height: '60px',
-          border: 'none',
-          borderRadius: '22px',
-          background:
-            'linear-gradient(135deg,#111111,#000000)',
-          color: '#fff',
-          fontSize: '18px',
-          fontWeight: 700,
-          cursor: 'pointer',
-          boxShadow:
-            '0 10px 28px rgba(0,0,0,.28)',
-        }}
-      >
-        บันทึกการชำระ
-      </button>
-    </div>
-  </div>
-)}
-
-
-
-{deleteId && (
-  <div
-    style={{
-      position: 'fixed',
-      inset: 0,
-      background:
-        'rgba(15,15,15,.28)',
-      zIndex: 130,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backdropFilter: 'blur(10px)',
-      padding: '20px',
-    }}
-    onClick={() =>
-      setDeleteId(null)
-    }
-  >
-    <div
-      onClick={(e) =>
-        e.stopPropagation()
-      }
-      style={{
-        width: '100%',
-        maxWidth: '420px',
-        borderRadius: '32px',
-        padding: '30px',
-        background:
-          'rgba(255,255,255,.88)',
-        backdropFilter:
-          'blur(24px)',
-        boxShadow:
-          '0 30px 90px rgba(0,0,0,.12)',
-      }}
-    >
-      <div
-        style={{
-          fontSize: '22px',
-          fontWeight: 800,
-          marginBottom: '12px',
-          color: '#1B2430',
-        }}
-      >
-        ลบรายการ
-      </div>
-
-      <div
-        style={{
-          color: '#666',
-          lineHeight: 1.7,
-          marginBottom: '28px',
-        }}
-      >
-        คุณต้องการลบรายการนี้จริงใช่ไหม
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent:
-            'flex-end',
-          gap: '12px',
-        }}
-      >
-        <button
-          onClick={() =>
-            setDeleteId(null)
-          }
-          style={{
-            height: '50px',
-            padding: '0 20px',
-            borderRadius: '16px',
-            border:
-              '1px solid rgba(0,0,0,.08)',
-            background:
-              '#F5F5F5',
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          ยกเลิก
-        </button>
-
-        <button
-          onClick={() =>
-            deleteItem(deleteId)
-          }
-          style={{
-            height: '50px',
-            padding: '0 22px',
-            borderRadius: '16px',
-            border: 'none',
-            background:
-              '#D64545',
-            color: '#fff',
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          ลบรายการ
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-{toast.show && (
-  <div
-    style={{
-      position: 'fixed',
-      top: '24px',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      zIndex: 99999,
-      animation:
-        'toastSlide .38s cubic-bezier(.22,1,.36,1)',
-    }}
-  >
-    <div
-      style={{
-        background:
-          'rgba(22,22,22,.92)',
-        color: '#fff',
-        padding: '14px 18px',
-        borderRadius: '18px',
-        backdropFilter: 'blur(18px)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        fontWeight: 700,
-        boxShadow:
-          '0 18px 50px rgba(0,0,0,.18)',
-      }}
-    >
-      <div
-        style={{
-          width: '24px',
-          height: '24px',
-          borderRadius: '999px',
-          background: '#DDF5E4',
-          color: '#2E6B45',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '13px',
-          fontWeight: 900,
-        }}
-      >
-        ✓
-      </div>
-
-      {toast.text}
-    </div>
-  </div>
-)}
-
-    </div>
     </>
-  )
+  );
 }
 
 const fieldStyle = {
-  width: '100%',
-  borderRadius: '999px',
-  border: 'none',
-  background: '#F2F4F7',
-  padding: '0 20px',
-  fontSize: '15px',
-  height: '52px',
-  outline: 'none',
-  boxSizing: 'border-box',
-  appearance: 'none',
-  WebkitAppearance: 'none',
-  color: '#1E2D3D',
-}
+  width: "100%",
+  borderRadius: "999px",
+  border: "none",
+  background: "#F2F4F7",
+  padding: "0 20px",
+  fontSize: "15px",
+  height: "52px",
+  outline: "none",
+  boxSizing: "border-box",
+  appearance: "none",
+  WebkitAppearance: "none",
+  color: "#1E2D3D",
+};
 
-function BahtInput({
-  value,
-  onChange,
-  placeholder = '',
-  style = {},
-}) {
-  const [focused, setFocused] = useState(false)
-  const raw = String(value || '')
-  const digitsOnly = raw.replace(/\D/g, '')
+function BahtInput({ value, onChange, placeholder = "", style = {} }) {
+  const [focused, setFocused] = useState(false);
+  const raw = String(value || "");
+  const digitsOnly = raw.replace(/\D/g, "");
   const formatted = digitsOnly
     ? focused
-      ? Number(digitsOnly).toLocaleString('en-US')
-      : Number(digitsOnly).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
-    : ''
+      ? Number(digitsOnly).toLocaleString("en-US")
+      : Number(digitsOnly).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+    : "";
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: "relative" }}>
       <span
         style={{
-          position: 'absolute',
-          left: '22px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          fontSize: '15px',
+          position: "absolute",
+          left: "22px",
+          top: "50%",
+          transform: "translateY(-50%)",
+          fontSize: "15px",
           fontWeight: 600,
-          color: '#8A9BB5',
-          pointerEvents: 'none',
-          userSelect: 'none',
+          color: "#8A9BB5",
+          pointerEvents: "none",
+          userSelect: "none",
         }}
       >
         ฿
@@ -3034,33 +2688,31 @@ function BahtInput({
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         onChange={(e) => {
-          const clean = e.target.value.replace(/\D/g, '')
-          onChange(clean)
+          const clean = e.target.value.replace(/\D/g, "");
+          onChange(clean);
         }}
         style={{
           ...fieldStyle,
-          paddingLeft: '40px',
+          paddingLeft: "40px",
           ...style,
         }}
       />
     </div>
-  )
+  );
 }
 
-function PayInput({
-  value,
-  onChange,
-  placeholder = '',
-  style = {},
-}) {
-  const [focused, setFocused] = useState(false)
-  const raw = String(value || '')
-  const digitsOnly = raw.replace(/\D/g, '')
+function PayInput({ value, onChange, placeholder = "", style = {} }) {
+  const [focused, setFocused] = useState(false);
+  const raw = String(value || "");
+  const digitsOnly = raw.replace(/\D/g, "");
   const formatted = digitsOnly
     ? focused
-      ? Number(digitsOnly).toLocaleString('en-US')
-      : Number(digitsOnly).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
-    : ''
+      ? Number(digitsOnly).toLocaleString("en-US")
+      : Number(digitsOnly).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+    : "";
 
   return (
     <input
@@ -3071,65 +2723,72 @@ function PayInput({
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       onChange={(e) => {
-        const clean = e.target.value.replace(/\D/g, '')
-        onChange(clean)
+        const clean = e.target.value.replace(/\D/g, "");
+        onChange(clean);
       }}
       style={style}
     />
-  )
+  );
 }
 
-function CustomSelect({
-  value,
-  onChange,
-  options,
-  placeholder = 'เลือก...',
-}) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef(null)
+function CustomSelect({ value, onChange, options, placeholder = "เลือก..." }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
-        setOpen(false)
+        setOpen(false);
       }
-    }
-    if (open) document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [open])
+    };
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
-  const selectedLabel =
-    options.find((o) => (o.value !== undefined ? o.value : o) === value)
-    ? (options.find((o) => (o.value !== undefined ? o.value : o) === value).label ||
-       options.find((o) => (o.value !== undefined ? o.value : o) === value))
-    : null
+  const selectedLabel = options.find(
+    (o) => (o.value !== undefined ? o.value : o) === value,
+  )
+    ? options.find((o) => (o.value !== undefined ? o.value : o) === value)
+        .label ||
+      options.find((o) => (o.value !== undefined ? o.value : o) === value)
+    : null;
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div ref={ref} style={{ position: "relative" }}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         style={{
           ...fieldStyle,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          cursor: 'pointer',
-          textAlign: 'left',
-          color: selectedLabel ? '#1E2D3D' : '#A0AEC0',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          cursor: "pointer",
+          textAlign: "left",
+          color: selectedLabel ? "#1E2D3D" : "#A0AEC0",
         }}
       >
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {selectedLabel || placeholder}
         </span>
         <svg
-          width="16" height="16" viewBox="0 0 24 24" fill="none"
-          stroke="#8A9BB5" strokeWidth="2"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#8A9BB5"
+          strokeWidth="2"
           style={{
             flexShrink: 0,
-            marginLeft: '8px',
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform .2s ease',
+            marginLeft: "8px",
+            transform: open ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform .2s ease",
           }}
         >
           <path d="m6 9 6 6 6-6" />
@@ -3139,237 +2798,213 @@ function CustomSelect({
       {open && (
         <div
           style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
+            position: "absolute",
+            top: "calc(100% + 8px)",
             left: 0,
             right: 0,
             zIndex: 9999,
-            background: '#FFFFFF',
-            borderRadius: '18px',
-            boxShadow: '0 8px 40px rgba(0,0,0,.14)',
-            border: '1px solid #F0F2F5',
-            overflow: 'hidden',
-            maxHeight: '280px',
-            overflowY: 'auto',
+            background: "#FFFFFF",
+            borderRadius: "18px",
+            boxShadow: "0 8px 40px rgba(0,0,0,.14)",
+            border: "1px solid #F0F2F5",
+            overflow: "hidden",
+            maxHeight: "280px",
+            overflowY: "auto",
           }}
         >
           {options.map((opt, i) => {
-            const optValue = opt.value !== undefined ? opt.value : opt
-            const optLabel = opt.label !== undefined ? opt.label : opt
-            const isSelected = optValue === value
+            const optValue = opt.value !== undefined ? opt.value : opt;
+            const optLabel = opt.label !== undefined ? opt.label : opt;
+            const isSelected = optValue === value;
             return (
               <div
                 key={optValue || i}
                 onClick={() => {
-                  onChange(optValue)
-                  setOpen(false)
+                  onChange(optValue);
+                  setOpen(false);
                 }}
                 style={{
-                  padding: '13px 20px',
-                  fontSize: '15px',
+                  padding: "13px 20px",
+                  fontSize: "15px",
                   fontWeight: isSelected ? 600 : 400,
-                  color: isSelected ? '#111111' : '#333',
-                  cursor: 'pointer',
-                  background: isSelected ? 'rgba(0,0,0,.07)' : 'transparent',
-                  borderBottom: i < options.length - 1 ? '1px solid #F5F7FA' : 'none',
-                  transition: 'background .15s ease',
+                  color: isSelected ? "#111111" : "#333",
+                  cursor: "pointer",
+                  background: isSelected ? "rgba(0,0,0,.07)" : "transparent",
+                  borderBottom:
+                    i < options.length - 1 ? "1px solid #F5F7FA" : "none",
+                  transition: "background .15s ease",
                 }}
                 onMouseEnter={(e) => {
-                  if (!isSelected) e.currentTarget.style.background = '#F7FAFB'
+                  if (!isSelected) e.currentTarget.style.background = "#F7FAFB";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = isSelected ? 'rgba(0,0,0,.07)' : 'transparent'
+                  e.currentTarget.style.background = isSelected
+                    ? "rgba(0,0,0,.07)"
+                    : "transparent";
                 }}
               >
                 {optLabel}
               </div>
-            )
+            );
           })}
         </div>
       )}
     </div>
-  )
+  );
 }
 
-function Field({
-  label,
-  children,
-}) {
+function Field({ label, children }) {
   return (
     <div>
       <label
         style={{
-          display: 'block',
-          marginBottom: '8px',
-          fontSize: '13px',
+          display: "block",
+          marginBottom: "8px",
+          fontSize: "13px",
           fontWeight: 500,
-          color: '#8A9BB5',
-          letterSpacing: '0.01em',
+          color: "#8A9BB5",
+          letterSpacing: "0.01em",
         }}
       >
         {label}
       </label>
 
-      <div>
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
-  )
+  );
 }
 
-
-function SummaryCard({
-  title,
-  value,
-  color = '#111111',
-  large = false,
-  sub,
-}) {
-  const numStr = safeNumber(value)
-  const hasDecimal = numStr.endsWith('.00')
-  const integerPart = hasDecimal ? numStr.slice(0, -3) : numStr
-  const decimalPart = hasDecimal ? '.00' : ''
+function SummaryCard({ title, value, color = "#111111", large = false, sub }) {
+  const numStr = safeNumber(value);
+  const hasDecimal = numStr.endsWith(".00");
+  const integerPart = hasDecimal ? numStr.slice(0, -3) : numStr;
+  const decimalPart = hasDecimal ? ".00" : "";
 
   return (
     <div
       className="summary-card"
       style={{
-        background: '#FFFFFF',
-        borderRadius: '20px',
-        padding: large ? '28px 32px 24px' : '24px 24px 20px',
-        border: '1px solid #DDE6F0',
-        boxShadow: '0 2px 12px rgba(30,45,61,.05)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        minHeight: large ? '140px' : '120px',
+        background: "#FFFFFF",
+        borderRadius: "20px",
+        padding: large ? "28px 32px 24px" : "24px 24px 20px",
+        border: "1px solid #DDE6F0",
+        boxShadow: "0 2px 12px rgba(30,45,61,.05)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        minHeight: large ? "140px" : "120px",
       }}
     >
       <div
         style={{
-          color: '#8A9BB5',
-          fontSize: '13px',
+          color: "#8A9BB5",
+          fontSize: "13px",
           fontWeight: 500,
-          letterSpacing: '0.02em',
-          marginBottom: large ? '12px' : '10px',
+          letterSpacing: "0.02em",
+          marginBottom: large ? "12px" : "10px",
         }}
       >
         {title}
       </div>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end' }}>
+      <div style={{ flex: 1, display: "flex", alignItems: "flex-end" }}>
         <span
           style={{
             color,
             fontSize: large
-              ? 'clamp(36px, 4vw, 56px)'
-              : 'clamp(26px, 2.8vw, 38px)',
+              ? "clamp(36px, 4vw, 56px)"
+              : "clamp(26px, 2.8vw, 38px)",
             fontWeight: 700,
-            letterSpacing: '-0.03em',
+            letterSpacing: "-0.03em",
             lineHeight: 1,
           }}
         >
-          ฿{integerPart}<span style={{ color: '#111111', opacity: 0.2, fontSize: large ? '28px' : '20px', fontWeight: 700 }}>{decimalPart}</span>
+          ฿{integerPart}
+          <span
+            style={{
+              color: "#111111",
+              opacity: 0.2,
+              fontSize: large ? "28px" : "20px",
+              fontWeight: 700,
+            }}
+          >
+            {decimalPart}
+          </span>
         </span>
       </div>
 
       {sub && (
         <div
           style={{
-            marginTop: '12px',
-            fontSize: '12px',
-            color: '#A0AEBF',
+            marginTop: "12px",
+            fontSize: "12px",
+            color: "#A0AEBF",
             fontWeight: 400,
-            letterSpacing: '0.01em',
-            borderTop: '1px solid #F0F4F8',
-            paddingTop: '10px',
+            letterSpacing: "0.01em",
+            borderTop: "1px solid #F0F4F8",
+            paddingTop: "10px",
           }}
         >
           {sub}
         </div>
       )}
     </div>
-  )
+  );
 }
 
-function TabButton({
-  children,
-  active,
-  onClick,
-}) {
+function TabButton({ children, active, onClick }) {
   return (
     <button
       onClick={onClick}
       style={{
-        border: 'none',
-        padding:
-          '10px 18px',
-        borderRadius:
-          '10px',
-        background: active
-          ? '#111111'
-          : 'transparent',
-        color: active
-          ? '#fff'
-          : '#64748B',
+        border: "none",
+        padding: "10px 18px",
+        borderRadius: "10px",
+        background: active ? "#111111" : "transparent",
+        color: active ? "#fff" : "#64748B",
         fontWeight: 600,
       }}
     >
       {children}
     </button>
-  )
+  );
 }
 
-function FilterButton({
-  children,
-  active,
-  onClick,
-}) {
+function FilterButton({ children, active, onClick }) {
   return (
     <button
       onClick={onClick}
       style={{
-        border:
-          '1px solid rgba(255,255,255,.5)',
-        borderRadius:
-          '999px',
-        padding:
-          '6px 14px',
-        background: active
-          ? '#111111'
-          : 'rgba(255,255,255,.85)',
-        color: active
-          ? '#fff'
-          : '#64748B',
-        backdropFilter: 'blur(12px)',
+        border: "1px solid rgba(255,255,255,.5)",
+        borderRadius: "999px",
+        padding: "6px 14px",
+        background: active ? "#111111" : "rgba(255,255,255,.85)",
+        color: active ? "#fff" : "#64748B",
+        backdropFilter: "blur(12px)",
       }}
     >
       {children}
     </button>
-  )
+  );
 }
 
+function StatusBadge({ children }) {
+  let bg = "rgba(30,45,61,.10)";
+  let color = "#1E2D3D";
 
-function StatusBadge({
-  children,
-}) {
-
-  let bg = 'rgba(30,45,61,.10)'
-  let color = '#1E2D3D'
-
-  if (children === 'จ่ายครบแล้ว') {
-    bg = 'rgba(34,197,94,.12)'
-    color = '#15803D'
+  if (children === "จ่ายครบแล้ว") {
+    bg = "rgba(34,197,94,.12)";
+    color = "#15803D";
   }
 
-  if (children === 'ชำระบางส่วน') {
-    bg = 'rgba(234,179,8,.14)'
-    color = '#92650A'
+  if (children === "ชำระบางส่วน") {
+    bg = "rgba(234,179,8,.14)";
+    color = "#92650A";
   }
 
-  if (children === 'ยังไม่จ่าย') {
-    bg = 'rgba(239,68,68,.10)'
-    color = '#DC3545'
+  if (children === "ยังไม่จ่าย") {
+    bg = "rgba(239,68,68,.10)";
+    color = "#DC3545";
   }
 
   return (
@@ -3377,84 +3012,64 @@ function StatusBadge({
       style={{
         background: bg,
         color: color,
-        borderRadius: '999px',
-        padding: '6px 12px',
-        fontSize: '14px',
+        borderRadius: "999px",
+        padding: "6px 12px",
+        fontSize: "14px",
         fontWeight: 600,
-        whiteSpace: 'nowrap'
+        whiteSpace: "nowrap",
       }}
     >
       {children}
     </span>
-  )
+  );
 }
-function TH({
-  children,
-  sticky,
-}) {
+function TH({ children, sticky }) {
   return (
     <th
       style={{
-        padding: '12px 14px',
-        background:
-          '#F7FAFB',
-        textAlign:
-          'left',
-        color: '#8A9BB5',
-        fontSize: '12px',
+        padding: "12px 14px",
+        background: "#F7FAFB",
+        textAlign: "left",
+        color: "#8A9BB5",
+        fontSize: "12px",
         fontWeight: 600,
-        letterSpacing: '0.04em',
-        textTransform: 'uppercase',
-        position: sticky
-          ? 'sticky'
-          : 'static',
-        right: sticky
-          ? 0
-          : undefined,
+        letterSpacing: "0.04em",
+        textTransform: "uppercase",
+        position: sticky ? "sticky" : "static",
+        right: sticky ? 0 : undefined,
       }}
     >
       {children}
     </th>
-  )
+  );
 }
 
-function TD({
-  children,
-  sticky,
-  style = {},
-}) {
+function TD({ children, sticky, style = {} }) {
   return (
     <td
       style={{
-        paddingTop: '14px',
-        paddingBottom: '14px',
-        paddingLeft: '14px',
-        paddingRight: '14px',
-        verticalAlign: 'top',
-        borderBottom:
-          '1px solid #EEF3F9',
-        transition: 'background .2s ease',
-        background:
-          '#FFFFFF',
-        position: sticky
-          ? 'sticky'
-          : 'static',
-        right: sticky
-          ? 0
-          : undefined,
+        paddingTop: "14px",
+        paddingBottom: "14px",
+        paddingLeft: "14px",
+        paddingRight: "14px",
+        verticalAlign: "top",
+        borderBottom: "1px solid #EEF3F9",
+        transition: "background .2s ease",
+        background: "#FFFFFF",
+        position: sticky ? "sticky" : "static",
+        right: sticky ? 0 : undefined,
         ...style,
       }}
     >
       {children}
     </td>
-  )
+  );
 }
-
 
 // floating animation styles
 const floatingStyle = {
-  animation: 'float 6s ease-in-out infinite'
-}
+  animation: "float 6s ease-in-out infinite",
+};
 
 /*
 CLARIO THEME UPGRADE:

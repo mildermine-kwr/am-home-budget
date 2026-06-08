@@ -183,6 +183,10 @@ export default function App() {
   const [subFilter, setSubFilter] =
     useState('all')
 
+  useEffect(() => {
+    setSubFilter('all')
+  }, [activeTab])
+
   const [open, setOpen] =
     useState(false)
 
@@ -366,11 +370,11 @@ const loadBudgets = async () => {
   const filteredItems = (() => {
     if (activeTab !== 'tort' || subFilter === 'all') return items || []
     return (items || []).filter((item) => {
-      const isMaterial = MATERIAL_KEYWORDS.some(
-        (kw) => item.note?.includes(kw)
-      )
-      if (subFilter === 'material') return isMaterial
-      if (subFilter === 'labor') return !isMaterial
+      const isLabor =
+        item.note?.includes('[ต่อเติม]') ||
+        item.title?.includes('[ต่อเติม]')
+      if (subFilter === 'labor') return isLabor
+      if (subFilter === 'material') return !isLabor
       return true
     })
   })()
@@ -1406,6 +1410,30 @@ button:hover{
             >
               + เพิ่มรายการ
             </button>
+
+            {activeTab === 'tort' && (
+              <div style={{
+                width: '100%',
+                display: 'flex',
+                gap: '8px',
+                borderTop: '1px solid rgba(0,0,0,.06)',
+                paddingTop: '10px',
+                marginTop: '2px',
+              }}>
+                <span style={{ fontSize: '13px', color: '#8B8B8B', alignSelf: 'center', whiteSpace: 'nowrap' }}>
+                  ประเภท:
+                </span>
+                {[['all','ทั้งหมด'],['labor','ค่าแรง'],['material','ค่าวัสดุ']].map(([val, label]) => (
+                  <FilterButton
+                    key={val}
+                    active={subFilter === val}
+                    onClick={() => setSubFilter(val)}
+                  >
+                    {label}
+                  </FilterButton>
+                ))}
+              </div>
+            )}
             
           </div>
 

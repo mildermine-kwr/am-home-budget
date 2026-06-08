@@ -1361,6 +1361,7 @@ button:hover{
                         <span
                           style={{
                             opacity: 0.45,
+                            whiteSpace: "nowrap",
                           }}
                         >
                           •
@@ -1588,17 +1589,17 @@ button:hover{
                               {item.installment && (
                                 <div
                                   style={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "8px",
-                                    padding: "8px 14px",
-                                    borderRadius: "999px",
-                                    background: "rgba(0,0,0,.12)",
-                                    color: "#000000",
-                                    fontSize: "14px",
-                                    fontWeight: 700,
                                     marginTop: "10px",
-                                    flexWrap: "wrap",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+    padding: "8px 14px",
+    borderRadius: "999px",
+    background: "rgb(163 214 244 / 12%)",
+    color: "rgb(63 134 197)",
+    fontWeight: 700,
+    fontSize: "14px",
+    flexWrap: "nowrap",
                                   }}
                                 >
                                   <span style={{
@@ -1795,16 +1796,16 @@ button:hover{
                                 <div
                                   style={{
                                     marginTop: "10px",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "8px",
-                                    height: "40px",
-                                    padding: "0 18px",
-                                    borderRadius: "999px",
-                                    background: "rgba(0,0,0,.12)",
-                                    color: "#000000",
-                                    fontWeight: 700,
-                                    fontSize: "15px",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+    padding: "8px 14px",
+    borderRadius: "999px",
+    background: "rgb(163 214 244 / 12%)",
+    color: "rgb(63 134 197)",
+    fontWeight: 700,
+    fontSize: "14px",
+    flexWrap: "nowrap",
                                   }}
                                 >
                                   ผ่อน {item.installment.paid}/

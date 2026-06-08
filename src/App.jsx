@@ -1883,16 +1883,15 @@ button:hover{
                             <div
                               style={{
                                 display: 'flex',
-                                flexDirection: 'column',
+                                flexDirection: 'row',
                                 gap: '8px',
-                                alignItems: 'flex-end',
-                                height: '100%',
+                                alignItems: 'center',
+                                justifyContent: 'flex-end',
                               }}
                             >
                               <StatusBadge>
                                 {statusText(item)}
                               </StatusBadge>
-                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                              {item.paid < item.budget && (
   <button
     style={{
@@ -1970,7 +1969,6 @@ button:hover{
 >
   <DeleteOutlined />
 </button>
-                              </div>
                             </div>
                           </TD>
                         </tr>

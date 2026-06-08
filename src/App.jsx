@@ -368,15 +368,38 @@ const loadBudgets = async () => {
   ]
 
   const filteredItems = (() => {
-    if (activeTab !== 'tort' || subFilter === 'all') return items || []
-    return (items || []).filter((item) => {
-      const isLabor =
-        item.note?.includes('[ต่อเติม]') ||
-        item.title?.includes('[ต่อเติม]')
-      if (subFilter === 'labor') return isLabor
-      if (subFilter === 'material') return !isLabor
-      return true
-    })
+    let result = items || []
+
+    if (activeTab === 'tort' && subFilter !== 'all') {
+      result = result.filter((item) => {
+        const isLabor =
+          item.note?.includes('[ต่อเติม]') ||
+          item.title?.includes('[ต่อเติม]')
+        if (subFilter === 'labor') return isLabor
+        if (subFilter === 'material') return !isLabor
+        return true
+      })
+    }
+
+    if (filter !== 'all') {
+      result = result.filter((item) => {
+        if (filter === 'done')    return item.status === 'paid'
+        if (filter === 'partial') return item.status === 'partial'
+        if (filter === 'none')    return item.status === 'unpaid'
+        return true
+      })
+    }
+
+    if (search.trim()) {
+      const q = search.trim().toLowerCase()
+      result = result.filter((item) =>
+        item.title?.toLowerCase().includes(q) ||
+        item.note?.toLowerCase().includes(q) ||
+        item.category?.toLowerCase().includes(q)
+      )
+    }
+
+    return result
   })()
 
   const repairInstallments =
@@ -906,6 +929,28 @@ button:hover{
       display: none;
     }
 
+    .status-chips-scroll {
+      display: flex !important;
+      gap: 8px !important;
+      overflow-x: auto !important;
+      padding-bottom: 2px !important;
+      scrollbar-width: none;
+      flex-wrap: nowrap !important;
+    }
+
+    .status-chips-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .status-chips-scroll button {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+    }
+
+    .status-filter-row {
+      flex-wrap: nowrap !important;
+    }
+
     .desktop-table {
       display: none !important;
     }
@@ -996,6 +1041,12 @@ button:hover{
 
     .mobile-fab {
       display: none !important;
+    }
+
+    .status-chips-scroll {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
   }
 `}
@@ -1288,63 +1339,7 @@ button:hover{
               รายการทั้งหมด
             </strong>
 
-            <div className="table-filters" style={{display:'flex',gap:'10px',alignItems:'center'}}><FilterButton
-              active={
-                filter ===
-                'all'
-              }
-              onClick={() =>
-                setFilter(
-                  'all'
-                )
-              }
-            >
-              ทั้งหมด
-            </FilterButton>
-
-            <FilterButton
-              active={
-                filter ===
-                'done'
-              }
-              onClick={() =>
-                setFilter(
-                  'done'
-                )
-              }
-            >
-              จ่ายครบ
-            </FilterButton>
-
-            <FilterButton
-              active={
-                filter ===
-                'partial'
-              }
-              onClick={() =>
-                setFilter(
-                  'partial'
-                )
-              }
-            >
-              บางส่วน
-            </FilterButton>
-
-            <FilterButton
-              active={
-                filter ===
-                'none'
-              }
-              onClick={() =>
-                setFilter(
-                  'none'
-                )
-              }
-            >
-              ยังไม่จ่าย
-            </FilterButton>
-
-            </div><input
+            <input
               value={search}
               onChange={(e) =>
                 setSearch(
@@ -1419,8 +1414,9 @@ button:hover{
                 borderTop: '1px solid rgba(0,0,0,.06)',
                 paddingTop: '10px',
                 marginTop: '2px',
+                alignItems: 'center',
               }}>
-                <span style={{ fontSize: '13px', color: '#8B8B8B', alignSelf: 'center', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: '13px', color: '#8B8B8B', whiteSpace: 'nowrap' }}>
                   ประเภท:
                 </span>
                 {[['all','ทั้งหมด'],['labor','ค่าแรง'],['material','ค่าวัสดุ']].map(([val, label]) => (
@@ -1434,6 +1430,31 @@ button:hover{
                 ))}
               </div>
             )}
+
+            <div className="status-filter-row" style={{
+              width: '100%',
+              display: 'flex',
+              gap: '8px',
+              borderTop: '1px solid rgba(0,0,0,.06)',
+              paddingTop: '10px',
+              marginTop: '2px',
+              alignItems: 'center',
+            }}>
+              <span style={{ fontSize: '13px', color: '#8B8B8B', whiteSpace: 'nowrap' }}>
+                สถานะ:
+              </span>
+              <div className="status-chips-scroll">
+                {[['all','ทั้งหมด'],['done','จ่ายครบ'],['partial','บางส่วน'],['none','ยังไม่จ่าย']].map(([val, label]) => (
+                  <FilterButton
+                    key={val}
+                    active={filter === val}
+                    onClick={() => setFilter(val)}
+                  >
+                    {label}
+                  </FilterButton>
+                ))}
+              </div>
+            </div>
             
           </div>
 

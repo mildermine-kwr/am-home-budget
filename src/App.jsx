@@ -1343,21 +1343,20 @@ button:hover{
 
                     {item.installment && (
                       <div
-                        style={{
-                          marginTop: "10px",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          minHeight: "36px",
-                          padding: "8px 14px",
-                          borderRadius: "999px",
-                          background: "rgba(0,0,0,.12)",
-                          color: "#000000",
-                          fontWeight: 700,
-                          fontSize: "13px",
-                          flexWrap: "wrap",
-                        }}
-                      >
+  style={{
+    marginTop: "10px",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+    padding: "8px 14px",
+    borderRadius: "999px",
+    background: "rgb(163 214 244 / 12%)",
+    color: "rgb(63 134 197)",
+    fontWeight: 700,
+    fontSize: "14px",
+    flexWrap: "nowrap",
+  }}
+>
                         ผ่อน {item.installment.paid}/{item.installment.total}
                         <span
                           style={{
@@ -1602,7 +1601,9 @@ button:hover{
                                     flexWrap: "wrap",
                                   }}
                                 >
-                                  <span>
+                                  <span style={{
+                                      whiteSpace: "nowrap",
+                                    }}>
                                     ผ่อน {item.installment.paid}/
                                     {item.installment.total}
                                   </span>
@@ -1616,7 +1617,9 @@ button:hover{
                                     •
                                   </span>
 
-                                  <span>
+                                   <span style={{
+                                      whiteSpace: "nowrap",
+                                    }}>
                                     ฿
                                     {Math.round(
                                       item.budget / item.installment.total,

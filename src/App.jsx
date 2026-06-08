@@ -180,12 +180,14 @@ export default function App() {
   const [filter, setFilter] =
     useState('all')
 
+
   const [subFilter, setSubFilter] =
     useState('all')
 
   useEffect(() => {
     setSubFilter('all')
   }, [activeTab])
+
 
   const [open, setOpen] =
     useState(false)
@@ -358,6 +360,7 @@ const loadBudgets = async () => {
     activeTab === 'tort'
       ? data?.tort || []
       : data?.furn || []
+
 
   const MATERIAL_KEYWORDS = [
     'TOA', 'สี', 'ปลั๊ก', 'สวิตช์', 'สายไฟ', 'หลอด', 'ทราย', 'ปูน',

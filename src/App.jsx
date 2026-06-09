@@ -2657,14 +2657,16 @@ const fieldStyle = {
 function BahtInput({ value, onChange, placeholder = "", style = {} }) {
   const [focused, setFocused] = useState(false);
   const raw = String(value || "");
-  const digitsOnly = raw.replace(/\D/g, "");
-  const formatted = digitsOnly
+  const num = Number(raw);
+  const formatted = raw
     ? focused
-      ? Number(digitsOnly).toLocaleString("en-US")
-      : Number(digitsOnly).toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
+      ? raw
+      : isNaN(num)
+        ? ""
+        : num.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
     : "";
 
   return (
@@ -2686,14 +2688,17 @@ function BahtInput({ value, onChange, placeholder = "", style = {} }) {
       </span>
       <input
         type="text"
-        inputMode="numeric"
+        inputMode="decimal"
         placeholder={placeholder}
         value={formatted}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         onChange={(e) => {
-          const clean = e.target.value.replace(/\D/g, "");
-          onChange(clean);
+          let v = e.target.value.replace(/[^\d.]/g, "");
+          const parts = v.split(".");
+          if (parts.length > 2) v = parts[0] + "." + parts.slice(1).join("");
+          if (parts[1] !== undefined) v = parts[0] + "." + parts[1].slice(0, 2);
+          onChange(v);
         }}
         style={{
           ...fieldStyle,
@@ -2708,27 +2713,32 @@ function BahtInput({ value, onChange, placeholder = "", style = {} }) {
 function PayInput({ value, onChange, placeholder = "", style = {} }) {
   const [focused, setFocused] = useState(false);
   const raw = String(value || "");
-  const digitsOnly = raw.replace(/\D/g, "");
-  const formatted = digitsOnly
+  const num = Number(raw);
+  const formatted = raw
     ? focused
-      ? Number(digitsOnly).toLocaleString("en-US")
-      : Number(digitsOnly).toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
+      ? raw
+      : isNaN(num)
+        ? ""
+        : num.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
     : "";
 
   return (
     <input
       type="text"
-      inputMode="numeric"
+      inputMode="decimal"
       placeholder={placeholder}
       value={formatted}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       onChange={(e) => {
-        const clean = e.target.value.replace(/\D/g, "");
-        onChange(clean);
+        let v = e.target.value.replace(/[^\d.]/g, "");
+        const parts = v.split(".");
+        if (parts.length > 2) v = parts[0] + "." + parts.slice(1).join("");
+        if (parts[1] !== undefined) v = parts[0] + "." + parts[1].slice(0, 2);
+        onChange(v);
       }}
       style={style}
     />

@@ -460,7 +460,6 @@ export default function App() {
         paid,
         remaining,
         status,
-        note: form.note || "",
         platform:
           form.platform === "อื่นๆ" ? form.otherPlatform : form.platform,
         installment:
@@ -569,10 +568,10 @@ export default function App() {
       setForm({
         date: "",
         category: "",
+        title: "",
         note: "",
         budget: "",
         paid: "",
-        note: "",
         platform: "",
         otherPlatform: "",
       });

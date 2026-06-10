@@ -1,0 +1,60 @@
+09:47:26.427 Running build in Washington, D.C., USA (East) – iad1
+09:47:26.428 Build machine configuration: 2 cores, 8 GB
+09:47:26.441 Cloning github.com/mildermine-kwr/am-home-budget (Branch: main, Commit: f055ee2)
+09:47:26.442 Skipping build cache, deployment was triggered without cache.
+09:47:27.392 Cloning completed: 951.000ms
+09:47:27.739 Running "vercel build"
+09:47:27.780 Vercel CLI 54.10.2
+09:47:28.339 Installing dependencies...
+09:47:31.300 npm warn deprecated recharts@2.15.4: 1.x and 2.x branches are no longer active. Bump to Recharts v3 to receive latest features and bugfixes. See https://github.com/recharts/recharts/wiki/3.0-migration-guide
+09:47:33.341 
+09:47:33.342 added 118 packages in 5s
+09:47:33.343 
+09:47:33.343 7 packages are looking for funding
+09:47:33.344   run `npm fund` for details
+09:47:33.392 Running "npm run build"
+09:47:33.494 
+09:47:33.494 > am-home-budget-v2@0.0.1 build
+09:47:33.494 > vite build
+09:47:33.494 
+09:47:33.703 vite v5.4.21 building for production...
+09:47:33.753 transforming...
+09:47:33.859 [plugin:vite:esbuild] [plugin vite:esbuild] src/App.jsx: Duplicate key "note" in object literal
+09:47:33.859 461|          remaining,
+09:47:33.859 462|          status,
+09:47:33.860 463|          note: form.note || "",
+09:47:33.860    |          ^
+09:47:33.860 464|          platform:
+09:47:33.860 465|            form.platform === "อื่นๆ" ? form.otherPlatform : form.platform,
+09:47:33.861 
+09:47:33.861 [plugin:vite:esbuild] [plugin vite:esbuild] src/App.jsx: Duplicate key "note" in object literal
+09:47:33.862 573|          budget: "",
+09:47:33.862 574|          paid: "",
+09:47:33.862 575|          note: "",
+09:47:33.863    |          ^
+09:47:33.863 576|          platform: "",
+09:47:33.863 577|          otherPlatform: "",
+09:47:33.863 
+09:47:37.517 ✓ 1767 modules transformed.
+09:47:37.684 warnings when minifying css:
+09:47:37.685 ▲ [WARNING] Unexpected "}" [css-syntax-error]
+09:47:37.685 
+09:47:37.685     <stdin>:277:0:
+09:47:37.686       277 │ }
+09:47:37.686           ╵ ^
+09:47:37.686 
+09:47:37.686 
+09:47:38.108 rendering chunks...
+09:47:38.127 computing gzip size...
+09:47:38.142 dist/index.html                     1.03 kB │ gzip:   0.50 kB
+09:47:38.142 dist/assets/image-BR8KlCvY.png  2,370.61 kB
+09:47:38.143 dist/assets/index-zuT3TaXC.css      3.41 kB │ gzip:   1.15 kB
+09:47:38.143 dist/assets/index-BBWO5bPv.js     412.48 kB │ gzip: 117.55 kB
+09:47:38.143 ✓ built in 4.42s
+09:47:38.289 Build Completed in /vercel/output [10s]
+09:47:38.358 Deploying outputs...
+09:47:39.831 Deployment completed
+09:47:39.939 Creating build cache...
+09:47:46.675 Created build cache: 7s
+09:47:46.675 Uploading build cache [21.14 MB]
+09:47:47.219 Build cache uploaded: 554.000ms

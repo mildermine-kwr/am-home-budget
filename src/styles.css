@@ -240,40 +240,36 @@ th{
   .topbar{
     flex-direction:column;
     align-items:flex-start;
-    gap:18px;
+    gap:12px;
   }
-
-  flex-direction: column;
-gap: 12px;
 }
 
 .nav button {
-width: 100%;
-border: none;
-background: rgba(0,0,0,.1);
-padding: 16px;
-border-radius: 18px;
-font-weight: 600;
-cursor: pointer;
-transition: 0.2s ease;
-text-align: left;
-position: relative;
-z-index: 2;
+  width: 100%;
+  border: none;
+  background: rgba(0,0,0,.1);
+  padding: 16px;
+  border-radius: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  text-align: left;
+  position: relative;
+  z-index: 2;
 }
 
 .nav button:hover {
-background: rgba(0,0,0,.18);
+  background: rgba(0,0,0,.18);
 }
 
 .nav button.active {
-background: #111111;
-color: white;
+  background: #111111;
+  color: white;
 }
 
 .sidebar {
-position: relative;
-z-index: 5;
-}
+  position: relative;
+  z-index: 5;
 }
 
 .modal-scroll::-webkit-scrollbar {

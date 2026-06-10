@@ -5,4 +5,4 @@ export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY
 )
 
-console.log("SUPABASE URL:", import.meta.env.VITE_SUPABASE_URL)
+console.log("SUPABASE URL RAW =", JSON.stringify(import.meta.env.VITE_SUPABASE_URL))

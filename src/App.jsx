@@ -219,6 +219,7 @@ export default function App() {
     paymentType: "full",
     installmentTotal: "",
     installmentPaid: "",
+    quantity: "1",
     platform: "",
   });
 
@@ -489,6 +490,7 @@ export default function App() {
 
         type: activeTab,
         checklist_id: linkedChecklistId || null,
+        quantity: Number(form.quantity || 1),
       };
 
       if (editingId) {
@@ -515,6 +517,7 @@ export default function App() {
               : form.platform || "",
           type: activeTab,
           checklist_id: linkedChecklistId || null,
+          quantity: Number(form.quantity || 1),
         };
 
         const { error } = await supabase
@@ -584,6 +587,7 @@ export default function App() {
           remaining: Number(next.remaining || 0),
           status: next.status || "unpaid",
           checklist_id: next.checklist_id || null,
+          quantity: Number(next.quantity || 1),
         };
 
         setData((prev) => {
@@ -634,6 +638,7 @@ export default function App() {
         paid: "",
         platform: "",
         otherPlatform: "",
+        quantity: "1",
       });
       setLinkedChecklistId(null);
       setClSearch("");
@@ -670,6 +675,7 @@ export default function App() {
       status: item.status || "",
       platform: item.platform || "",
       otherPlatform: "",
+      quantity: String(item.quantity || 1),
     });
 
     setLinkedChecklistId(item.checklist_id || null);
@@ -1366,6 +1372,7 @@ button:hover{
 
                     platform: "",
                     otherPlatform: "",
+                    quantity: "1",
                   });
 
                   setLinkedChecklistId(null);
@@ -1677,6 +1684,7 @@ button:hover{
                   installmentPaid: "",
                   platform: "",
                   otherPlatform: "",
+                  quantity: "1",
                 });
 
                 setLinkedChecklistId(null);
@@ -1734,7 +1742,21 @@ button:hover{
                                 alignItems: "flex-start",
                               }}
                             >
-                              <div>{item.title || item.note}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                                <span>{item.title || item.note}</span>
+                                {item.quantity > 1 && (
+                                  <span style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    padding: "2px 10px",
+                                    borderRadius: "999px",
+                                    background: "#F3F4F6",
+                                    color: "#374151",
+                                    fontSize: "13px",
+                                    fontWeight: 600,
+                                  }}>×{item.quantity}</span>
+                                )}
+                              </div>
 
                               {item.checklist_id && (() => {
                                 const cl = checklistItems.find(c => c.id === item.checklist_id);
@@ -2177,20 +2199,38 @@ button:hover{
                     marginBottom: "18px",
                   }}
                 >
-                  <Field label="รายละเอียด">
-                    <input
-                      type="text"
-                      placeholder="ชื่อรายการ..."
-                      value={form.title}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          title: e.target.value,
-                        })
-                      }
-                      style={fieldStyle}
-                    />
-                  </Field>
+                  <div style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
+                    <div style={{ flex: 1 }}>
+                      <Field label="รายละเอียด">
+                        <input
+                          type="text"
+                          placeholder="ชื่อรายการ..."
+                          value={form.title}
+                          onChange={(e) =>
+                            setForm({
+                              ...form,
+                              title: e.target.value,
+                            })
+                          }
+                          style={fieldStyle}
+                        />
+                      </Field>
+                    </div>
+                    <div style={{ width: "90px", flexShrink: 0 }}>
+                      <Field label="จำนวน">
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder="1"
+                          value={form.quantity}
+                          onChange={(e) =>
+                            setForm({ ...form, quantity: e.target.value })
+                          }
+                          style={{ ...fieldStyle, textAlign: "center" }}
+                        />
+                      </Field>
+                    </div>
+                  </div>
                 </div>
 
                 <div

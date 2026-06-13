@@ -42,6 +42,7 @@ export default function Checklist() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("ปลั๊กและสวิตช์");
   const [notes, setNotes] = useState("");
+  const [quantity, setQuantity] = useState(1);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [adding, setAdding] = useState(false);
@@ -77,7 +78,7 @@ export default function Checklist() {
     setAdding(true);
     const { data, error } = await supabase
       .from("checklist")
-      .insert({ title: title.trim(), category, notes: notes.trim(), checked: false })
+      .insert({ title: title.trim(), category, notes: notes.trim(), checked: false, quantity: quantity || 1 })
       .select()
       .single();
     if (error) {
@@ -88,6 +89,7 @@ export default function Checklist() {
       setTitle("");
       setNotes("");
       setCategory("ปลั๊กและสวิตช์");
+      setQuantity(1);
       setShowForm(false);
       showToast("เพิ่มรายการแล้ว");
     }
@@ -168,7 +170,8 @@ export default function Checklist() {
   title text not null,
   category text default '',
   notes text default '',
-  checked boolean default false
+  checked boolean default false,
+  quantity integer default 1
 );
 
 -- อนุญาตให้ anon อ่าน/เขียนได้
@@ -433,6 +436,43 @@ alter table checklist disable row level security;`}
               </button>
             ))}
           </div>
+          <div style={{ display: "flex", gap: 10, marginBottom: 12, alignItems: "center" }}>
+            <span style={{ fontSize: 14, color: "#7C8798", fontWeight: 600, whiteSpace: "nowrap" }}>
+              จำนวน
+            </span>
+            <button
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              style={{
+                width: 34, height: 34, borderRadius: 10,
+                border: "1px solid #DDE6F0", background: "#F9FAFB",
+                fontSize: 18, cursor: "pointer", display: "flex",
+                alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}
+            >−</button>
+            <input
+              type="number"
+              min={1}
+              value={quantity}
+              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+              style={{
+                width: 64, textAlign: "center",
+                padding: "7px 10px", borderRadius: 10,
+                border: "1px solid #DDE6F0", fontSize: 15,
+                fontFamily: "inherit", outline: "none",
+                fontWeight: 700, color: "#1B2430",
+              }}
+            />
+            <button
+              onClick={() => setQuantity((q) => q + 1)}
+              style={{
+                width: 34, height: 34, borderRadius: 10,
+                border: "1px solid #DDE6F0", background: "#F9FAFB",
+                fontSize: 18, cursor: "pointer", display: "flex",
+                alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}
+            >+</button>
+            <span style={{ fontSize: 13, color: "#A0AEC0" }}>ชิ้น / อัน</span>
+          </div>
           <input
             placeholder="หมายเหตุ (ไม่บังคับ)"
             value={notes}
@@ -656,6 +696,20 @@ function ChecklistItem({ item, onToggle, onDelete }) {
             flexWrap: "wrap",
           }}
         >
+          {item.quantity > 1 && (
+            <span
+              style={{
+                background: "#1B2430",
+                color: "#fff",
+                borderRadius: 999,
+                padding: "2px 9px",
+                fontSize: 11,
+                fontWeight: 700,
+              }}
+            >
+              ×{item.quantity}
+            </span>
+          )}
           {item.category && (
             <span
               style={{

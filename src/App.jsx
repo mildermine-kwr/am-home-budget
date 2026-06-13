@@ -540,7 +540,27 @@ export default function App() {
           ),
         }));
 
-        showToast("แก้ไขรายการสำเร็จ");
+        if (payload.status === "paid" && payload.checklist_id) {
+          const clItem = checklistItems.find((c) => c.id === payload.checklist_id);
+          if (clItem) {
+            await supabase
+              .from("checklist")
+              .update({ checked: true, bought: clItem.quantity })
+              .eq("id", payload.checklist_id);
+            setChecklistItems((prev) =>
+              prev.map((c) =>
+                c.id === payload.checklist_id
+                  ? { ...c, checked: true, bought: c.quantity }
+                  : c,
+              ),
+            );
+            showToast("แก้ไขรายการสำเร็จ ✅ ติ๊กรายการซื้อแล้ว");
+          } else {
+            showToast("แก้ไขรายการสำเร็จ");
+          }
+        } else {
+          showToast("แก้ไขรายการสำเร็จ");
+        }
       } else {
         const { error } = await supabase.from("budget").insert(next);
 
@@ -563,6 +583,7 @@ export default function App() {
           paid: Number(next.paid || 0),
           remaining: Number(next.remaining || 0),
           status: next.status || "unpaid",
+          checklist_id: next.checklist_id || null,
         };
 
         setData((prev) => {
@@ -574,7 +595,27 @@ export default function App() {
           return updated;
         });
 
-        showToast("บันทึกรายการสำเร็จ");
+        if (next.status === "paid" && linkedChecklistId) {
+          const clItem = checklistItems.find((c) => c.id === linkedChecklistId);
+          if (clItem) {
+            await supabase
+              .from("checklist")
+              .update({ checked: true, bought: clItem.quantity })
+              .eq("id", linkedChecklistId);
+            setChecklistItems((prev) =>
+              prev.map((c) =>
+                c.id === linkedChecklistId
+                  ? { ...c, checked: true, bought: c.quantity }
+                  : c,
+              ),
+            );
+            showToast("บันทึกรายการสำเร็จ ✅ ติ๊กรายการซื้อแล้ว");
+          } else {
+            showToast("บันทึกรายการสำเร็จ");
+          }
+        } else {
+          showToast("บันทึกรายการสำเร็จ");
+        }
       }
 
       setOpen(false);
@@ -691,7 +732,27 @@ export default function App() {
         ),
       }));
 
-      showToast("บันทึกการชำระสำเร็จ");
+      if (status === "paid" && currentItem.checklist_id) {
+        const clItem = checklistItems.find((c) => c.id === currentItem.checklist_id);
+        if (clItem) {
+          await supabase
+            .from("checklist")
+            .update({ checked: true, bought: clItem.quantity })
+            .eq("id", currentItem.checklist_id);
+          setChecklistItems((prev) =>
+            prev.map((c) =>
+              c.id === currentItem.checklist_id
+                ? { ...c, checked: true, bought: c.quantity }
+                : c,
+            ),
+          );
+          showToast("บันทึกการชำระสำเร็จ ✅ ติ๊กรายการซื้อแล้ว");
+        } else {
+          showToast("บันทึกการชำระสำเร็จ");
+        }
+      } else {
+        showToast("บันทึกการชำระสำเร็จ");
+      }
 
       setPayingId(null);
       setPayAmount("");

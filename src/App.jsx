@@ -4,6 +4,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TORT, FURN } from "./data/items";
+import Checklist from "./Checklist";
 
 const DEFAULT_TORT = TORT;
 
@@ -145,6 +146,7 @@ export default function App() {
     console.log(error);
   };
 
+  const [page, setPage] = useState("budget");
   const [activeTab, setActiveTab] = useState("tort");
 
   const [search, setSearch] = useState("");
@@ -960,6 +962,67 @@ button:hover{
         `}
       </style>
 
+      <nav
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          background: "rgba(238,243,249,0.92)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderBottom: "1px solid #DDE6F0",
+          padding: "0 40px",
+          fontFamily: "'IBM Plex Sans Thai', sans-serif",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1400,
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            height: 60,
+            gap: 8,
+          }}
+        >
+          <span
+            style={{
+              fontWeight: 800,
+              fontSize: 17,
+              color: "#1B2430",
+              letterSpacing: "-0.02em",
+              marginRight: "auto",
+            }}
+          >
+            AM Home Budget
+          </span>
+
+          {[
+            { key: "budget", label: "💰 งบประมาณ" },
+            { key: "checklist", label: "✅ รายการซื้อ" },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setPage(key)}
+              style={{
+                border: "none",
+                background: page === key ? "#111" : "transparent",
+                color: page === key ? "#fff" : "#7C8798",
+                borderRadius: 12,
+                padding: "8px 18px",
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                transition: "all .2s ease",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </nav>
+
       <div
         className="app-shell"
         style={{
@@ -971,14 +1034,16 @@ button:hover{
         `,
           backgroundSize: "100% 100%",
           animation: "none",
-          padding: "40px",
+          padding: page === "checklist" ? "40px" : "40px",
           fontFamily: "'IBM Plex Sans Thai', sans-serif",
         }}
       >
+        {page === "checklist" && <Checklist />}
         <div
           style={{
             maxWidth: "1400px",
             margin: "0 auto",
+            display: page === "budget" ? "block" : "none",
           }}
         >
           <div

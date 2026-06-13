@@ -172,6 +172,18 @@ export default function App() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (open) {
+      supabase
+        .from("checklist")
+        .select("id, title, category, quantity, bought, checked")
+        .order("created_at", { ascending: false })
+        .then(({ data }) => {
+          if (data) setChecklistItems(data);
+        });
+    }
+  }, [open]);
+
   const [payingId, setPayingId] = useState(null);
 
   const [payAmount, setPayAmount] = useState("");
@@ -191,6 +203,9 @@ export default function App() {
 
   const [editingId, setEditingId] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [checklistItems, setChecklistItems] = useState([]);
+  const [linkedChecklistId, setLinkedChecklistId] = useState(null);
+  const [clSearch, setClSearch] = useState("");
 
   const [form, setForm] = useState({
     date: "",
@@ -473,6 +488,7 @@ export default function App() {
             : null,
 
         type: activeTab,
+        checklist_id: linkedChecklistId || null,
       };
 
       if (editingId) {
@@ -498,6 +514,7 @@ export default function App() {
               ? form.otherPlatform || ""
               : form.platform || "",
           type: activeTab,
+          checklist_id: linkedChecklistId || null,
         };
 
         const { error } = await supabase
@@ -577,6 +594,8 @@ export default function App() {
         platform: "",
         otherPlatform: "",
       });
+      setLinkedChecklistId(null);
+      setClSearch("");
     } catch (error) {
       console.log(error);
       showToast("เกิดข้อผิดพลาดในการบันทึก");
@@ -612,6 +631,8 @@ export default function App() {
       otherPlatform: "",
     });
 
+    setLinkedChecklistId(item.checklist_id || null);
+    setClSearch("");
     setOpen(true);
   };
 
@@ -1286,6 +1307,8 @@ button:hover{
                     otherPlatform: "",
                   });
 
+                  setLinkedChecklistId(null);
+                  setClSearch("");
                   setOpen(true);
                 }}
                 style={{
@@ -1595,6 +1618,8 @@ button:hover{
                   otherPlatform: "",
                 });
 
+                setLinkedChecklistId(null);
+                setClSearch("");
                 setOpen(true);
               }}
             >
@@ -1649,6 +1674,26 @@ button:hover{
                               }}
                             >
                               <div>{item.title || item.note}</div>
+
+                              {item.checklist_id && (() => {
+                                const cl = checklistItems.find(c => c.id === item.checklist_id);
+                                return cl ? (
+                                  <div style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "5px",
+                                    padding: "4px 10px",
+                                    borderRadius: "999px",
+                                    background: "rgba(34,197,94,0.10)",
+                                    color: "#16a34a",
+                                    fontSize: "12px",
+                                    fontWeight: 600,
+                                  }}>
+                                    <span>✅</span>
+                                    <span>{cl.title}</span>
+                                  </div>
+                                ) : null;
+                              })()}
 
                               {item.installment && (
                                 <div
@@ -2354,6 +2399,96 @@ button:hover{
                         height: "auto",
                       }}
                     />
+                  </Field>
+
+                  <Field label="เชื่อมกับรายการซื้อ (ไม่บังคับ)">
+                    {linkedChecklistId ? (
+                      <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "12px 16px",
+                        borderRadius: "16px",
+                        background: "rgba(34,197,94,0.08)",
+                        border: "1.5px solid rgba(34,197,94,0.25)",
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ fontSize: "16px" }}>✅</span>
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: "14px", color: "#15803d" }}>
+                              {checklistItems.find(c => c.id === linkedChecklistId)?.title}
+                            </div>
+                            <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                              {checklistItems.find(c => c.id === linkedChecklistId)?.category}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => { setLinkedChecklistId(null); setClSearch(""); }}
+                          style={{
+                            background: "none", border: "none", cursor: "pointer",
+                            color: "#9ca3af", fontSize: "18px", lineHeight: 1, padding: "4px",
+                          }}
+                        >×</button>
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          placeholder="ค้นหารายการซื้อ..."
+                          value={clSearch}
+                          onChange={e => setClSearch(e.target.value)}
+                          style={{ ...fieldStyle, marginBottom: "8px" }}
+                        />
+                        <div style={{
+                          maxHeight: "180px",
+                          overflowY: "auto",
+                          border: "1px solid #E5E7EB",
+                          borderRadius: "16px",
+                          background: "#FAFAFA",
+                        }}>
+                          {checklistItems
+                            .filter(c =>
+                              !clSearch || c.title?.toLowerCase().includes(clSearch.toLowerCase()) ||
+                              c.category?.toLowerCase().includes(clSearch.toLowerCase())
+                            )
+                            .map(c => (
+                              <button
+                                key={c.id}
+                                onClick={() => setLinkedChecklistId(c.id)}
+                                style={{
+                                  width: "100%", display: "flex", alignItems: "center",
+                                  justifyContent: "space-between", gap: "8px",
+                                  padding: "10px 14px", background: "none", border: "none",
+                                  borderBottom: "1px solid #F3F4F6", cursor: "pointer",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                  <span style={{ fontSize: "13px" }}>{c.checked ? "✅" : "🔲"}</span>
+                                  <div>
+                                    <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>{c.title}</div>
+                                    <div style={{ fontSize: "12px", color: "#9ca3af" }}>{c.category}</div>
+                                  </div>
+                                </div>
+                                {c.quantity > 1 && (
+                                  <span style={{
+                                    fontSize: "11px", color: "#6b7280", background: "#F3F4F6",
+                                    borderRadius: "999px", padding: "2px 8px", whiteSpace: "nowrap",
+                                  }}>×{c.quantity}</span>
+                                )}
+                              </button>
+                            ))}
+                          {checklistItems.filter(c =>
+                            !clSearch || c.title?.toLowerCase().includes(clSearch.toLowerCase()) ||
+                            c.category?.toLowerCase().includes(clSearch.toLowerCase())
+                          ).length === 0 && (
+                            <div style={{ padding: "20px", textAlign: "center", color: "#9ca3af", fontSize: "13px" }}>
+                              ไม่พบรายการ
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </Field>
                 </div>
               </div>

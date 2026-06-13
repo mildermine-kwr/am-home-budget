@@ -80,7 +80,10 @@ export default function Checklist() {
       .insert({ title: title.trim(), category, notes: notes.trim(), checked: false })
       .select()
       .single();
-    if (!error && data) {
+    if (error) {
+      console.error("addItem error:", error);
+      showToast("เกิดข้อผิดพลาด: " + (error.message || "ไม่สามารถเพิ่มได้"));
+    } else if (data) {
       setItems((prev) => [data, ...prev]);
       setTitle("");
       setNotes("");
@@ -166,7 +169,10 @@ export default function Checklist() {
   category text default '',
   notes text default '',
   checked boolean default false
-);`}
+);
+
+-- อนุญาตให้ anon อ่าน/เขียนได้
+alter table checklist disable row level security;`}
         </pre>
         <button
           onClick={() => { setDbError(false); loadItems(); }}

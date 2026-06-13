@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
-import { DeleteOutlined, CheckOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, CheckOutlined, EditOutlined } from "@ant-design/icons";
 
 const CATS = [
   "ปลั๊กและสวิตช์",
@@ -50,6 +50,12 @@ export default function Checklist() {
   const [deleteId, setDeleteId] = useState(null);
   const [buyingItem, setBuyingItem] = useState(null);
   const [buyQty, setBuyQty] = useState(1);
+  const [editingItem, setEditingItem] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [editQuantity, setEditQuantity] = useState(1);
+  const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState({ show: false, text: "" });
 
   useEffect(() => {
@@ -140,6 +146,42 @@ export default function Checklist() {
         ? "ซื้อครบแล้ว ✓"
         : `ซื้อไปแล้ว ${newBought}/${buyingItem.quantity} ชิ้น`
     );
+  };
+
+  const openEdit = (item) => {
+    setEditingItem(item);
+    setEditTitle(item.title);
+    setEditCategory(item.category || CATS[0]);
+    setEditNotes(item.notes || "");
+    setEditQuantity(item.quantity || 1);
+  };
+
+  const saveEdit = async () => {
+    if (!editTitle.trim() || !editingItem) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("checklist")
+      .update({
+        title: editTitle.trim(),
+        category: editCategory,
+        notes: editNotes.trim(),
+        quantity: editQuantity,
+      })
+      .eq("id", editingItem.id);
+    if (!error) {
+      setItems((prev) =>
+        prev.map((i) =>
+          i.id === editingItem.id
+            ? { ...i, title: editTitle.trim(), category: editCategory, notes: editNotes.trim(), quantity: editQuantity }
+            : i
+        )
+      );
+      setEditingItem(null);
+      showToast("บันทึกแล้ว");
+    } else {
+      showToast("เกิดข้อผิดพลาด: " + error.message);
+    }
+    setSaving(false);
   };
 
   const deleteItem = async (id) => {
@@ -441,6 +483,131 @@ alter table checklist disable row level security;`}
         </div>
       )}
 
+      {editingItem && (
+        <div
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,.5)",
+            zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 20,
+          }}
+          onClick={() => setEditingItem(null)}
+        >
+          <div
+            style={{
+              background: "#fff", borderRadius: 24, padding: 28,
+              width: "100%", maxWidth: 420,
+              boxShadow: "0 20px 60px rgba(0,0,0,.18)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p style={{ margin: "0 0 20px", fontWeight: 800, fontSize: 18, color: "#1B2430" }}>
+              แก้ไขรายการ
+            </p>
+
+            <input
+              autoFocus
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && saveEdit()}
+              placeholder="ชื่อรายการ"
+              style={{
+                width: "100%", padding: "12px 16px", borderRadius: 12,
+                border: "1px solid #DDE6F0", fontSize: 15, fontFamily: "inherit",
+                outline: "none", marginBottom: 14, boxSizing: "border-box",
+                fontWeight: 600, color: "#1B2430",
+              }}
+            />
+
+            <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
+              {CATS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setEditCategory(c)}
+                  style={{
+                    border: editCategory === c ? "2px solid #111" : "1px solid #DDE6F0",
+                    background: editCategory === c ? CAT_COLORS[c] || "#F4F4F5" : "#fff",
+                    color: editCategory === c ? CAT_TEXT[c] || "#111" : "#7C8798",
+                    borderRadius: 999, padding: "5px 13px",
+                    fontWeight: editCategory === c ? 700 : 500,
+                    fontSize: 12, cursor: "pointer", fontFamily: "inherit",
+                  }}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: 10, marginBottom: 14, alignItems: "center" }}>
+              <span style={{ fontSize: 14, color: "#7C8798", fontWeight: 600, whiteSpace: "nowrap" }}>จำนวน</span>
+              <button
+                onClick={() => setEditQuantity((q) => Math.max(1, q - 1))}
+                style={{
+                  width: 34, height: 34, borderRadius: 10, border: "1px solid #DDE6F0",
+                  background: "#F9FAFB", fontSize: 18, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >−</button>
+              <input
+                type="number" min={1} value={editQuantity}
+                onChange={(e) => setEditQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                style={{
+                  width: 64, textAlign: "center", padding: "7px 10px",
+                  borderRadius: 10, border: "1px solid #DDE6F0",
+                  fontSize: 15, fontFamily: "inherit", outline: "none",
+                  fontWeight: 700, color: "#1B2430",
+                }}
+              />
+              <button
+                onClick={() => setEditQuantity((q) => q + 1)}
+                style={{
+                  width: 34, height: 34, borderRadius: 10, border: "1px solid #DDE6F0",
+                  background: "#F9FAFB", fontSize: 18, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >+</button>
+              <span style={{ fontSize: 13, color: "#A0AEC0" }}>ชิ้น / อัน</span>
+            </div>
+
+            <input
+              value={editNotes}
+              onChange={(e) => setEditNotes(e.target.value)}
+              placeholder="หมายเหตุ (ไม่บังคับ)"
+              style={{
+                width: "100%", padding: "10px 16px", borderRadius: 12,
+                border: "1px solid #DDE6F0", fontSize: 14, fontFamily: "inherit",
+                outline: "none", marginBottom: 20, boxSizing: "border-box",
+              }}
+            />
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setEditingItem(null)}
+                style={{
+                  flex: 1, border: "1px solid #DDE6F0", background: "#fff",
+                  borderRadius: 12, padding: "12px", fontWeight: 600,
+                  cursor: "pointer", fontFamily: "inherit", color: "#7C8798",
+                }}
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={saveEdit}
+                disabled={!editTitle.trim() || saving}
+                style={{
+                  flex: 2, border: "none",
+                  background: editTitle.trim() ? "linear-gradient(135deg,#111,#000)" : "#DDE6F0",
+                  color: editTitle.trim() ? "#fff" : "#aaa",
+                  borderRadius: 12, padding: "12px", fontWeight: 700,
+                  cursor: editTitle.trim() ? "pointer" : "default", fontFamily: "inherit",
+                }}
+              >
+                {saving ? "กำลังบันทึก..." : "บันทึก"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           display: "flex",
@@ -719,6 +886,7 @@ alter table checklist disable row level security;`}
                   item={item}
                   onToggle={toggleItem}
                   onDelete={() => setDeleteId(item.id)}
+                  onEdit={() => openEdit(item)}
                 />
               ))}
             </Section>
@@ -736,6 +904,7 @@ alter table checklist disable row level security;`}
                   item={item}
                   onToggle={toggleItem}
                   onDelete={() => setDeleteId(item.id)}
+                  onEdit={() => openEdit(item)}
                 />
               ))}
             </Section>
@@ -790,7 +959,7 @@ function Section({ title, count, color, children }) {
   );
 }
 
-function ChecklistItem({ item, onToggle, onDelete }) {
+function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
   return (
     <div
       style={{
@@ -909,19 +1078,26 @@ function ChecklistItem({ item, onToggle, onDelete }) {
       </div>
 
       <button
+        onClick={onEdit}
+        style={{
+          border: "none", background: "transparent", color: "#C8D3DF",
+          cursor: "pointer", padding: 6, borderRadius: 8,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0, transition: "color .2s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#6B8CAE")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "#C8D3DF")}
+      >
+        <EditOutlined style={{ fontSize: 14 }} />
+      </button>
+
+      <button
         onClick={onDelete}
         style={{
-          border: "none",
-          background: "transparent",
-          color: "#DDE6F0",
-          cursor: "pointer",
-          padding: 6,
-          borderRadius: 8,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-          transition: "color .2s",
+          border: "none", background: "transparent", color: "#DDE6F0",
+          cursor: "pointer", padding: 6, borderRadius: 8,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0, transition: "color .2s",
         }}
         onMouseEnter={(e) => (e.currentTarget.style.color = "#EF4444")}
         onMouseLeave={(e) => (e.currentTarget.style.color = "#DDE6F0")}

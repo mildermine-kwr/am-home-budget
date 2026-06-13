@@ -48,6 +48,8 @@ export default function Checklist() {
   const [adding, setAdding] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [buyingItem, setBuyingItem] = useState(null);
+  const [buyQty, setBuyQty] = useState(1);
   const [toast, setToast] = useState({ show: false, text: "" });
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export default function Checklist() {
     setAdding(true);
     const { data, error } = await supabase
       .from("checklist")
-      .insert({ title: title.trim(), category, notes: notes.trim(), checked: false, quantity: quantity || 1 })
+      .insert({ title: title.trim(), category, notes: notes.trim(), checked: false, quantity: quantity || 1, bought: 0 })
       .select()
       .single();
     if (error) {
@@ -96,16 +98,48 @@ export default function Checklist() {
     setAdding(false);
   };
 
-  const toggleItem = async (item) => {
-    const newVal = !item.checked;
+  const toggleItem = (item) => {
+    if (item.checked) {
+      // Uncheck: reset bought to 0
+      setItems((prev) =>
+        prev.map((i) => (i.id === item.id ? { ...i, checked: false, bought: 0 } : i))
+      );
+      supabase.from("checklist").update({ checked: false, bought: 0 }).eq("id", item.id);
+      showToast("ยกเลิกเครื่องหมาย");
+    } else if ((item.quantity || 1) <= 1) {
+      // Single item — check directly
+      setItems((prev) =>
+        prev.map((i) => (i.id === item.id ? { ...i, checked: true, bought: 1 } : i))
+      );
+      supabase.from("checklist").update({ checked: true, bought: 1 }).eq("id", item.id);
+      showToast("ซื้อแล้ว ✓");
+    } else {
+      // Multi-quantity — open buy modal
+      const remaining = (item.quantity || 1) - (item.bought || 0);
+      setBuyQty(remaining > 0 ? remaining : 1);
+      setBuyingItem(item);
+    }
+  };
+
+  const confirmBuy = async () => {
+    if (!buyingItem) return;
+    const newBought = (buyingItem.bought || 0) + buyQty;
+    const isChecked = newBought >= (buyingItem.quantity || 1);
     setItems((prev) =>
-      prev.map((i) => (i.id === item.id ? { ...i, checked: newVal } : i))
+      prev.map((i) =>
+        i.id === buyingItem.id ? { ...i, bought: newBought, checked: isChecked } : i
+      )
     );
     await supabase
       .from("checklist")
-      .update({ checked: newVal })
-      .eq("id", item.id);
-    showToast(newVal ? "ทำเครื่องหมายซื้อแล้ว ✓" : "ยกเลิกเครื่องหมาย");
+      .update({ bought: newBought, checked: isChecked })
+      .eq("id", buyingItem.id);
+    setBuyingItem(null);
+    showToast(
+      isChecked
+        ? "ซื้อครบแล้ว ✓"
+        : `ซื้อไปแล้ว ${newBought}/${buyingItem.quantity} ชิ้น`
+    );
   };
 
   const deleteItem = async (id) => {
@@ -171,7 +205,8 @@ export default function Checklist() {
   category text default '',
   notes text default '',
   checked boolean default false,
-  quantity integer default 1
+  quantity integer default 1,
+  bought integer default 0
 );
 
 -- อนุญาตให้ anon อ่าน/เขียนได้
@@ -282,6 +317,124 @@ alter table checklist disable row level security;`}
                 }}
               >
                 ลบ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {buyingItem && (
+        <div
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,.5)",
+            zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+          onClick={() => setBuyingItem(null)}
+        >
+          <div
+            style={{
+              background: "#fff", borderRadius: 24, padding: 28,
+              width: 320, boxShadow: "0 20px 60px rgba(0,0,0,.18)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p style={{ margin: "0 0 4px", fontWeight: 800, fontSize: 17, color: "#1B2430" }}>
+              บันทึกการซื้อ
+            </p>
+            <p style={{
+              margin: "0 0 20px", fontSize: 13, color: "#7C8798",
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+            }}>
+              {buyingItem.title}
+            </p>
+
+            <div style={{ background: "#F9FAFB", borderRadius: 16, padding: "14px 16px", marginBottom: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                <span style={{ fontSize: 13, color: "#7C8798" }}>ต้องซื้อทั้งหมด</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#1B2430" }}>{buyingItem.quantity} ชิ้น</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                <span style={{ fontSize: 13, color: "#7C8798" }}>ซื้อไปแล้ว</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#22C55E" }}>{buyingItem.bought || 0} ชิ้น</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontSize: 13, color: "#7C8798" }}>คงเหลือ</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#EF4444" }}>
+                  {(buyingItem.quantity || 1) - (buyingItem.bought || 0)} ชิ้น
+                </span>
+              </div>
+            </div>
+
+            <p style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 700, color: "#1B2430" }}>
+              ซื้อครั้งนี้กี่ชิ้น?
+            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+              <button
+                onClick={() => setBuyQty((q) => Math.max(1, q - 1))}
+                style={{
+                  width: 38, height: 38, borderRadius: 10, border: "1px solid #DDE6F0",
+                  background: "#F9FAFB", fontSize: 20, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >−</button>
+              <input
+                type="number" min={1}
+                max={(buyingItem.quantity || 1) - (buyingItem.bought || 0)}
+                value={buyQty}
+                onChange={(e) => setBuyQty(Math.max(1, Math.min(
+                  parseInt(e.target.value) || 1,
+                  (buyingItem.quantity || 1) - (buyingItem.bought || 0)
+                )))}
+                style={{
+                  flex: 1, textAlign: "center", padding: "9px 12px",
+                  borderRadius: 10, border: "1px solid #DDE6F0",
+                  fontSize: 20, fontWeight: 800, color: "#1B2430",
+                  fontFamily: "inherit", outline: "none",
+                }}
+              />
+              <button
+                onClick={() => setBuyQty((q) => Math.min(
+                  q + 1, (buyingItem.quantity || 1) - (buyingItem.bought || 0)
+                ))}
+                style={{
+                  width: 38, height: 38, borderRadius: 10, border: "1px solid #DDE6F0",
+                  background: "#F9FAFB", fontSize: 20, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >+</button>
+            </div>
+
+            {(buyingItem.bought || 0) + buyQty >= (buyingItem.quantity || 1) ? (
+              <p style={{ margin: "0 0 16px", fontSize: 12, color: "#22C55E", fontWeight: 600, textAlign: "center" }}>
+                ✓ ครบ! จะย้ายไปที่ "ซื้อแล้ว"
+              </p>
+            ) : (
+              <p style={{ margin: "0 0 16px", fontSize: 12, color: "#7C8798", textAlign: "center" }}>
+                จะเหลืออีก {(buyingItem.quantity || 1) - (buyingItem.bought || 0) - buyQty} ชิ้น
+              </p>
+            )}
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setBuyingItem(null)}
+                style={{
+                  flex: 1, border: "1px solid #DDE6F0", background: "#fff",
+                  borderRadius: 12, padding: "12px", fontWeight: 600,
+                  cursor: "pointer", fontFamily: "inherit", color: "#7C8798",
+                }}
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={confirmBuy}
+                style={{
+                  flex: 2, border: "none",
+                  background: "linear-gradient(135deg,#111,#000)",
+                  color: "#fff", borderRadius: 12, padding: "12px",
+                  fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                บันทึก
               </button>
             </div>
           </div>
@@ -696,18 +849,43 @@ function ChecklistItem({ item, onToggle, onDelete }) {
             flexWrap: "wrap",
           }}
         >
-          {item.quantity > 1 && (
+          {(item.quantity || 1) > 1 && !item.checked && (
             <span
               style={{
-                background: "#1B2430",
-                color: "#fff",
+                background: (item.bought || 0) > 0 ? "#FEF3C7" : "#1B2430",
+                color: (item.bought || 0) > 0 ? "#92400E" : "#fff",
                 borderRadius: 999,
                 padding: "2px 9px",
                 fontSize: 11,
                 fontWeight: 700,
               }}
             >
-              ×{item.quantity}
+              {(item.bought || 0) > 0
+                ? `ซื้อแล้ว ${item.bought}/${item.quantity}`
+                : `×${item.quantity}`}
+            </span>
+          )}
+          {(item.quantity || 1) > 1 && !item.checked && (item.bought || 0) > 0 && (
+            <span
+              style={{
+                background: "#FEF2F2",
+                color: "#DC2626",
+                borderRadius: 999,
+                padding: "2px 9px",
+                fontSize: 11,
+                fontWeight: 700,
+              }}
+            >
+              คงเหลือ {item.quantity - item.bought}
+            </span>
+          )}
+          {item.checked && (item.quantity || 1) > 1 && (
+            <span style={{
+              background: "#F0FDF4", color: "#166534",
+              borderRadius: 999, padding: "2px 9px",
+              fontSize: 11, fontWeight: 700,
+            }}>
+              ครบ {item.quantity} ชิ้น
             </span>
           )}
           {item.category && (

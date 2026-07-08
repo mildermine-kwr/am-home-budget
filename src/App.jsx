@@ -450,6 +450,15 @@ export default function App() {
     return "ชำระบางส่วน";
   };
 
+  const getPaidInstallments = (item) => {
+    const total = Number(item.installment?.total || 0);
+    if (!total) return 0;
+    const perInstallment = Number(item.budget || 0) / total;
+    if (!perInstallment) return 0;
+    const paidCount = Math.floor(Number(item.paid || 0) / perInstallment);
+    return Math.min(paidCount, total);
+  };
+
   const addItem = async () => {
     try {
       if (!form.title?.trim()) {
@@ -1512,7 +1521,7 @@ button:hover{
     flexWrap: "nowrap",
   }}
 >
-                        ผ่อน {item.installment.paid}/{item.installment.total}
+                        ผ่อน {getPaidInstallments(item)}/{item.installment.total}
                         <span
                           style={{
                             opacity: 0.45,
@@ -1797,7 +1806,7 @@ button:hover{
                                   <span style={{
                                       whiteSpace: "nowrap",
                                     }}>
-                                    ผ่อน {item.installment.paid}/
+                                    ผ่อน {getPaidInstallments(item)}/
                                     {item.installment.total}
                                   </span>
 
@@ -2000,7 +2009,7 @@ button:hover{
     flexWrap: "nowrap",
                                   }}
                                 >
-                                  ผ่อน {item.installment.paid}/
+                                  ผ่อน {getPaidInstallments(item)}/
                                   {item.installment.total}
                                   <span
                                     style={{

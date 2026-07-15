@@ -148,6 +148,7 @@ export default function App() {
 
   const [page, setPage] = useState("budget");
   const [activeTab, setActiveTab] = useState("tort");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const [search, setSearch] = useState("");
 
@@ -242,6 +243,12 @@ export default function App() {
 
   useEffect(() => {
     loadBudgets();
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") setDrawerOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
   }, []);
 
   const loadBudgets = async () => {
@@ -1091,6 +1098,19 @@ button:hover{
             }
           }
 
+          @keyframes drawerSlide {
+            from { transform: translateX(-100%); }
+            to   { transform: translateX(0); }
+          }
+
+          .nav-desktop-links { display: flex; gap: 8px; }
+          .nav-hamburger { display: none; }
+
+          @media (max-width: 767px) {
+            .nav-desktop-links { display: none !important; }
+            .nav-hamburger { display: flex !important; }
+          }
+
           @keyframes floatCard {
             0% {
               transform: translateY(0px);
@@ -1142,6 +1162,122 @@ button:hover{
             AM Home Budget
           </span>
 
+          <div className="nav-desktop-links">
+            {[
+              { key: "budget", label: "💰 งบประมาณ" },
+              { key: "checklist", label: "✅ รายการซื้อ" },
+              { key: "settings", label: "⚙️ ตั้งค่า" },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setPage(key)}
+                style={{
+                  border: "none",
+                  background: page === key ? "#111" : "transparent",
+                  color: page === key ? "#fff" : "#7C8798",
+                  borderRadius: 12,
+                  padding: "8px 18px",
+                  fontWeight: 700,
+                  fontSize: 14,
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  transition: "all .2s ease",
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="nav-hamburger"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="เปิดเมนู"
+            style={{
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+              padding: "6px",
+              display: "none",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 8,
+            }}
+          >
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <rect x="2" y="5" width="18" height="2" rx="1" fill="#1B2430" />
+              <rect x="2" y="10" width="18" height="2" rx="1" fill="#1B2430" />
+              <rect x="2" y="15" width="18" height="2" rx="1" fill="#1B2430" />
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      {drawerOpen && (
+        <div
+          onClick={() => setDrawerOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,.35)",
+            zIndex: 200,
+          }}
+        />
+      )}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: "100%",
+          width: "260px",
+          background: "rgba(238,243,249,0.97)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          zIndex: 201,
+          boxShadow: "4px 0 24px rgba(0,0,0,.12)",
+          display: "flex",
+          flexDirection: "column",
+          paddingTop: "20px",
+          fontFamily: "'IBM Plex Sans Thai', sans-serif",
+          transform: drawerOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform .28s cubic-bezier(.22,1,.36,1)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 20px 20px",
+            borderBottom: "1px solid #DDE6F0",
+          }}
+        >
+          <span style={{ fontWeight: 800, fontSize: 15, color: "#1B2430", letterSpacing: "-0.02em" }}>
+            AM Home Budget
+          </span>
+          <button
+            onClick={() => setDrawerOpen(false)}
+            aria-label="ปิดเมนู"
+            style={{
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+              padding: "4px",
+              borderRadius: 6,
+              display: "flex",
+              alignItems: "center",
+              color: "#7C8798",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <line x1="3" y1="3" x2="15" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <line x1="15" y1="3" x2="3" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div style={{ padding: "12px 12px" }}>
           {[
             { key: "budget", label: "💰 งบประมาณ" },
             { key: "checklist", label: "✅ รายการซื้อ" },
@@ -1149,25 +1285,29 @@ button:hover{
           ].map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => setPage(key)}
+              onClick={() => { setPage(key); setDrawerOpen(false); }}
               style={{
+                display: "block",
+                width: "100%",
+                textAlign: "left",
                 border: "none",
                 background: page === key ? "#111" : "transparent",
-                color: page === key ? "#fff" : "#7C8798",
+                color: page === key ? "#fff" : "#3A4660",
                 borderRadius: 12,
-                padding: "8px 18px",
+                padding: "12px 16px",
                 fontWeight: 700,
-                fontSize: 14,
+                fontSize: 15,
                 cursor: "pointer",
                 fontFamily: "inherit",
-                transition: "all .2s ease",
+                marginBottom: 4,
+                transition: "background .18s ease, color .18s ease",
               }}
             >
               {label}
             </button>
           ))}
         </div>
-      </nav>
+      </div>
 
       <div
         className="app-shell"

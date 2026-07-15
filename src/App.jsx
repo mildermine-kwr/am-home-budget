@@ -437,6 +437,18 @@ export default function App() {
     };
   }, [items]);
 
+  const overallTotals = useMemo(() => {
+    const all = [...(data.tort || []), ...(data.furn || [])];
+    const total = all.reduce((s, i) => s + Number(i.budget || 0), 0);
+    const paid = all.reduce((s, i) => s + Number(i.paid || 0), 0);
+    const remain = all.reduce(
+      (s, i) =>
+        s + Number(i.remaining ?? Number(i.budget || 0) - Number(i.paid || 0)),
+      0,
+    );
+    return { total, paid, remain };
+  }, [data.tort, data.furn]);
+
   const progress =
     totals.total > 0 ? Math.round((totals.paid / totals.total) * 100) : 0;
 
@@ -1352,6 +1364,32 @@ button:hover{
                 🛋 ของแต่งบ้าน
               </TabButton>
             </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                window.innerWidth < 768 ? "1fr" : "repeat(3, 1fr)",
+              gap: "16px",
+              marginBottom: "16px",
+            }}
+          >
+            <SummaryCard
+              title="🏠 ภาพรวมทั้งบ้าน — งบรวม"
+              value={overallTotals.total}
+              color="#111111"
+            />
+            <SummaryCard
+              title="🏠 ภาพรวมทั้งบ้าน — จ่ายแล้ว"
+              value={overallTotals.paid}
+              color="#000000"
+            />
+            <SummaryCard
+              title="🏠 ภาพรวมทั้งบ้าน — คงเหลือ"
+              value={overallTotals.remain}
+              color="#1E2D3D"
+            />
           </div>
 
           <div

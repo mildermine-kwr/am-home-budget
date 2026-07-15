@@ -804,6 +804,42 @@ export default function App() {
     }, 2200);
   };
 
+  const handleBackup = async () => {
+    try {
+      const [budgetRes, checklistRes] = await Promise.all([
+        supabase.from("budget").select("*"),
+        supabase.from("checklist").select("*"),
+      ]);
+      if (budgetRes.error) throw budgetRes.error;
+      if (checklistRes.error) throw checklistRes.error;
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      const ts =
+        `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}` +
+        `-${pad(now.getHours())}-${pad(now.getMinutes())}`;
+      const payload = {
+        version: 1,
+        exportedAt: now.toISOString(),
+        tables: {
+          budget: budgetRes.data,
+          checklist: checklistRes.data,
+        },
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `am-home-budget-backup-${ts}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("📥 สำรองข้อมูลสำเร็จ");
+    } catch (err) {
+      showToast("❌ สำรองข้อมูลไม่สำเร็จ");
+    }
+  };
+
   const resetData = () => {
     setData({
       tort: DEFAULT_TORT,
@@ -1097,6 +1133,7 @@ button:hover{
           {[
             { key: "budget", label: "💰 งบประมาณ" },
             { key: "checklist", label: "✅ รายการซื้อ" },
+            { key: "settings", label: "⚙️ ตั้งค่า" },
           ].map(({ key, label }) => (
             <button
               key={key}
@@ -1136,6 +1173,71 @@ button:hover{
         }}
       >
         {page === "checklist" && <Checklist />}
+        {page === "settings" && (
+          <div style={{ maxWidth: "640px", margin: "0 auto" }}>
+            <h2
+              style={{
+                fontSize: "24px",
+                fontWeight: 800,
+                color: "#111",
+                marginBottom: "32px",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              ตั้งค่า
+            </h2>
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: "20px",
+                padding: "28px 32px",
+                boxShadow: "0 2px 16px rgba(0,0,0,.07)",
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 700,
+                  color: "#111",
+                  margin: "0 0 6px 0",
+                }}
+              >
+                จัดการข้อมูล
+              </h3>
+              <p
+                style={{
+                  fontSize: "13px",
+                  color: "#7C8798",
+                  margin: "0 0 20px 0",
+                }}
+              >
+                สำรองข้อมูลทั้งหมดจาก Supabase เป็นไฟล์ JSON บนเครื่องของคุณ
+              </p>
+              <button
+                onClick={handleBackup}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  background: "#111",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "12px",
+                  padding: "12px 22px",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  transition: "opacity .15s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.82")}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              >
+                📥 สำรองข้อมูลเดี๋ยวนี้
+              </button>
+            </div>
+          </div>
+        )}
         <div
           style={{
             maxWidth: "1400px",

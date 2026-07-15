@@ -1485,219 +1485,271 @@ button:hover{
             display: page === "budget" ? "block" : "none",
           }}
         >
+          {/* ── SECTION 1: Overall Home Summary ── */}
           <div
-            className="hero-grid"
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              alignItems: "center",
-              gap: "40px",
-              marginBottom: "48px",
-              minHeight: "360px",
+              background: "#F0F6FF",
+              border: "1px solid #D8E8F8",
+              borderRadius: "24px",
+              padding: "clamp(24px,3vw,40px)",
+              marginBottom: "clamp(32px,5vw,56px)",
+              boxShadow: "0 2px 20px rgba(30,45,61,.06)",
             }}
           >
-            <div
-              style={{
-                position: "relative",
-                zIndex: 2,
-              }}
-            >
-              <h1
-                className="hero-title"
+            {/* Section header */}
+            <div style={{ marginBottom: "28px" }}>
+              <span
                 style={{
-                  fontSize: "clamp(52px,6vw,84px)",
-                  lineHeight: ".95",
-                  letterSpacing: "-0.04em",
-                  margin: 0,
-                  color: "#1B2430",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "#DBEAFE",
+                  color: "#1D5FA8",
+                  borderRadius: "999px",
+                  padding: "5px 14px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  letterSpacing: "0.04em",
+                  marginBottom: "12px",
+                }}
+              >
+                🏠 ภาพรวมทั้งบ้าน
+              </span>
+              <h2
+                style={{
+                  margin: "0 0 4px",
+                  fontSize: "clamp(20px,2.4vw,26px)",
                   fontWeight: 800,
+                  color: "#1B2430",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.2,
                 }}
               >
-                AM Home
-                <br />
-                Budget
-              </h1>
-
-              <p
-                className="hero-subtitle"
-                style={{
-                  color: "#7C8798",
-                  marginTop: "18px",
-                  fontSize: "16px",
-                  lineHeight: 1.7,
-                  maxWidth: "640px",
-                }}
-              >
-                Take control of your home budget with a softer, more intentional
-                experience — from renovation plans to furniture, appliances, and
-                installment tracking.
+                สรุปงบประมาณทั้งหมดของบ้าน
+              </h2>
+              <p style={{ margin: 0, fontSize: "13px", color: "#7C8798" }}>
+                รวมข้อมูลจาก &ldquo;ต่อเติม&rdquo; และ &ldquo;ของแต่งบ้าน&rdquo;
               </p>
             </div>
 
+            {/* Existing hero grid (title + house image) */}
             <div
+              className="hero-grid"
               style={{
-                display: "flex",
-                justifyContent: "center",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
                 alignItems: "center",
-                width: "100%",
+                gap: "40px",
+                marginBottom: "28px",
+                minHeight: "260px",
               }}
             >
-              <img
-                src={house3d}
-                alt="3D House"
+              <div style={{ position: "relative", zIndex: 2 }}>
+                <h1
+                  className="hero-title"
+                  style={{
+                    fontSize: "clamp(52px,6vw,84px)",
+                    lineHeight: ".95",
+                    letterSpacing: "-0.04em",
+                    margin: 0,
+                    color: "#1B2430",
+                    fontWeight: 800,
+                  }}
+                >
+                  AM Home
+                  <br />
+                  Budget
+                </h1>
+                <p
+                  className="hero-subtitle"
+                  style={{
+                    color: "#7C8798",
+                    marginTop: "18px",
+                    fontSize: "16px",
+                    lineHeight: 1.7,
+                    maxWidth: "640px",
+                  }}
+                >
+                  Take control of your home budget with a softer, more
+                  intentional experience — from renovation plans to furniture,
+                  appliances, and installment tracking.
+                </p>
+              </div>
+              <div
                 style={{
-                  position: "relative",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                   width: "100%",
-                  maxWidth: "760px",
-                  objectFit: "contain",
-                  filter: "drop-shadow(0 40px 80px rgba(0,0,0,.18))",
-                  animation: "floatCard 7s ease-in-out infinite",
                 }}
+              >
+                <img
+                  src={house3d}
+                  alt="3D House"
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    maxWidth: "760px",
+                    objectFit: "contain",
+                    filter: "drop-shadow(0 40px 80px rgba(0,0,0,.18))",
+                    animation: "floatCard 7s ease-in-out infinite",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Existing overall summary cards */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  window.innerWidth < 768 ? "1fr" : "repeat(3, 1fr)",
+                gap: "16px",
+              }}
+            >
+              <SummaryCard
+                title="🏠 ภาพรวมทั้งบ้าน — งบรวม"
+                value={overallTotals.total}
+                color="#111111"
+              />
+              <SummaryCard
+                title="🏠 ภาพรวมทั้งบ้าน — จ่ายแล้ว"
+                value={overallTotals.paid}
+                color="#000000"
+              />
+              <SummaryCard
+                title="🏠 ภาพรวมทั้งบ้าน — คงเหลือ"
+                value={overallTotals.remain}
+                color="#1E2D3D"
               />
             </div>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              gap: "12px",
-              alignItems: "right",
-              marginTop: "32px",
-              flexWrap: "wrap",
-              marginBottom: "24px",
-              width: "100%",
-              justifyContent: "flex-end",
-            }}
-          >
+          {/* ── SECTION 2: Current Category Budget ── */}
+          <div style={{ marginBottom: "20px" }}>
+            {/* Section header */}
             <div
               style={{
                 display: "flex",
-                background: "#DDE6F0",
-                padding: "4px",
-                borderRadius: "14px",
-                fontSize: "16px",
-              }}
-            >
-              <TabButton
-                active={activeTab === "tort"}
-                onClick={() => setActiveTab("tort")}
-              >
-                🔨 ต่อเติม
-              </TabButton>
-
-              <TabButton
-                active={activeTab === "furn"}
-                onClick={() => setActiveTab("furn")}
-              >
-                🛋 ของแต่งบ้าน
-              </TabButton>
-            </div>
-          </div>
-
-          <div className="mobile-section-label">
-            <span>🏠 ภาพรวมทั้งบ้าน</span>
-            <span className="label-line" />
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                window.innerWidth < 768 ? "1fr" : "repeat(3, 1fr)",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            <SummaryCard
-              title="🏠 ภาพรวมทั้งบ้าน — งบรวม"
-              value={overallTotals.total}
-              color="#111111"
-            />
-            <SummaryCard
-              title="🏠 ภาพรวมทั้งบ้าน — จ่ายแล้ว"
-              value={overallTotals.paid}
-              color="#000000"
-            />
-            <SummaryCard
-              title="🏠 ภาพรวมทั้งบ้าน — คงเหลือ"
-              value={overallTotals.remain}
-              color="#1E2D3D"
-            />
-          </div>
-
-          <div className="mobile-section-divider" />
-
-          <div className="mobile-section-label">
-            <span>{activeTab === "tort" ? "🏗️ งบต่อเติม" : "🛋️ งบของแต่งบ้าน"}</span>
-            <span className="label-line" />
-          </div>
-          <div
-            className="summary-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                window.innerWidth < 768 ? "1fr" : "2fr 1fr 1fr",
-              gap: "16px",
-              marginBottom: "20px",
-            }}
-          >
-            <SummaryCard
-              title="งบทั้งหมด"
-              value={totals.total}
-              color="#111111"
-              large
-              sub={`จ่ายไปแล้ว ${progress}% ของงบทั้งหมด`}
-            />
-            <SummaryCard
-              title="จ่ายแล้ว"
-              value={totals.paid}
-              color="#000000"
-              sub="ยอดที่ชำระแล้ว"
-            />
-            <SummaryCard
-              title="คงเหลือ"
-              value={totals.remain}
-              color="#1E2D3D"
-              sub="ยอดค้างจ่าย"
-            />
-          </div>
-
-          <div
-            style={{
-              background: "#FFFFFF",
-              borderRadius: "20px",
-              padding: "20px 24px",
-              marginBottom: "20px",
-              border: "1px solid #DDE6F0",
-              boxShadow: "0 2px 12px rgba(30,45,61,.05)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
+                alignItems: "flex-start",
                 justifyContent: "space-between",
-                marginBottom: "10px",
+                flexWrap: "wrap",
+                gap: "16px",
+                marginBottom: "24px",
               }}
             >
-              <span>ความคืบหน้าการชำระ</span>
+              <div>
+                <h2
+                  style={{
+                    margin: "0 0 4px",
+                    fontSize: "clamp(20px,2.4vw,26px)",
+                    fontWeight: 800,
+                    color: "#1B2430",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {activeTab === "tort" ? "🏗️ งบต่อเติม" : "🛋️ งบของแต่งบ้าน"}
+                </h2>
+                <p style={{ margin: 0, fontSize: "13px", color: "#7C8798" }}>
+                  รายละเอียดงบประมาณของหมวดนี้
+                </p>
+              </div>
 
-              <strong>{progress}%</strong>
+              {/* Existing tab switcher — unchanged */}
+              <div
+                style={{
+                  display: "flex",
+                  background: "#DDE6F0",
+                  padding: "4px",
+                  borderRadius: "14px",
+                  fontSize: "16px",
+                }}
+              >
+                <TabButton
+                  active={activeTab === "tort"}
+                  onClick={() => setActiveTab("tort")}
+                >
+                  🔨 ต่อเติม
+                </TabButton>
+                <TabButton
+                  active={activeTab === "furn"}
+                  onClick={() => setActiveTab("furn")}
+                >
+                  🛋 ของแต่งบ้าน
+                </TabButton>
+              </div>
             </div>
 
+            {/* Existing category summary cards */}
+            <div
+              className="summary-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  window.innerWidth < 768 ? "1fr" : "2fr 1fr 1fr",
+                gap: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <SummaryCard
+                title="งบทั้งหมด"
+                value={totals.total}
+                color="#111111"
+                large
+                sub={`จ่ายไปแล้ว ${progress}% ของงบทั้งหมด`}
+              />
+              <SummaryCard
+                title="จ่ายแล้ว"
+                value={totals.paid}
+                color="#000000"
+                sub="ยอดที่ชำระแล้ว"
+              />
+              <SummaryCard
+                title="คงเหลือ"
+                value={totals.remain}
+                color="#1E2D3D"
+                sub="ยอดค้างจ่าย"
+              />
+            </div>
+
+            {/* Existing progress bar */}
             <div
               style={{
-                height: "8px",
-                borderRadius: "999px",
-                background: "#EEF3F9",
-                overflow: "hidden",
+                background: "#FFFFFF",
+                borderRadius: "20px",
+                padding: "20px 24px",
+                marginBottom: "20px",
+                border: "1px solid #DDE6F0",
+                boxShadow: "0 2px 12px rgba(30,45,61,.05)",
               }}
             >
               <div
                 style={{
-                  width: `${progress}%`,
-                  height: "100%",
-                  background: "linear-gradient(90deg,#111111,#000000)",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "10px",
                 }}
-              />
+              >
+                <span>ความคืบหน้าการชำระ</span>
+                <strong>{progress}%</strong>
+              </div>
+              <div
+                style={{
+                  height: "8px",
+                  borderRadius: "999px",
+                  background: "#EEF3F9",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${progress}%`,
+                    height: "100%",
+                    background: "linear-gradient(90deg,#111111,#000000)",
+                  }}
+                />
+              </div>
             </div>
           </div>
 

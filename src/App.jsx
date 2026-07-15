@@ -1111,6 +1111,29 @@ button:hover{
             .nav-hamburger { display: flex !important; }
           }
 
+          .mobile-section-label { display: none; }
+
+          @media (max-width: 767px) {
+            .mobile-section-label {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              font-size: 13px;
+              font-weight: 700;
+              color: #7C8798;
+              letter-spacing: 0.04em;
+              text-transform: uppercase;
+              margin-bottom: 12px;
+            }
+            .mobile-section-label .label-line {
+              flex: 1;
+              height: 1px;
+              background: #DDE6F0;
+            }
+            .mobile-section-divider { display: block; height: 36px; }
+          }
+          .mobile-section-divider { display: none; }
+
           @keyframes floatCard {
             0% {
               transform: translateY(0px);
@@ -1506,6 +1529,10 @@ button:hover{
             </div>
           </div>
 
+          <div className="mobile-section-label">
+            <span>🏠 ภาพรวมทั้งบ้าน</span>
+            <span className="label-line" />
+          </div>
           <div
             style={{
               display: "grid",
@@ -1532,6 +1559,12 @@ button:hover{
             />
           </div>
 
+          <div className="mobile-section-divider" />
+
+          <div className="mobile-section-label">
+            <span>{activeTab === "tort" ? "🏗️ งบต่อเติม" : "🛋️ งบของแต่งบ้าน"}</span>
+            <span className="label-line" />
+          </div>
           <div
             className="summary-grid"
             style={{

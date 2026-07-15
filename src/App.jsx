@@ -149,6 +149,8 @@ export default function App() {
   const [page, setPage] = useState("budget");
   const [activeTab, setActiveTab] = useState("tort");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState("json");
 
   const [search, setSearch] = useState("");
 
@@ -859,6 +861,69 @@ export default function App() {
     }
   };
 
+  const downloadBlob = (blob, filename) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const toCSV = (rows) => {
+    if (!rows || rows.length === 0) return "";
+    const headers = Object.keys(rows[0]);
+    const escape = (val) => {
+      if (val === null || val === undefined) return "";
+      const str = typeof val === "object" ? JSON.stringify(val) : String(val);
+      return `"${str.replace(/"/g, '""')}"`;
+    };
+    const lines = [headers.map(escape).join(",")];
+    for (const row of rows) lines.push(headers.map((h) => escape(row[h])).join(","));
+    return "\uFEFF" + lines.join("\r\n");
+  };
+
+  const handleExport = async () => {
+    setExportModalOpen(false);
+    try {
+      const [budgetRes, checklistRes] = await Promise.all([
+        supabase.from("budget").select("*"),
+        supabase.from("checklist").select("*"),
+      ]);
+      if (budgetRes.error) throw budgetRes.error;
+      if (checklistRes.error) throw checklistRes.error;
+
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      const ts =
+        `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}` +
+        `-${pad(now.getHours())}-${pad(now.getMinutes())}`;
+
+      if (exportFormat === "json") {
+        const payload = {
+          version: 1,
+          exportedAt: now.toISOString(),
+          tables: { budget: budgetRes.data, checklist: checklistRes.data },
+        };
+        downloadBlob(
+          new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }),
+          `am-home-budget-backup-${ts}.json`,
+        );
+      } else {
+        const tables = { budget: budgetRes.data, checklist: checklistRes.data };
+        for (const [name, rows] of Object.entries(tables)) {
+          downloadBlob(
+            new Blob([toCSV(rows)], { type: "text/csv;charset=utf-8;" }),
+            `am-home-budget-${name}-${ts}.csv`,
+          );
+        }
+      }
+      showToast("📥 ส่งออกข้อมูลสำเร็จ");
+    } catch {
+      showToast("❌ ส่งออกข้อมูลไม่สำเร็จ");
+    }
+  };
+
   const resetData = () => {
     setData({
       tort: DEFAULT_TORT,
@@ -1386,10 +1451,10 @@ button:hover{
                   margin: "0 0 20px 0",
                 }}
               >
-                สำรองข้อมูลทั้งหมดจาก Supabase เป็นไฟล์ JSON บนเครื่องของคุณ
+                ส่งออกข้อมูลทั้งหมดจาก Supabase เป็นไฟล์ JSON หรือ CSV
               </p>
               <button
-                onClick={handleBackup}
+                onClick={() => { setExportFormat("json"); setExportModalOpen(true); }}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -3208,6 +3273,132 @@ button:hover{
               </div>
             </div>
           </div>
+        )}
+
+        {exportModalOpen && (
+          <>
+            <div
+              onClick={() => setExportModalOpen(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,.40)",
+                zIndex: 1000,
+              }}
+            />
+            <div
+              style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%,-50%)",
+                zIndex: 1001,
+                background: "#fff",
+                borderRadius: "20px",
+                padding: "28px 28px 24px",
+                width: "min(440px, calc(100vw - 32px))",
+                boxShadow: "0 24px 60px rgba(0,0,0,.18)",
+                fontFamily: "'IBM Plex Sans Thai', sans-serif",
+              }}
+            >
+              <h3 style={{ margin: "0 0 6px", fontSize: "17px", fontWeight: 800, color: "#111", letterSpacing: "-0.02em" }}>
+                ส่งออกข้อมูล
+              </h3>
+              <p style={{ margin: "0 0 20px", fontSize: "13px", color: "#7C8798" }}>
+                เลือกรูปแบบไฟล์ที่ต้องการส่งออก
+              </p>
+
+              {[
+                {
+                  value: "json",
+                  label: "JSON (แนะนำ)",
+                  desc: "สำรองข้อมูลครบถ้วนสำหรับกู้คืนแอปในภายหลัง",
+                },
+                {
+                  value: "csv",
+                  label: "CSV (สำหรับ Excel)",
+                  desc: "ส่งออกข้อมูลเป็นไฟล์ CSV สำหรับเปิดหรือแก้ไขใน Excel",
+                },
+              ].map(({ value, label, desc }) => (
+                <div
+                  key={value}
+                  onClick={() => setExportFormat(value)}
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "12px",
+                    padding: "14px 16px",
+                    borderRadius: "12px",
+                    border: `2px solid ${exportFormat === value ? "#111" : "#DDE6F0"}`,
+                    marginBottom: "10px",
+                    cursor: "pointer",
+                    background: exportFormat === value ? "#F8F9FB" : "#fff",
+                    transition: "border-color .15s, background .15s",
+                  }}
+                >
+                  <div
+                    style={{
+                      marginTop: "2px",
+                      width: "18px",
+                      height: "18px",
+                      borderRadius: "50%",
+                      border: `2px solid ${exportFormat === value ? "#111" : "#C5D0DC"}`,
+                      background: exportFormat === value ? "#111" : "transparent",
+                      flexShrink: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {exportFormat === value && (
+                      <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#fff" }} />
+                    )}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "14px", color: "#111", marginBottom: "3px" }}>{label}</div>
+                    <div style={{ fontSize: "12px", color: "#7C8798", lineHeight: 1.5 }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+
+              <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+                <button
+                  onClick={() => setExportModalOpen(false)}
+                  style={{
+                    flex: 1,
+                    padding: "11px",
+                    border: "1.5px solid #DDE6F0",
+                    borderRadius: "12px",
+                    background: "transparent",
+                    color: "#3A4660",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  onClick={handleExport}
+                  style={{
+                    flex: 2,
+                    padding: "11px",
+                    border: "none",
+                    borderRadius: "12px",
+                    background: "#111",
+                    color: "#fff",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  📥 ส่งออก
+                </button>
+              </div>
+            </div>
+          </>
         )}
 
         {toast.show && (

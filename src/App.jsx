@@ -3782,7 +3782,7 @@ function CustomSelect({ value, onChange, options, placeholder = "เลือก
           justifyContent: "space-between",
           cursor: "pointer",
           textAlign: "left",
-          color: selectedLabel ? "#1E2D3D" : "#A0AEC0",
+          color: selectedLabel ? "var(--input-color)" : "var(--input-placeholder)",
         }}
       >
         <span

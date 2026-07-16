@@ -6,3 +6,8 @@ export const supabase = createClient(
 )
 
 console.log("SUPABASE URL RAW =", JSON.stringify(import.meta.env.VITE_SUPABASE_URL))
+
+
+console.log(import.meta.env)
+
+console.log(import.meta.env.VITE_SUPABASE_URL)

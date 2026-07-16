@@ -4006,36 +4006,13 @@ function FilterButton({ children, active, onClick }) {
 }
 
 function StatusBadge({ children }) {
-  let bg = "rgba(30,45,61,.10)";
-  let color = "#1E2D3D";
-
-  if (children === "จ่ายครบแล้ว") {
-    bg = "rgba(34,197,94,.12)";
-    color = "#15803D";
-  }
-
-  if (children === "ชำระบางส่วน") {
-    bg = "rgba(234,179,8,.14)";
-    color = "#92650A";
-  }
-
-  if (children === "ยังไม่จ่าย") {
-    bg = "rgba(239,68,68,.10)";
-    color = "#DC3545";
-  }
+  let cls = "status-default";
+  if (children === "จ่ายครบแล้ว") cls = "status-paid";
+  if (children === "ชำระบางส่วน") cls = "status-partial";
+  if (children === "ยังไม่จ่าย") cls = "status-unpaid";
 
   return (
-    <span
-      style={{
-        background: bg,
-        color: color,
-        borderRadius: "999px",
-        padding: "6px 12px",
-        fontSize: "14px",
-        fontWeight: 600,
-        whiteSpace: "nowrap",
-      }}
-    >
+    <span className={`status-chip ${cls}`}>
       {children}
     </span>
   );

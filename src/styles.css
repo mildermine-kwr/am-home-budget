@@ -70,8 +70,8 @@
   --line-faint:rgba(255,255,255,.06);
   --text:#FFFFFF;
   --text2:#E0E6F0;
-  --muted:#B8C0CC;
-  --muted2:#8A9BB5;
+  --muted:#C4CDD8;
+  --muted2:#9AA5B4;
   --primary:#FFFFFF;
   --primary-dark:#E0E6F0;
   --green:#FFFFFF;
@@ -96,9 +96,9 @@
   --filter-inactive-color:#B8C0CC;
   --filter-border:rgba(255,255,255,.12);
 
-  --input-bg:#20242D;
+  --input-bg:#262B36;
   --input-color:#FFFFFF;
-  --input-placeholder:#8A9BB5;
+  --input-placeholder:#9AA5B4;
 
   --dropdown-bg:#20242D;
   --dropdown-border:rgba(255,255,255,.08);
@@ -114,7 +114,7 @@
   --card-bg:#171A21;
   --card-border:rgba(255,255,255,.08);
 
-  --field-label:#7C8798;
+  --field-label:#8A9BB5;
 }
 
 *{box-sizing:border-box}
@@ -287,6 +287,58 @@ th{
 .paid{
   background:#ecfdf5;
   color:#065f46;
+}
+
+/* StatusBadge chips */
+.status-chip{
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:600;
+  white-space:nowrap;
+  border:1px solid transparent;
+  display:inline-block;
+}
+.status-paid{
+  background:rgba(34,197,94,.12);
+  color:#15803D;
+  border-color:rgba(34,197,94,.28);
+}
+.status-partial{
+  background:rgba(234,179,8,.14);
+  color:#92650A;
+  border-color:rgba(234,179,8,.32);
+}
+.status-unpaid{
+  background:rgba(239,68,68,.10);
+  color:#C53030;
+  border-color:rgba(239,68,68,.24);
+}
+.status-default{
+  background:rgba(30,45,61,.08);
+  color:#1E2D3D;
+  border-color:rgba(30,45,61,.15);
+}
+
+[data-theme="dark"] .status-paid{
+  background:rgba(34,197,94,.18);
+  color:#4ADE80;
+  border-color:rgba(34,197,94,.38);
+}
+[data-theme="dark"] .status-partial{
+  background:rgba(234,179,8,.18);
+  color:#FCD34D;
+  border-color:rgba(234,179,8,.42);
+}
+[data-theme="dark"] .status-unpaid{
+  background:rgba(239,68,68,.18);
+  color:#FC8181;
+  border-color:rgba(239,68,68,.38);
+}
+[data-theme="dark"] .status-default{
+  background:rgba(255,255,255,.08);
+  color:#C4CDD8;
+  border-color:rgba(255,255,255,.14);
 }
 
 .mobile-cards{

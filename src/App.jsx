@@ -115,6 +115,19 @@ const safeNumber = (value) =>
     maximumFractionDigits: 2,
   });
 
+const FormattedBaht = ({ value, style = {} }) => {
+  const numStr = safeNumber(value);
+  const dotIdx = numStr.lastIndexOf(".");
+  const integerPart = dotIdx >= 0 ? numStr.slice(0, dotIdx) : numStr;
+  const decimalPart = dotIdx >= 0 ? numStr.slice(dotIdx) : ".00";
+  return (
+    <span style={{ whiteSpace: "nowrap", ...style }}>
+      ฿{integerPart}
+      <span style={{ opacity: 0.35 }}>{decimalPart}</span>
+    </span>
+  );
+};
+
 const normalizeItem = (item) => ({
   ...item,
   category: item.category || "",
@@ -2088,14 +2101,12 @@ button:hover{
                         >
                           •
                         </span>
-                        ฿
-                        {Math.round(
-                          Number(item.budget || 0) /
-                            Number(item.installment?.total || 1),
-                        ).toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        <FormattedBaht
+                          value={Math.round(
+                            Number(item.budget || 0) /
+                              Number(item.installment?.total || 1),
+                          )}
+                        />
                         /งวด
                       </div>
                     )}
@@ -2129,7 +2140,7 @@ button:hover{
                         <div className="mobile-budget-label">จ่ายแล้ว</div>
 
                         <div className="mobile-budget-value">
-                          ฿{safeNumber(item.paid)}
+                          <FormattedBaht value={item.paid} />
                         </div>
                       </div>
 
@@ -2137,7 +2148,7 @@ button:hover{
                         <div className="mobile-budget-label">คงเหลือ</div>
 
                         <div className="mobile-budget-value">
-                          ฿{safeNumber(remain)}
+                          <FormattedBaht value={remain} />
                         </div>
                       </div>
                     </div>
@@ -2381,13 +2392,11 @@ button:hover{
                                    <span style={{
                                       whiteSpace: "nowrap",
                                     }}>
-                                    ฿
-                                    {Math.round(
-                                      item.budget / item.installment.total,
-                                    ).toLocaleString("en-US", {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                    })}
+                                    <FormattedBaht
+                                      value={Math.round(
+                                        item.budget / item.installment.total,
+                                      )}
+                                    />
                                     / งวด
                                   </span>
                                 </div>
@@ -2407,11 +2416,11 @@ button:hover{
                             {item.note || "—"}
                           </TD>
 
-                          <TD>฿{safeNumber(item.budget)}</TD>
+                          <TD><FormattedBaht value={item.budget} /></TD>
 
-                          <TD>฿{safeNumber(item.paid)}</TD>
+                          <TD><FormattedBaht value={item.paid} /></TD>
 
-                          <TD>฿{safeNumber(remain)}</TD>
+                          <TD><FormattedBaht value={remain} /></TD>
 
                           <TD sticky>
                             <div
@@ -2579,14 +2588,12 @@ button:hover{
                                   >
                                     •
                                   </span>
-                                  ฿
-                                  {Math.round(
-                                    Number(item.budget || 0) /
-                                      Number(item.installment?.total || 1),
-                                  ).toLocaleString("en-US", {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                  })}
+                                  <FormattedBaht
+                                    value={Math.round(
+                                      Number(item.budget || 0) /
+                                        Number(item.installment?.total || 1),
+                                    )}
+                                  />
                                   /งวด
                                 </div>
                               )}
@@ -3893,9 +3900,9 @@ function Field({ label, children }) {
 
 function SummaryCard({ title, value, color = "#111111", large = false, sub }) {
   const numStr = safeNumber(value);
-  const hasDecimal = numStr.endsWith(".00");
-  const integerPart = hasDecimal ? numStr.slice(0, -3) : numStr;
-  const decimalPart = hasDecimal ? ".00" : "";
+  const dotIdx = numStr.lastIndexOf(".");
+  const integerPart = dotIdx >= 0 ? numStr.slice(0, dotIdx) : numStr;
+  const decimalPart = dotIdx >= 0 ? numStr.slice(dotIdx) : ".00";
 
   return (
     <div
@@ -3940,7 +3947,7 @@ function SummaryCard({ title, value, color = "#111111", large = false, sub }) {
           <span
             style={{
               color: "var(--card-amount-color, #111111)",
-              opacity: 0.2,
+              opacity: 0.35,
               fontSize: large ? "28px" : "20px",
               fontWeight: 700,
             }}

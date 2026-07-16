@@ -1,0 +1,1 @@
+- [Dark mode approach](dark-mode-approach.md) — sub-components outside App fn use CSS vars; inside App fn uses C color object + isDark flag

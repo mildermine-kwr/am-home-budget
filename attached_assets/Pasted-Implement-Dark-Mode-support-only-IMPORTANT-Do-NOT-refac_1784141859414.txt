@@ -1,0 +1,127 @@
+Implement Dark Mode support only.
+
+IMPORTANT
+
+- Do NOT refactor the project.
+- Do NOT redesign the UI.
+- Do NOT modify business logic.
+- Do NOT change layouts or component structure.
+- Reuse the existing design system and components.
+- Only add theme support.
+
+--------------------------------------------------
+
+GOAL
+
+Add a global Light / Dark theme for the entire application while keeping the current UI unchanged.
+
+--------------------------------------------------
+
+SETTINGS
+
+In Settings, add a new section:
+
+Appearance
+
+Theme
+
+○ Light
+○ Dark
+○ System (Default)
+
+Save the selected theme in localStorage.
+
+On application startup:
+
+- Restore the saved theme.
+- If "System" is selected, follow the user's OS preference using prefers-color-scheme.
+
+--------------------------------------------------
+
+LIGHT MODE
+
+Keep the current UI exactly as it is.
+
+--------------------------------------------------
+
+DARK MODE
+
+Use a modern dark blue theme instead of pure black.
+
+Suggested colors:
+
+Background
+#0F1115
+
+Card
+#171A21
+
+Secondary Surface
+#20242D
+
+Primary Text
+#FFFFFF
+
+Secondary Text
+#B8C0CC
+
+Border
+rgba(255,255,255,0.08)
+
+Primary Accent
+
+Reuse the current blue accent color.
+
+--------------------------------------------------
+
+UPDATE ONLY
+
+Support Dark Mode for:
+
+- Background
+- Cards
+- Header
+- Navigation
+- Drawer
+- Bottom Sheets
+- Dialogs
+- Tabs
+- Buttons
+- Input fields
+- Toasts
+- Progress bars
+- Charts (maintain current colors with sufficient contrast)
+
+--------------------------------------------------
+
+DO NOT CHANGE
+
+- Layout
+- Typography
+- Card structure
+- Spacing
+- Icons
+- Existing calculations
+- Existing business logic
+
+--------------------------------------------------
+
+IMPLEMENTATION
+
+Prefer using CSS variables or the existing theme system.
+
+Avoid hardcoded colors whenever possible.
+
+Reuse existing Tailwind utility classes if the project already uses Tailwind.
+
+Add smooth color transitions when switching themes.
+
+--------------------------------------------------
+
+FINAL RESULT
+
+The application should keep the exact same layout and user experience.
+
+Only the color theme should change between Light and Dark modes.
+
+Do not modify unrelated files or components.

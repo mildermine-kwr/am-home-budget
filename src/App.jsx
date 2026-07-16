@@ -152,6 +152,23 @@ export default function App() {
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState("json");
 
+  const [theme, setTheme] = useState(() => localStorage.getItem("am-home-theme") || "system");
+  const [systemDark, setSystemDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => setSystemDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const isDark = theme === "dark" || (theme === "system" && systemDark);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    localStorage.setItem("am-home-theme", theme);
+  }, [theme, isDark]);
+
   const [search, setSearch] = useState("");
 
   const [filter, setFilter] = useState("all");
@@ -931,6 +948,64 @@ export default function App() {
     });
   };
 
+  const C = {
+    navBg: isDark ? "rgba(15,17,21,0.92)" : "rgba(238,243,249,0.92)",
+    drawerBg: isDark ? "rgba(15,17,21,0.97)" : "rgba(238,243,249,0.97)",
+    shellBg: isDark
+      ? "#0F1115"
+      : "radial-gradient(circle at 15% 10%,rgba(0,0,0,.07),transparent 35%),radial-gradient(circle at 85% 80%,rgba(0,0,0,.05),transparent 35%),linear-gradient(160deg,#EEF3F9 0%,#F4F8FC 100%)",
+    line: isDark ? "rgba(255,255,255,.08)" : "#DDE6F0",
+    lineFaint: isDark ? "rgba(255,255,255,.06)" : "#EEF3F9",
+    text: isDark ? "#FFFFFF" : "#1B2430",
+    text2: isDark ? "#E0E6F0" : "#111",
+    muted: isDark ? "#B8C0CC" : "#7C8798",
+    card: isDark ? "#171A21" : "#FFFFFF",
+    surface: isDark ? "#20242D" : "#FFFFFF",
+    section1Bg: isDark ? "#1A1E28" : "#F0F6FF",
+    section1Border: isDark ? "rgba(255,255,255,.06)" : "#D8E8F8",
+    badgeBg: isDark ? "rgba(30,100,200,.25)" : "#DBEAFE",
+    badgeColor: isDark ? "#7EB8F7" : "#1D5FA8",
+    tabBg: isDark ? "rgba(255,255,255,.08)" : "#DDE6F0",
+    progressTrack: isDark ? "rgba(255,255,255,.08)" : "#EEF3F9",
+    inputBg: isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.75)",
+    inputBorder: isDark ? "rgba(255,255,255,.12)" : "rgba(0,0,0,.06)",
+    thBg: isDark ? "#1A1E25" : "#F7FAFB",
+    tdBg: isDark ? "#171A21" : "#FFFFFF",
+    tdBorder: isDark ? "rgba(255,255,255,.06)" : "#EEF3F9",
+    modalBg: isDark ? "#171A21" : "#FFFFFF",
+    modalHeaderBorder: isDark ? "rgba(255,255,255,.08)" : "#F0F2F5",
+    closeBtnBg: isDark ? "#2A2D35" : "#F2F4F7",
+    closeBtnHoverBg: isDark ? "#3A3D45" : "#E4E7EC",
+    closeBtnColor: isDark ? "#B8C0CC" : "#555",
+    payModalBg: isDark ? "rgba(23,26,33,.94)" : "rgba(255,255,255,.82)",
+    payModalBorder: isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.6)",
+    payInputBg: isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.88)",
+    payInputBorder: isDark ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.5)",
+    payCloseBg: isDark ? "#20242D" : "rgba(255,255,255,.8)",
+    deleteBg: isDark ? "rgba(23,26,33,.94)" : "rgba(255,255,255,.88)",
+    cancelBg: isDark ? "#2A2D35" : "#F5F5F5",
+    cancelColor: isDark ? "#E0E6F0" : "#333",
+    exportModalBg: isDark ? "#171A21" : "#fff",
+    exportSelectedBorder: isDark ? "#FFFFFF" : "#111",
+    exportSelectedBg: isDark ? "#20242D" : "#F8F9FB",
+    exportUnselectedBorder: isDark ? "rgba(255,255,255,.12)" : "#DDE6F0",
+    exportUnselectedBg: isDark ? "#171A21" : "#fff",
+    exportRadioSelected: isDark ? "#FFFFFF" : "#111",
+    exportRadioUnselected: isDark ? "rgba(255,255,255,.2)" : "#C5D0DC",
+    exportCancelColor: isDark ? "#B8C0CC" : "#3A4660",
+    settingsCardBg: isDark ? "#171A21" : "#fff",
+    toolbarBorder: isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.45)",
+    noteBg: isDark ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.04)",
+    editBtnBg: isDark ? "#20242D" : "rgba(255,255,255,.95)",
+    editBtnBorder: isDark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.06)",
+    deleteBtnBg: isDark ? "rgba(220,69,69,.15)" : "rgba(255,240,240,.95)",
+    deleteBtnBorder: isDark ? "rgba(220,69,69,.2)" : "rgba(255,0,0,.08)",
+    filterBg: isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.85)",
+    filterBorder: isDark ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.5)",
+    payTypeBg: isDark ? "#20242D" : "#F2F4F7",
+    deleteDialogText: isDark ? "#B8C0CC" : "#666",
+  };
+
   return (
     <>
       <style>
@@ -1220,10 +1295,10 @@ button:hover{
           position: "sticky",
           top: 0,
           zIndex: 100,
-          background: "rgba(238,243,249,0.92)",
+          background: C.navBg,
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid #DDE6F0",
+          borderBottom: `1px solid ${C.line}`,
           padding: "0 40px",
           fontFamily: "'IBM Plex Sans Thai', sans-serif",
         }}
@@ -1242,7 +1317,7 @@ button:hover{
             style={{
               fontWeight: 800,
               fontSize: 17,
-              color: "#1B2430",
+              color: C.text,
               letterSpacing: "-0.02em",
               marginRight: "auto",
             }}
@@ -1261,8 +1336,8 @@ button:hover{
                 onClick={() => setPage(key)}
                 style={{
                   border: "none",
-                  background: page === key ? "#111" : "transparent",
-                  color: page === key ? "#fff" : "#7C8798",
+                  background: page === key ? C.text : "transparent",
+                  color: page === key ? (isDark ? "#111" : "#fff") : C.muted,
                   borderRadius: 12,
                   padding: "8px 18px",
                   fontWeight: 700,
@@ -1319,7 +1394,7 @@ button:hover{
           left: 0,
           height: "100%",
           width: "260px",
-          background: "rgba(238,243,249,0.97)",
+          background: C.drawerBg,
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           zIndex: 201,
@@ -1338,10 +1413,10 @@ button:hover{
             alignItems: "center",
             justifyContent: "space-between",
             padding: "0 20px 20px",
-            borderBottom: "1px solid #DDE6F0",
+            borderBottom: `1px solid ${C.line}`,
           }}
         >
-          <span style={{ fontWeight: 800, fontSize: 15, color: "#1B2430", letterSpacing: "-0.02em" }}>
+          <span style={{ fontWeight: 800, fontSize: 15, color: C.text, letterSpacing: "-0.02em" }}>
             AM Home Budget
           </span>
           <button
@@ -1355,7 +1430,7 @@ button:hover{
               borderRadius: 6,
               display: "flex",
               alignItems: "center",
-              color: "#7C8798",
+              color: C.muted,
             }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -1379,8 +1454,8 @@ button:hover{
                 width: "100%",
                 textAlign: "left",
                 border: "none",
-                background: page === key ? "#111" : "transparent",
-                color: page === key ? "#fff" : "#3A4660",
+                background: page === key ? C.text : "transparent",
+                color: page === key ? (isDark ? "#111" : "#fff") : C.muted,
                 borderRadius: 12,
                 padding: "12px 16px",
                 fontWeight: 700,
@@ -1401,14 +1476,15 @@ button:hover{
         className="app-shell"
         style={{
           minHeight: "100vh",
-          background: `
-          radial-gradient(circle at 15% 10%, rgba(0,0,0,.07), transparent 35%),
-          radial-gradient(circle at 85% 80%, rgba(0,0,0,.05), transparent 35%),
-          linear-gradient(160deg,#EEF3F9 0%,#F4F8FC 100%)
-        `,
-          backgroundSize: "100% 100%",
+          ...(isDark
+            ? { background: "#0F1115" }
+            : {
+                backgroundImage:
+                  "radial-gradient(circle at 15% 10%,rgba(0,0,0,.07),transparent 35%),radial-gradient(circle at 85% 80%,rgba(0,0,0,.05),transparent 35%),linear-gradient(160deg,#EEF3F9 0%,#F4F8FC 100%)",
+                backgroundSize: "100% 100%",
+              }),
           animation: "none",
-          padding: page === "checklist" ? "40px" : "40px",
+          padding: "40px",
           fontFamily: "'IBM Plex Sans Thai', sans-serif",
         }}
       >
@@ -1419,26 +1495,74 @@ button:hover{
               style={{
                 fontSize: "24px",
                 fontWeight: 800,
-                color: "#111",
+                color: C.text,
                 marginBottom: "32px",
                 letterSpacing: "-0.02em",
               }}
             >
               ตั้งค่า
             </h2>
+
+            {/* ── Theme Settings ── */}
             <div
               style={{
-                background: "#fff",
+                background: C.settingsCardBg,
                 borderRadius: "20px",
                 padding: "28px 32px",
                 boxShadow: "0 2px 16px rgba(0,0,0,.07)",
+                marginBottom: "20px",
+                border: `1px solid ${C.line}`,
+              }}
+            >
+              <h3 style={{ fontSize: "16px", fontWeight: 700, color: C.text, margin: "0 0 6px 0" }}>
+                🎨 ธีม
+              </h3>
+              <p style={{ fontSize: "13px", color: C.muted, margin: "0 0 16px 0" }}>
+                เลือกธีมสีของแอป
+              </p>
+              <div style={{ display: "flex", gap: "8px" }}>
+                {[
+                  { key: "light", label: "☀️ สว่าง" },
+                  { key: "dark",  label: "🌙 มืด" },
+                  { key: "system", label: "💻 ระบบ" },
+                ].map(({ key, label }) => (
+                  <button
+                    key={key}
+                    onClick={() => setTheme(key)}
+                    style={{
+                      flex: 1,
+                      padding: "10px 8px",
+                      border: `1.5px solid ${theme === key ? C.text : C.line}`,
+                      borderRadius: "10px",
+                      background: theme === key ? C.text : "transparent",
+                      color: theme === key ? (isDark ? "#111" : "#fff") : C.muted,
+                      fontSize: "13px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                      transition: "all .18s ease",
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: C.settingsCardBg,
+                borderRadius: "20px",
+                padding: "28px 32px",
+                boxShadow: "0 2px 16px rgba(0,0,0,.07)",
+                border: `1px solid ${C.line}`,
               }}
             >
               <h3
                 style={{
                   fontSize: "16px",
                   fontWeight: 700,
-                  color: "#111",
+                  color: C.text,
                   margin: "0 0 6px 0",
                 }}
               >
@@ -1447,7 +1571,7 @@ button:hover{
               <p
                 style={{
                   fontSize: "13px",
-                  color: "#7C8798",
+                  color: C.muted,
                   margin: "0 0 20px 0",
                 }}
               >
@@ -1488,8 +1612,8 @@ button:hover{
           {/* ── SECTION 1: Overall Home Summary ── */}
           <div
             style={{
-              background: "#F0F6FF",
-              border: "1px solid #D8E8F8",
+              background: C.section1Bg,
+              border: `1px solid ${C.section1Border}`,
               borderRadius: "24px",
               padding: "clamp(24px,3vw,40px)",
               marginBottom: "clamp(32px,5vw,56px)",
@@ -1503,8 +1627,8 @@ button:hover{
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "6px",
-                  background: "#DBEAFE",
-                  color: "#1D5FA8",
+                  background: C.badgeBg,
+                  color: C.badgeColor,
                   borderRadius: "999px",
                   padding: "5px 14px",
                   fontSize: "12px",
@@ -1520,14 +1644,14 @@ button:hover{
                   margin: "0 0 4px",
                   fontSize: "clamp(20px,2.4vw,26px)",
                   fontWeight: 800,
-                  color: "#1B2430",
+                  color: C.text,
                   letterSpacing: "-0.03em",
                   lineHeight: 1.2,
                 }}
               >
                 สรุปงบประมาณทั้งหมดของบ้าน
               </h2>
-              <p style={{ margin: 0, fontSize: "13px", color: "#7C8798" }}>
+              <p style={{ margin: 0, fontSize: "13px", color: C.muted }}>
                 รวมข้อมูลจาก &ldquo;ต่อเติม&rdquo; และ &ldquo;ของแต่งบ้าน&rdquo;
               </p>
             </div>
@@ -1552,7 +1676,7 @@ button:hover{
                     lineHeight: ".95",
                     letterSpacing: "-0.04em",
                     margin: 0,
-                    color: "#1B2430",
+                    color: C.text,
                     fontWeight: 800,
                   }}
                 >
@@ -1563,7 +1687,7 @@ button:hover{
                 <p
                   className="hero-subtitle"
                   style={{
-                    color: "#7C8798",
+                    color: C.muted,
                     marginTop: "18px",
                     fontSize: "16px",
                     lineHeight: 1.7,
@@ -1644,23 +1768,23 @@ button:hover{
                     margin: "0 0 4px",
                     fontSize: "clamp(20px,2.4vw,26px)",
                     fontWeight: 800,
-                    color: "#1B2430",
+                    color: C.text,
                     letterSpacing: "-0.03em",
                     lineHeight: 1.2,
                   }}
                 >
                   {activeTab === "tort" ? "🏗️ งบต่อเติม" : "🛋️ งบของแต่งบ้าน"}
                 </h2>
-                <p style={{ margin: 0, fontSize: "13px", color: "#7C8798" }}>
+                <p style={{ margin: 0, fontSize: "13px", color: C.muted }}>
                   รายละเอียดงบประมาณของหมวดนี้
                 </p>
               </div>
 
-              {/* Existing tab switcher — unchanged */}
+              {/* Existing tab switcher */}
               <div
                 style={{
                   display: "flex",
-                  background: "#DDE6F0",
+                  background: C.tabBg,
                   padding: "4px",
                   borderRadius: "14px",
                   fontSize: "16px",
@@ -1716,12 +1840,13 @@ button:hover{
             {/* Existing progress bar */}
             <div
               style={{
-                background: "#FFFFFF",
+                background: C.card,
                 borderRadius: "20px",
                 padding: "20px 24px",
                 marginBottom: "20px",
-                border: "1px solid #DDE6F0",
+                border: `1px solid ${C.line}`,
                 boxShadow: "0 2px 12px rgba(30,45,61,.05)",
+                color: C.text,
               }}
             >
               <div
@@ -1738,7 +1863,7 @@ button:hover{
                 style={{
                   height: "8px",
                   borderRadius: "999px",
-                  background: "#EEF3F9",
+                  background: C.progressTrack,
                   overflow: "hidden",
                 }}
               >
@@ -1755,10 +1880,10 @@ button:hover{
 
           <div
             style={{
-              background: "#FFFFFF",
+              background: C.card,
               borderRadius: "20px",
               overflow: "hidden",
-              border: "1px solid #DDE6F0",
+              border: `1px solid ${C.line}`,
               boxShadow: "0 2px 12px rgba(30,45,61,.05)",
             }}
           >
@@ -1766,11 +1891,12 @@ button:hover{
               className="table-toolbar"
               style={{
                 padding: "16px",
-                borderBottom: "1px solid rgba(255,255,255,.45)",
+                borderBottom: `1px solid ${C.toolbarBorder}`,
                 display: "flex",
                 gap: "10px",
                 flexWrap: "wrap",
                 alignItems: "center",
+                color: C.text,
               }}
             >
               <strong>รายการทั้งหมด</strong>
@@ -1783,9 +1909,11 @@ button:hover{
                   marginLeft: "auto",
                   padding: "10px 14px",
                   borderRadius: "999px",
-                  border: "1px solid rgba(0,0,0,.06)",
-                  background: "rgba(255,255,255,.75)",
+                  border: `1px solid ${C.inputBorder}`,
+                  background: C.inputBg,
                   backdropFilter: "blur(16px)",
+                  color: C.text,
+                  outline: "none",
                 }}
               />
 
@@ -2020,9 +2148,10 @@ button:hover{
                           marginTop: "8px",
                           padding: "12px",
                           borderRadius: "14px",
-                          background: "rgba(0,0,0,.04)",
+                          background: C.noteBg,
                           fontSize: "14px",
                           lineHeight: 1.5,
+                          color: C.text,
                         }}
                       >
                         <strong>หมายเหตุ:</strong> {item.note}
@@ -2066,9 +2195,9 @@ button:hover{
                           width: "54px",
                           height: "54px",
                           borderRadius: "18px",
-                          border: "1px solid rgba(0,0,0,.06)",
-                          background: "rgba(255,255,255,.95)",
-                          color: "#111",
+                          border: `1px solid ${C.line}`,
+                          background: C.card,
+                          color: C.text,
                           fontSize: "18px",
                           cursor: "pointer",
                           display: "flex",
@@ -2086,8 +2215,8 @@ button:hover{
                           width: "54px",
                           height: "54px",
                           borderRadius: "18px",
-                          border: "1px solid rgba(255,0,0,.08)",
-                          background: "rgba(255,240,240,.95)",
+                          border: "1px solid rgba(255,0,0,.12)",
+                          background: isDark ? "rgba(200,50,50,.18)" : "rgba(255,240,240,.95)",
                           color: "#C94B4B",
                           fontSize: "18px",
                           cursor: "pointer",
@@ -2272,7 +2401,7 @@ button:hover{
                             style={{
                               maxWidth: "220px",
                               whiteSpace: "pre-wrap",
-                              color: "#666",
+                              color: C.muted,
                             }}
                           >
                             {item.note || "—"}
@@ -2298,8 +2427,9 @@ button:hover{
                               {item.paid < item.budget && (
                                 <button
                                   style={{
-                                    border: "1px solid rgba(0,0,0,.08)",
-                                    background: "rgba(255,255,255,.92)",
+                                    border: `1px solid ${C.line}`,
+                                    background: C.card,
+                                    color: C.text,
                                     boxShadow: "0 4px 14px rgba(0,0,0,.06)",
                                     borderRadius: "12px",
                                     padding: "8px 12px",
@@ -2330,9 +2460,9 @@ button:hover{
                                   width: "32px",
                                   height: "32px",
                                   borderRadius: "12px",
-                                  border: "1px solid rgba(0,0,0,.08)",
-                                  background: "rgba(255,255,255,.92)",
-                                  color: "#111",
+                                  border: `1px solid ${C.line}`,
+                                  background: C.card,
+                                  color: C.text,
                                   fontSize: "16px",
                                   cursor: "pointer",
                                   display: "flex",
@@ -2349,8 +2479,8 @@ button:hover{
                                   width: "32px",
                                   height: "32px",
                                   borderRadius: "12px",
-                                  border: "1px solid rgba(255,0,0,.08)",
-                                  background: "rgba(255,240,240,.9)",
+                                  border: "1px solid rgba(255,0,0,.12)",
+                                  background: isDark ? "rgba(200,50,50,.18)" : "rgba(255,240,240,.9)",
                                   color: "#C94B4B",
                                   fontSize: "18px",
                                   cursor: "pointer",
@@ -2390,7 +2520,7 @@ button:hover{
                                       transform: "translateY(-50%)",
                                       fontSize: "15px",
                                       fontWeight: 600,
-                                      color: "#8A9BB5",
+                                      color: C.muted,
                                       pointerEvents: "none",
                                     }}
                                   >
@@ -2404,8 +2534,9 @@ button:hover{
                                       width: "100%",
                                       height: "40px",
                                       borderRadius: "12px",
-                                      border: "1px solid #DDE6F0",
-                                      background: "#FFFFFF",
+                                      border: `1px solid ${C.line}`,
+                                      background: C.inputBg,
+                                      color: C.text,
                                       padding: "0 12px 0 34px",
                                       fontSize: "15px",
                                       outline: "none",
@@ -2502,12 +2633,12 @@ button:hover{
                 width: "100%",
                 maxWidth: window.innerWidth < 768 ? "100%" : "620px",
                 borderRadius: window.innerWidth < 768 ? "0px" : "28px",
-                background: "#FFFFFF",
+                background: C.modalBg,
                 border: "none",
                 boxShadow:
                   window.innerWidth < 768
                     ? "none"
-                    : "0 12px 60px rgba(0,0,0,.16)",
+                    : "0 12px 60px rgba(0,0,0,.28)",
                 height: window.innerWidth < 768 ? "100%" : "auto",
                 maxHeight:
                   window.innerWidth < 768 ? "100%" : "calc(100vh - 48px)",
@@ -2516,17 +2647,18 @@ button:hover{
                 overflow: "hidden",
                 WebkitOverflowScrolling: "touch",
                 transform: "translateZ(0)",
+                color: C.text,
               }}
             >
               <button
                 onClick={() => setOpen(false)}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#E4E7EC";
-                  e.currentTarget.style.color = "#111";
+                  e.currentTarget.style.background = isDark ? "#3A3F4A" : "#E4E7EC";
+                  e.currentTarget.style.color = isDark ? "#fff" : "#111";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#F2F4F7";
-                  e.currentTarget.style.color = "#555";
+                  e.currentTarget.style.background = isDark ? "#2E3340" : "#F2F4F7";
+                  e.currentTarget.style.color = isDark ? "#ccc" : "#555";
                 }}
                 style={{
                   position: "absolute",
@@ -2536,9 +2668,9 @@ button:hover{
                   height: "36px",
                   border: "none",
                   borderRadius: "999px",
-                  background: "#F2F4F7",
+                  background: isDark ? "#2E3340" : "#F2F4F7",
                   cursor: "pointer",
-                  color: "#555",
+                  color: isDark ? "#ccc" : "#555",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -2566,12 +2698,12 @@ button:hover{
                 style={{
                   flexShrink: 0,
                   zIndex: 2,
-                  background: "#FFFFFF",
+                  background: C.modalBg,
                   padding:
                     window.innerWidth < 768
                       ? "24px 20px 16px"
                       : "28px 28px 16px",
-                  borderBottom: "1px solid #F0F2F5",
+                  borderBottom: `1px solid ${C.line}`,
                 }}
               >
                 <h3
@@ -2580,7 +2712,7 @@ button:hover{
                     lineHeight: 1.2,
                     fontWeight: 700,
                     letterSpacing: "-0.02em",
-                    color: "#111",
+                    color: C.text,
                     margin: 0,
                     paddingRight: "48px",
                   }}
@@ -2719,9 +2851,9 @@ button:hover{
                               border: "none",
                               borderRadius: "999px",
 
-                              background: active ? "#FFFFFF" : "transparent",
+                              background: active ? (isDark ? "#2E3340" : "#FFFFFF") : "transparent",
 
-                              color: active ? "#111" : "#8A9BB5",
+                              color: active ? (isDark ? "#FFFFFF" : "#111") : "#8A9BB5",
 
                               fontWeight: active ? 600 : 400,
                               fontSize: "14px",
@@ -3006,8 +3138,8 @@ button:hover{
                                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                   <span style={{ fontSize: "13px" }}>{c.checked ? "✅" : "🔲"}</span>
                                   <div>
-                                    <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>{c.title}</div>
-                                    <div style={{ fontSize: "12px", color: "#9ca3af" }}>{c.category}</div>
+                                    <div style={{ fontSize: "14px", fontWeight: 500, color: C.text }}>{c.title}</div>
+                                    <div style={{ fontSize: "12px", color: C.muted }}>{c.category}</div>
                                   </div>
                                 </div>
                                 {c.quantity > 1 && (
@@ -3044,8 +3176,8 @@ button:hover{
                     window.innerWidth < 768
                       ? "16px 20px calc(16px + env(safe-area-inset-bottom))"
                       : "18px 28px",
-                  background: "#FFFFFF",
-                  borderTop: "1px solid #F0F2F5",
+                  background: C.modalBg,
+                  borderTop: `1px solid ${C.line}`,
                 }}
               >
                 <button
@@ -3056,8 +3188,8 @@ button:hover{
                     padding: "0 28px",
                     borderRadius: "999px",
                     border: "none",
-                    background: "#F2F4F7",
-                    color: "#555",
+                    background: isDark ? "#2A2D35" : "#F2F4F7",
+                    color: isDark ? "#B8C0CC" : "#555",
                     fontSize: "15px",
                     fontWeight: 500,
                     cursor: "pointer",
@@ -3117,10 +3249,10 @@ button:hover{
                 maxWidth: "460px",
                 borderRadius: window.innerWidth < 768 ? "32px" : "36px",
                 padding: window.innerWidth < 768 ? "28px 22px" : "32px",
-                background: "rgba(255,255,255,.82)",
+                background: C.payModalBg,
                 backdropFilter: "blur(24px)",
-                border: "1px solid rgba(255,255,255,.6)",
-                boxShadow: "0 30px 90px rgba(0,0,0,.12)",
+                border: `1px solid ${C.payModalBorder}`,
+                boxShadow: "0 30px 90px rgba(0,0,0,.18)",
               }}
             >
               <div
@@ -3136,7 +3268,7 @@ button:hover{
                     margin: 0,
                     fontSize: "32px",
                     fontWeight: 800,
-                    color: "#1B2430",
+                    color: C.text,
                     letterSpacing: "-0.04em",
                   }}
                 >
@@ -3153,7 +3285,8 @@ button:hover{
                     height: "40px",
                     borderRadius: "999px",
                     border: "none",
-                    background: "rgba(255,255,255,.8)",
+                    background: C.payCloseBg,
+                    color: C.text,
                     cursor: "pointer",
                     fontSize: "18px",
                   }}
@@ -3173,7 +3306,7 @@ button:hover{
                     marginBottom: "10px",
                     fontSize: "15px",
                     fontWeight: 600,
-                    color: "#8A9BB5",
+                    color: C.muted,
                   }}
                 >
                   จำนวนเงิน
@@ -3188,7 +3321,7 @@ button:hover{
                       transform: "translateY(-50%)",
                       fontSize: "18px",
                       fontWeight: 600,
-                      color: "#8A9BB5",
+                      color: C.muted,
                       pointerEvents: "none",
                       userSelect: "none",
                     }}
@@ -3203,8 +3336,9 @@ button:hover{
                       width: "100%",
                       height: "62px",
                       borderRadius: "20px",
-                      border: "1px solid rgba(255,255,255,.5)",
-                      background: "rgba(255,255,255,.88)",
+                      border: `1px solid ${C.payInputBorder}`,
+                      background: C.payInputBg,
+                      color: C.text,
                       padding: "0 20px 0 44px",
                       fontSize: "18px",
                       outline: "none",
@@ -3259,9 +3393,10 @@ button:hover{
                 maxWidth: "420px",
                 borderRadius: "32px",
                 padding: "30px",
-                background: "rgba(255,255,255,.88)",
+                background: C.deleteBg,
                 backdropFilter: "blur(24px)",
-                boxShadow: "0 30px 90px rgba(0,0,0,.12)",
+                boxShadow: "0 30px 90px rgba(0,0,0,.18)",
+                border: `1px solid ${C.line}`,
               }}
             >
               <div
@@ -3269,7 +3404,7 @@ button:hover{
                   fontSize: "22px",
                   fontWeight: 800,
                   marginBottom: "12px",
-                  color: "#1B2430",
+                  color: C.text,
                 }}
               >
                 ลบรายการ
@@ -3277,7 +3412,7 @@ button:hover{
 
               <div
                 style={{
-                  color: "#666",
+                  color: C.deleteDialogText,
                   lineHeight: 1.7,
                   marginBottom: "28px",
                 }}
@@ -3298,8 +3433,9 @@ button:hover{
                     height: "50px",
                     padding: "0 20px",
                     borderRadius: "16px",
-                    border: "1px solid rgba(0,0,0,.08)",
-                    background: "#F5F5F5",
+                    border: `1px solid ${C.line}`,
+                    background: C.cancelBg,
+                    color: C.cancelColor,
                     fontWeight: 700,
                     cursor: "pointer",
                   }}
@@ -3345,18 +3481,20 @@ button:hover{
                 left: "50%",
                 transform: "translate(-50%,-50%)",
                 zIndex: 1001,
-                background: "#fff",
+                background: C.exportModalBg,
                 borderRadius: "20px",
                 padding: "28px 28px 24px",
                 width: "min(440px, calc(100vw - 32px))",
-                boxShadow: "0 24px 60px rgba(0,0,0,.18)",
+                boxShadow: "0 24px 60px rgba(0,0,0,.28)",
                 fontFamily: "'IBM Plex Sans Thai', sans-serif",
+                border: `1px solid ${C.line}`,
+                color: C.text,
               }}
             >
-              <h3 style={{ margin: "0 0 6px", fontSize: "17px", fontWeight: 800, color: "#111", letterSpacing: "-0.02em" }}>
+              <h3 style={{ margin: "0 0 6px", fontSize: "17px", fontWeight: 800, color: C.text, letterSpacing: "-0.02em" }}>
                 ส่งออกข้อมูล
               </h3>
-              <p style={{ margin: "0 0 20px", fontSize: "13px", color: "#7C8798" }}>
+              <p style={{ margin: "0 0 20px", fontSize: "13px", color: C.muted }}>
                 เลือกรูปแบบไฟล์ที่ต้องการส่งออก
               </p>
 
@@ -3381,10 +3519,10 @@ button:hover{
                     gap: "12px",
                     padding: "14px 16px",
                     borderRadius: "12px",
-                    border: `2px solid ${exportFormat === value ? "#111" : "#DDE6F0"}`,
+                    border: `2px solid ${exportFormat === value ? C.exportSelectedBorder : C.exportUnselectedBorder}`,
                     marginBottom: "10px",
                     cursor: "pointer",
-                    background: exportFormat === value ? "#F8F9FB" : "#fff",
+                    background: exportFormat === value ? C.exportSelectedBg : C.exportUnselectedBg,
                     transition: "border-color .15s, background .15s",
                   }}
                 >
@@ -3394,8 +3532,8 @@ button:hover{
                       width: "18px",
                       height: "18px",
                       borderRadius: "50%",
-                      border: `2px solid ${exportFormat === value ? "#111" : "#C5D0DC"}`,
-                      background: exportFormat === value ? "#111" : "transparent",
+                      border: `2px solid ${exportFormat === value ? C.exportRadioSelected : C.exportRadioUnselected}`,
+                      background: exportFormat === value ? C.exportRadioSelected : "transparent",
                       flexShrink: 0,
                       display: "flex",
                       alignItems: "center",
@@ -3403,12 +3541,12 @@ button:hover{
                     }}
                   >
                     {exportFormat === value && (
-                      <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#fff" }} />
+                      <div style={{ width: 7, height: 7, borderRadius: "50%", background: isDark ? "#0F1115" : "#fff" }} />
                     )}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: "14px", color: "#111", marginBottom: "3px" }}>{label}</div>
-                    <div style={{ fontSize: "12px", color: "#7C8798", lineHeight: 1.5 }}>{desc}</div>
+                    <div style={{ fontWeight: 700, fontSize: "14px", color: C.text, marginBottom: "3px" }}>{label}</div>
+                    <div style={{ fontSize: "12px", color: C.muted, lineHeight: 1.5 }}>{desc}</div>
                   </div>
                 </div>
               ))}
@@ -3419,10 +3557,10 @@ button:hover{
                   style={{
                     flex: 1,
                     padding: "11px",
-                    border: "1.5px solid #DDE6F0",
+                    border: `1.5px solid ${C.line}`,
                     borderRadius: "12px",
                     background: "transparent",
-                    color: "#3A4660",
+                    color: C.exportCancelColor,
                     fontSize: "14px",
                     fontWeight: 700,
                     cursor: "pointer",
@@ -3508,7 +3646,7 @@ const fieldStyle = {
   width: "100%",
   borderRadius: "999px",
   border: "none",
-  background: "#F2F4F7",
+  background: "var(--input-bg)",
   padding: "0 20px",
   fontSize: "15px",
   height: "52px",
@@ -3516,7 +3654,7 @@ const fieldStyle = {
   boxSizing: "border-box",
   appearance: "none",
   WebkitAppearance: "none",
-  color: "#1E2D3D",
+  color: "var(--input-color)",
 };
 
 function BahtInput({ value, onChange, placeholder = "", style = {} }) {
@@ -3544,7 +3682,7 @@ function BahtInput({ value, onChange, placeholder = "", style = {} }) {
           transform: "translateY(-50%)",
           fontSize: "15px",
           fontWeight: 600,
-          color: "#8A9BB5",
+          color: "var(--field-label)",
           pointerEvents: "none",
           userSelect: "none",
         }}
@@ -3682,10 +3820,10 @@ function CustomSelect({ value, onChange, options, placeholder = "เลือก
             left: 0,
             right: 0,
             zIndex: 9999,
-            background: "#FFFFFF",
+            background: "var(--dropdown-bg)",
             borderRadius: "18px",
-            boxShadow: "0 8px 40px rgba(0,0,0,.14)",
-            border: "1px solid #F0F2F5",
+            boxShadow: "0 8px 40px rgba(0,0,0,.20)",
+            border: "1px solid var(--dropdown-border)",
             overflow: "hidden",
             maxHeight: "280px",
             overflowY: "auto",
@@ -3706,19 +3844,19 @@ function CustomSelect({ value, onChange, options, placeholder = "เลือก
                   padding: "13px 20px",
                   fontSize: "15px",
                   fontWeight: isSelected ? 600 : 400,
-                  color: isSelected ? "#111111" : "#333",
+                  color: isSelected ? "var(--dropdown-color)" : "var(--dropdown-color)",
                   cursor: "pointer",
-                  background: isSelected ? "rgba(0,0,0,.07)" : "transparent",
+                  background: isSelected ? "rgba(128,128,128,.12)" : "transparent",
                   borderBottom:
-                    i < options.length - 1 ? "1px solid #F5F7FA" : "none",
+                    i < options.length - 1 ? "1px solid var(--td-border)" : "none",
                   transition: "background .15s ease",
                 }}
                 onMouseEnter={(e) => {
-                  if (!isSelected) e.currentTarget.style.background = "#F7FAFB";
+                  if (!isSelected) e.currentTarget.style.background = "rgba(128,128,128,.07)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = isSelected
-                    ? "rgba(0,0,0,.07)"
+                    ? "rgba(128,128,128,.12)"
                     : "transparent";
                 }}
               >
@@ -3741,7 +3879,7 @@ function Field({ label, children }) {
           marginBottom: "8px",
           fontSize: "13px",
           fontWeight: 500,
-          color: "#8A9BB5",
+          color: "var(--field-label)",
           letterSpacing: "0.01em",
         }}
       >
@@ -3763,10 +3901,10 @@ function SummaryCard({ title, value, color = "#111111", large = false, sub }) {
     <div
       className="summary-card"
       style={{
-        background: "#FFFFFF",
+        background: "var(--card-bg)",
         borderRadius: "20px",
         padding: large ? "28px 32px 24px" : "24px 24px 20px",
-        border: "1px solid #DDE6F0",
+        border: "1px solid var(--card-border)",
         boxShadow: "0 2px 12px rgba(30,45,61,.05)",
         display: "flex",
         flexDirection: "column",
@@ -3776,7 +3914,7 @@ function SummaryCard({ title, value, color = "#111111", large = false, sub }) {
     >
       <div
         style={{
-          color: "#8A9BB5",
+          color: "var(--field-label)",
           fontSize: "13px",
           fontWeight: 500,
           letterSpacing: "0.02em",
@@ -3789,7 +3927,7 @@ function SummaryCard({ title, value, color = "#111111", large = false, sub }) {
       <div style={{ flex: 1, display: "flex", alignItems: "flex-end" }}>
         <span
           style={{
-            color,
+            color: `var(--card-amount-color, ${color})`,
             fontSize: large
               ? "clamp(36px, 4vw, 56px)"
               : "clamp(26px, 2.8vw, 38px)",
@@ -3801,7 +3939,7 @@ function SummaryCard({ title, value, color = "#111111", large = false, sub }) {
           ฿{integerPart}
           <span
             style={{
-              color: "#111111",
+              color: "var(--card-amount-color, #111111)",
               opacity: 0.2,
               fontSize: large ? "28px" : "20px",
               fontWeight: 700,
@@ -3817,10 +3955,10 @@ function SummaryCard({ title, value, color = "#111111", large = false, sub }) {
           style={{
             marginTop: "12px",
             fontSize: "12px",
-            color: "#A0AEBF",
+            color: "var(--field-label)",
             fontWeight: 400,
             letterSpacing: "0.01em",
-            borderTop: "1px solid #F0F4F8",
+            borderTop: "1px solid var(--card-border)",
             paddingTop: "10px",
           }}
         >
@@ -3839,8 +3977,8 @@ function TabButton({ children, active, onClick }) {
         border: "none",
         padding: "10px 18px",
         borderRadius: "10px",
-        background: active ? "#111111" : "transparent",
-        color: active ? "#fff" : "#64748B",
+        background: active ? "var(--tab-active-bg)" : "transparent",
+        color: active ? "var(--tab-active-color)" : "var(--tab-inactive-color)",
         fontWeight: 600,
       }}
     >
@@ -3854,11 +3992,11 @@ function FilterButton({ children, active, onClick }) {
     <button
       onClick={onClick}
       style={{
-        border: "1px solid rgba(255,255,255,.5)",
+        border: "1px solid var(--filter-border)",
         borderRadius: "999px",
         padding: "6px 14px",
-        background: active ? "#111111" : "rgba(255,255,255,.85)",
-        color: active ? "#fff" : "#64748B",
+        background: active ? "var(--filter-active-bg)" : "var(--filter-inactive-bg)",
+        color: active ? "var(--filter-active-color)" : "var(--tab-inactive-color)",
         backdropFilter: "blur(12px)",
       }}
     >
@@ -3907,9 +4045,9 @@ function TH({ children, sticky }) {
     <th
       style={{
         padding: "12px 14px",
-        background: "#F7FAFB",
+        background: "var(--th-bg)",
         textAlign: "left",
-        color: "#8A9BB5",
+        color: "var(--field-label)",
         fontSize: "12px",
         fontWeight: 600,
         letterSpacing: "0.04em",
@@ -3932,9 +4070,10 @@ function TD({ children, sticky, style = {} }) {
         paddingLeft: "14px",
         paddingRight: "14px",
         verticalAlign: "top",
-        borderBottom: "1px solid #EEF3F9",
+        borderBottom: "1px solid var(--td-border)",
         transition: "background .2s ease",
-        background: "#FFFFFF",
+        background: "var(--td-bg)",
+        color: "var(--dropdown-color)",
         position: sticky ? "sticky" : "static",
         right: sticky ? 0 : undefined,
         ...style,

@@ -41,6 +41,8 @@
   --input-bg:#F2F4F7;
   --input-color:#1E2D3D;
   --input-placeholder:#A0AEC0;
+  --input-focus-border:#3B82F6;
+  --input-focus-glow:rgba(59,130,246,0.12);
 
   /* dropdown */
   --dropdown-bg:#FFFFFF;
@@ -526,4 +528,14 @@ th{
 [data-theme="dark"] textarea::placeholder {
   color: var(--input-placeholder) !important;
   opacity: 1;
+}
+
+/* Light Mode focus states */
+input:focus,
+textarea:focus,
+select:focus,
+input[type="date"]:focus {
+  border-color: var(--input-focus-border) !important;
+  box-shadow: 0 0 0 4px var(--input-focus-glow) !important;
+  outline: none !important;
 }

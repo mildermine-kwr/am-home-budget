@@ -3652,7 +3652,7 @@ button:hover{
 const fieldStyle = {
   width: "100%",
   borderRadius: "999px",
-  border: "none",
+  border: "1px solid transparent",
   background: "var(--input-bg)",
   padding: "0 20px",
   fontSize: "15px",
@@ -3662,6 +3662,7 @@ const fieldStyle = {
   appearance: "none",
   WebkitAppearance: "none",
   color: "var(--input-color)",
+  transition: "border-color .15s ease, box-shadow .15s ease",
 };
 
 function BahtInput({ value, onChange, placeholder = "", style = {} }) {

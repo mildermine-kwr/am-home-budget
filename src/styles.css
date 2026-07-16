@@ -96,9 +96,12 @@
   --filter-inactive-color:#B8C0CC;
   --filter-border:rgba(255,255,255,.12);
 
-  --input-bg:#262B36;
+  --input-bg:#252B38;
+  --input-hover-bg:#2B3343;
+  --input-border:rgba(255,255,255,0.08);
+  --input-focus-border:#7EB8F7;
   --input-color:#FFFFFF;
-  --input-placeholder:#9AA5B4;
+  --input-placeholder:rgba(255,255,255,0.50);
 
   --dropdown-bg:#20242D;
   --dropdown-border:rgba(255,255,255,.08);
@@ -500,4 +503,27 @@ th{
   background: var(--text);
   color: var(--bg);
   border-color: var(--text);
+}
+
+/* Dark mode form controls */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  border: 1px solid var(--input-border) !important;
+  transition: background .15s ease, border-color .15s ease;
+}
+[data-theme="dark"] input:hover,
+[data-theme="dark"] textarea:hover {
+  background: var(--input-hover-bg) !important;
+}
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus {
+  background: var(--input-hover-bg) !important;
+  border-color: var(--input-focus-border) !important;
+  outline: none !important;
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--input-placeholder) !important;
+  opacity: 1;
 }

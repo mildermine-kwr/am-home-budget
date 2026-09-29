@@ -1226,7 +1226,7 @@ export default function App() {
     <>
       <style>
         {`
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
 
 *{
   box-sizing:border-box;
@@ -1236,7 +1236,7 @@ button,
 input,
 textarea,
 select{
-  font-family:'IBM Plex Sans Thai', sans-serif;
+  font-family:'Prompt', sans-serif;
   transition:all .28s cubic-bezier(.22,1,.36,1);
 }
 
@@ -1516,7 +1516,7 @@ button:hover{
           WebkitBackdropFilter: "blur(20px)",
           borderBottom: `1px solid ${C.line}`,
           padding: "0 40px",
-          fontFamily: "'IBM Plex Sans Thai', sans-serif",
+          fontFamily: "'Prompt', sans-serif",
         }}
       >
         <div
@@ -1618,7 +1618,7 @@ button:hover{
           display: "flex",
           flexDirection: "column",
           paddingTop: "20px",
-          fontFamily: "'IBM Plex Sans Thai', sans-serif",
+          fontFamily: "'Prompt', sans-serif",
           transform: drawerOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform .28s cubic-bezier(.22,1,.36,1)",
         }}
@@ -1701,7 +1701,7 @@ button:hover{
               }),
           animation: "none",
           padding: "40px",
-          fontFamily: "'IBM Plex Sans Thai', sans-serif",
+          fontFamily: "'Prompt', sans-serif",
         }}
       >
         {page === "checklist" && <Checklist isDark={isDark} />}
@@ -4164,7 +4164,7 @@ button:hover{
                 padding: "28px 28px 24px",
                 width: "min(440px, calc(100vw - 32px))",
                 boxShadow: "0 24px 60px rgba(0,0,0,.28)",
-                fontFamily: "'IBM Plex Sans Thai', sans-serif",
+                fontFamily: "'Prompt', sans-serif",
                 border: `1px solid ${C.line}`,
                 color: C.text,
               }}

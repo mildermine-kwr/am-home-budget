@@ -3337,86 +3337,212 @@ button:hover{
 
                   <Field label="เชื่อมกับรายการซื้อ (ไม่บังคับ)">
                     {linkedChecklistId ? (
-                      <div style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "12px 16px",
-                        borderRadius: "16px",
-                        background: "rgba(34,197,94,0.08)",
-                        border: "1.5px solid rgba(34,197,94,0.25)",
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "12px 16px",
+                          borderRadius: "18px",
+                          background: isDark
+                            ? "rgba(34, 197, 94, 0.12)"
+                            : "rgba(34, 197, 94, 0.08)",
+                          border: isDark
+                            ? "1.5px solid rgba(34, 197, 94, 0.35)"
+                            : "1.5px solid rgba(34, 197, 94, 0.25)",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
                           <span style={{ fontSize: "16px" }}>✅</span>
                           <div>
-                            <div style={{ fontWeight: 600, fontSize: "14px", color: "#15803d" }}>
-                              {checklistItems.find(c => c.id === linkedChecklistId)?.title}
+                            <div
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "14px",
+                                color: isDark ? "#4ade80" : "#15803d",
+                              }}
+                            >
+                              {
+                                checklistItems.find(
+                                  (c) => c.id === linkedChecklistId,
+                                )?.title
+                              }
                             </div>
-                            <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                              {checklistItems.find(c => c.id === linkedChecklistId)?.category}
+                            <div
+                              style={{
+                                fontSize: "12px",
+                                color: isDark ? "#94a3b8" : "#6b7280",
+                              }}
+                            >
+                              {
+                                checklistItems.find(
+                                  (c) => c.id === linkedChecklistId,
+                                )?.category
+                              }
                             </div>
                           </div>
                         </div>
                         <button
-                          onClick={() => { setLinkedChecklistId(null); setClSearch(""); }}
-                          style={{
-                            background: "none", border: "none", cursor: "pointer",
-                            color: "#9ca3af", fontSize: "18px", lineHeight: 1, padding: "4px",
+                          type="button"
+                          onClick={() => {
+                            setLinkedChecklistId(null);
+                            setClSearch("");
                           }}
-                        >×</button>
+                          style={{
+                            background: isDark
+                              ? "rgba(255,255,255,0.1)"
+                              : "rgba(0,0,0,0.05)",
+                            border: "none",
+                            cursor: "pointer",
+                            color: isDark ? "#cbd5e1" : "#64748b",
+                            fontSize: "14px",
+                            width: "28px",
+                            height: "28px",
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transition: "all 0.15s ease",
+                          }}
+                          title="ยกเลิกการเชื่อม"
+                        >
+                          ✕
+                        </button>
                       </div>
                     ) : (
                       <div>
                         <input
                           placeholder="ค้นหารายการซื้อ..."
                           value={clSearch}
-                          onChange={e => setClSearch(e.target.value)}
+                          onChange={(e) => setClSearch(e.target.value)}
                           style={{ ...fieldStyle, marginBottom: "8px" }}
                         />
-                        <div style={{
-                          maxHeight: "180px",
-                          overflowY: "auto",
-                          border: "1px solid #E5E7EB",
-                          borderRadius: "16px",
-                          background: "#FAFAFA",
-                        }}>
+                        <div
+                          style={{
+                            maxHeight: "180px",
+                            overflowY: "auto",
+                            border: `1px solid ${C.line}`,
+                            borderRadius: "18px",
+                            background: isDark ? "#171A21" : "#FAFAFA",
+                            boxShadow: isDark
+                              ? "0 4px 20px rgba(0,0,0,0.25)"
+                              : "none",
+                          }}
+                        >
                           {checklistItems
-                            .filter(c =>
-                              !clSearch || c.title?.toLowerCase().includes(clSearch.toLowerCase()) ||
-                              c.category?.toLowerCase().includes(clSearch.toLowerCase())
+                            .filter(
+                              (c) =>
+                                !clSearch ||
+                                c.title
+                                  ?.toLowerCase()
+                                  .includes(clSearch.toLowerCase()) ||
+                                c.category
+                                  ?.toLowerCase()
+                                  .includes(clSearch.toLowerCase()),
                             )
-                            .map(c => (
+                            .map((c) => (
                               <button
                                 key={c.id}
+                                type="button"
                                 onClick={() => setLinkedChecklistId(c.id)}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = isDark
+                                    ? "rgba(255,255,255,0.06)"
+                                    : "rgba(0,0,0,0.03)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
+                                }}
                                 style={{
-                                  width: "100%", display: "flex", alignItems: "center",
-                                  justifyContent: "space-between", gap: "8px",
-                                  padding: "10px 14px", background: "none", border: "none",
-                                  borderBottom: "1px solid #F3F4F6", cursor: "pointer",
+                                  width: "100%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  gap: "8px",
+                                  padding: "12px 16px",
+                                  background: "transparent",
+                                  border: "none",
+                                  borderBottom: `1px solid ${C.lineFaint}`,
+                                  cursor: "pointer",
                                   textAlign: "left",
+                                  transition: "background 0.15s ease",
                                 }}
                               >
-                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                  <span style={{ fontSize: "13px" }}>{c.checked ? "✅" : "🔲"}</span>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                  }}
+                                >
+                                  <span style={{ fontSize: "14px" }}>
+                                    {c.checked ? "✅" : "🔲"}
+                                  </span>
                                   <div>
-                                    <div style={{ fontSize: "14px", fontWeight: 500, color: C.text }}>{c.title}</div>
-                                    <div style={{ fontSize: "12px", color: C.muted }}>{c.category}</div>
+                                    <div
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: 500,
+                                        color: C.text,
+                                      }}
+                                    >
+                                      {c.title}
+                                    </div>
+                                    <div
+                                      style={{
+                                        fontSize: "12px",
+                                        color: C.muted,
+                                        marginTop: "2px",
+                                      }}
+                                    >
+                                      {c.category}
+                                    </div>
                                   </div>
                                 </div>
                                 {c.quantity > 1 && (
-                                  <span style={{
-                                    fontSize: "11px", color: "#6b7280", background: "#F3F4F6",
-                                    borderRadius: "999px", padding: "2px 8px", whiteSpace: "nowrap",
-                                  }}>×{c.quantity}</span>
+                                  <span
+                                    style={{
+                                      fontSize: "11px",
+                                      color: isDark ? "#cbd5e1" : "#475569",
+                                      background: isDark
+                                        ? "rgba(255,255,255,0.08)"
+                                        : "#E2E8F0",
+                                      borderRadius: "999px",
+                                      padding: "3px 9px",
+                                      whiteSpace: "nowrap",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    ×{c.quantity}
+                                  </span>
                                 )}
                               </button>
                             ))}
-                          {checklistItems.filter(c =>
-                            !clSearch || c.title?.toLowerCase().includes(clSearch.toLowerCase()) ||
-                            c.category?.toLowerCase().includes(clSearch.toLowerCase())
+                          {checklistItems.filter(
+                            (c) =>
+                              !clSearch ||
+                              c.title
+                                ?.toLowerCase()
+                                .includes(clSearch.toLowerCase()) ||
+                              c.category
+                                ?.toLowerCase()
+                                .includes(clSearch.toLowerCase()),
                           ).length === 0 && (
-                            <div style={{ padding: "20px", textAlign: "center", color: "#9ca3af", fontSize: "13px" }}>
+                            <div
+                              style={{
+                                padding: "24px 16px",
+                                textAlign: "center",
+                                color: C.muted,
+                                fontSize: "13px",
+                              }}
+                            >
                               ไม่พบรายการ
                             </div>
                           )}

@@ -171,29 +171,39 @@ const compressImage = (file) => {
   });
 };
 
-const normalizeItem = (item) => ({
-  ...item,
-  category: item.category || "",
-  budget: Number(item.budget || 0),
-  paid: Number(item.paid || 0),
-  remaining: Number(
-    item.remaining ?? Number(item.budget || 0) - Number(item.paid || 0),
-  ),
-  title: item.title || item.note || "",
-  platform: item.platform || "",
-  images: Array.isArray(item.images)
-    ? item.images
-    : item.image
-      ? [item.image]
-      : [],
-  status:
-    item.status ||
-    (Number(item.paid || 0) >= Number(item.budget || 0)
-      ? "paid"
-      : Number(item.paid || 0) > 0
-        ? "partial"
-        : "unpaid"),
-});
+const normalizeItem = (item) => {
+  let checklist_ids = [];
+  if (Array.isArray(item.checklist_ids) && item.checklist_ids.length > 0) {
+    checklist_ids = item.checklist_ids;
+  } else if (item.checklist_id) {
+    checklist_ids = [item.checklist_id];
+  }
+  return {
+    ...item,
+    category: item.category || "",
+    budget: Number(item.budget || 0),
+    paid: Number(item.paid || 0),
+    remaining: Number(
+      item.remaining ?? Number(item.budget || 0) - Number(item.paid || 0),
+    ),
+    title: item.title || item.note || "",
+    platform: item.platform || "",
+    checklist_id: item.checklist_id || checklist_ids[0] || null,
+    checklist_ids,
+    images: Array.isArray(item.images)
+      ? item.images
+      : item.image
+        ? [item.image]
+        : [],
+    status:
+      item.status ||
+      (Number(item.paid || 0) >= Number(item.budget || 0)
+        ? "paid"
+        : Number(item.paid || 0) > 0
+          ? "partial"
+          : "unpaid"),
+  };
+};
 
 export default function App() {
   useEffect(() => {
@@ -287,7 +297,7 @@ export default function App() {
   const [editingId, setEditingId] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [checklistItems, setChecklistItems] = useState([]);
-  const [linkedChecklistId, setLinkedChecklistId] = useState(null);
+  const [linkedChecklistIds, setLinkedChecklistIds] = useState([]);
   const [clSearch, setClSearch] = useState("");
 
   const [form, setForm] = useState({
@@ -364,19 +374,58 @@ export default function App() {
         ? [selectedItem.image]
         : [];
 
+    let initialClIds = [];
+    if (
+      Array.isArray(selectedItem?.checklist_ids) &&
+      selectedItem.checklist_ids.length > 0
+    ) {
+      initialClIds = selectedItem.checklist_ids;
+    } else if (selectedItem?.checklist_id) {
+      initialClIds = [selectedItem.checklist_id];
+    }
+
+    const currentClIds = Array.isArray(linkedChecklistIds)
+      ? linkedChecklistIds
+      : [];
+
+    const isPlatformChanged =
+      form.platform === "อื่นๆ"
+        ? normalizeValue(form.otherPlatform) !==
+          normalizeValue(selectedItem?.platform)
+        : normalizeValue(form.platform) !==
+          normalizeValue(selectedItem?.platform);
+
     return (
       normalizeValue(form.date) !== normalizeValue(selectedItem?.date) ||
       normalizeValue(form.category) !==
         normalizeValue(selectedItem?.category) ||
       normalizeValue(form.title) !== normalizeValue(selectedItem?.title) ||
       normalizeValue(form.note) !== normalizeValue(selectedItem?.note) ||
-      Number(form.budget || 0) !== Number(selectedItem?.budget || 0) ||
-      Number(form.paid || 0) !== Number(selectedItem?.paid || 0) ||
-      normalizeValue(form.platform) !== normalizeValue(selectedItem?.platform) ||
-      normalizeValue(form.quantity) !== normalizeValue(selectedItem?.quantity) ||
-      JSON.stringify(currentImages) !== JSON.stringify(selectedImages)
+      normalizeValue(form.budget) !==
+        normalizeValue(String(selectedItem?.budget ?? "")) ||
+      normalizeValue(form.paid) !==
+        normalizeValue(String(selectedItem?.paid ?? "")) ||
+      isPlatformChanged ||
+      normalizeValue(form.quantity) !==
+        normalizeValue(String(selectedItem?.quantity ?? 1)) ||
+      normalizeValue(form.paymentType) !==
+        normalizeValue(
+          selectedItem?.installment
+            ? "installment"
+            : Number(selectedItem?.paid || 0) >=
+                Number(selectedItem?.budget || 0)
+              ? "full"
+              : "partial",
+        ) ||
+      normalizeValue(form.installmentTotal) !==
+        normalizeValue(selectedItem?.installment?.total) ||
+      normalizeValue(form.installmentPaid) !==
+        normalizeValue(selectedItem?.installment?.paid) ||
+      JSON.stringify(currentImages) !== JSON.stringify(selectedImages) ||
+      JSON.stringify([...currentClIds].sort()) !==
+        JSON.stringify([...initialClIds].sort())
     );
-  }, [form, selectedItem, editingId]);
+  }, [form, selectedItem, editingId, linkedChecklistIds]);
 
   useEffect(() => {
     loadBudgets();
@@ -406,9 +455,13 @@ export default function App() {
     }
 
     let localImagesMap = {};
+    let localChecklistsMap = {};
     try {
       localImagesMap = JSON.parse(
         localStorage.getItem("am-home-budget-images") || "{}",
+      );
+      localChecklistsMap = JSON.parse(
+        localStorage.getItem("am-home-budget-linked-checklists") || "{}",
       );
     } catch (e) {
       console.error(e);
@@ -419,7 +472,11 @@ export default function App() {
         Array.isArray(item.images) && item.images.length > 0
           ? item.images
           : localImagesMap[item.id] || (item.image ? [item.image] : []);
-      return normalizeItem({ ...item, images: itemImages });
+      const itemChecklists =
+        Array.isArray(item.checklist_ids) && item.checklist_ids.length > 0
+          ? item.checklist_ids
+          : localChecklistsMap[item.id] || (item.checklist_id ? [item.checklist_id] : []);
+      return normalizeItem({ ...item, images: itemImages, checklist_ids: itemChecklists });
     });
 
     const sortNewest = (arr) =>
@@ -678,13 +735,14 @@ export default function App() {
             : null,
 
         type: activeTab,
-        checklist_id: linkedChecklistId || null,
+        checklist_id: linkedChecklistIds[0] || null,
+        checklist_ids: linkedChecklistIds,
         quantity: Number(form.quantity || 1),
         images: form.images || [],
       };
 
       if (editingId) {
-        const payload = {
+        const dbUpdatePayload = {
           date: form.date || null,
           category: form.category || "",
           title: form.title || "",
@@ -706,26 +764,25 @@ export default function App() {
               ? form.otherPlatform || ""
               : form.platform || "",
           type: activeTab,
-          checklist_id: linkedChecklistId || null,
+          checklist_id: linkedChecklistIds[0] || null,
           quantity: Number(form.quantity || 1),
-          images: form.images || [],
         };
 
         let { error } = await supabase
           .from("budget")
-          .update(payload)
+          .update(dbUpdatePayload)
           .eq("id", editingId);
 
         if (error) {
-          console.warn("Supabase update error (attempting retry without images column):", error);
-          const { images, ...payloadWithoutImages } = payload;
+          console.warn("Supabase update error (attempting retry):", error);
+          const { checklist_id, ...payloadBasic } = dbUpdatePayload;
           const retry = await supabase
             .from("budget")
-            .update(payloadWithoutImages)
+            .update(payloadBasic)
             .eq("id", editingId);
 
           if (retry.error) {
-            console.log(retry.error);
+            console.error("Supabase update retry error:", retry.error);
             showToast("แก้ไขไม่สำเร็จ");
             return;
           }
@@ -744,6 +801,19 @@ export default function App() {
             "am-home-budget-images",
             JSON.stringify(localImagesMap),
           );
+
+          const localChecklistsMap = JSON.parse(
+            localStorage.getItem("am-home-budget-linked-checklists") || "{}",
+          );
+          if (linkedChecklistIds && linkedChecklistIds.length > 0) {
+            localChecklistsMap[editingId] = linkedChecklistIds;
+          } else {
+            delete localChecklistsMap[editingId];
+          }
+          localStorage.setItem(
+            "am-home-budget-linked-checklists",
+            JSON.stringify(localChecklistsMap),
+          );
         } catch (e) {
           console.error(e);
         }
@@ -754,44 +824,60 @@ export default function App() {
             item.id === editingId
               ? {
                   ...item,
-                  ...payload,
+                  ...dbUpdatePayload,
+                  checklist_ids: linkedChecklistIds,
+                  images: form.images || [],
                 }
               : item,
           ),
         }));
 
-        if (payload.status === "paid" && payload.checklist_id) {
-          const clItem = checklistItems.find((c) => c.id === payload.checklist_id);
-          if (clItem) {
+        if (linkedChecklistIds.length > 0) {
+          for (const clId of linkedChecklistIds) {
+            const clItem = checklistItems.find((c) => c.id === clId);
+            const targetQty = clItem && clItem.quantity ? Number(clItem.quantity) : 1;
             await supabase
               .from("checklist")
-              .update({ checked: true, bought: clItem.quantity })
-              .eq("id", payload.checklist_id);
-            setChecklistItems((prev) =>
-              prev.map((c) =>
-                c.id === payload.checklist_id
-                  ? { ...c, checked: true, bought: c.quantity }
-                  : c,
-              ),
-            );
-            showToast("แก้ไขรายการสำเร็จ ✅ ติ๊กรายการซื้อแล้ว");
-          } else {
-            showToast("แก้ไขรายการสำเร็จ");
+              .update({ checked: true, bought: targetQty })
+              .eq("id", clId);
           }
+          setChecklistItems((prev) =>
+            prev.map((c) =>
+              linkedChecklistIds.includes(c.id)
+                ? { ...c, checked: true, bought: c.quantity ? Number(c.quantity) : 1 }
+                : c,
+            ),
+          );
+          showToast(`แก้ไขรายการสำเร็จ ✅ เปลี่ยนสถานะเป็นซื้อแล้ว (${linkedChecklistIds.length} รายการ)`);
         } else {
           showToast("แก้ไขรายการสำเร็จ");
         }
       } else {
+        const dbInsertPayload = {
+          type: activeTab,
+          date: next.date || null,
+          category: next.category || "",
+          title: next.title || "",
+          note: next.note || "",
+          platform: next.platform || "",
+          budget: Number(next.budget || 0),
+          paid: Number(next.paid || 0),
+          remaining: Number(next.remaining || 0),
+          status: next.status || "unpaid",
+          checklist_id: linkedChecklistIds[0] || null,
+          quantity: Number(next.quantity || 1),
+        };
+
         let insertedId = Date.now();
-        let res = await supabase.from("budget").insert(next).select();
+        let res = await supabase.from("budget").insert(dbInsertPayload).select();
 
         if (res.error) {
-          console.warn("Supabase insert error (attempting retry without images column):", res.error);
-          const { images, ...nextWithoutImages } = next;
-          res = await supabase.from("budget").insert(nextWithoutImages).select();
+          console.warn("Supabase insert error (attempting retry):", res.error);
+          const { checklist_id, ...insertWithoutCl } = dbInsertPayload;
+          res = await supabase.from("budget").insert(insertWithoutCl).select();
 
           if (res.error) {
-            console.log(res.error);
+            console.error(res.error);
             showToast("บันทึกรายการไม่สำเร็จ");
             return;
           }
@@ -812,6 +898,17 @@ export default function App() {
               JSON.stringify(localImagesMap),
             );
           }
+
+          if (linkedChecklistIds && linkedChecklistIds.length > 0) {
+            const localChecklistsMap = JSON.parse(
+              localStorage.getItem("am-home-budget-linked-checklists") || "{}",
+            );
+            localChecklistsMap[insertedId] = linkedChecklistIds;
+            localStorage.setItem(
+              "am-home-budget-linked-checklists",
+              JSON.stringify(localChecklistsMap),
+            );
+          }
         } catch (e) {
           console.error(e);
         }
@@ -829,7 +926,8 @@ export default function App() {
           paid: Number(next.paid || 0),
           remaining: Number(next.remaining || 0),
           status: next.status || "unpaid",
-          checklist_id: next.checklist_id || null,
+          checklist_id: linkedChecklistIds[0] || null,
+          checklist_ids: linkedChecklistIds,
           quantity: Number(next.quantity || 1),
           images: next.images || [],
         };
@@ -843,24 +941,23 @@ export default function App() {
           return updated;
         });
 
-        if (next.status === "paid" && linkedChecklistId) {
-          const clItem = checklistItems.find((c) => c.id === linkedChecklistId);
-          if (clItem) {
+        if (linkedChecklistIds.length > 0) {
+          for (const clId of linkedChecklistIds) {
+            const clItem = checklistItems.find((c) => c.id === clId);
+            const targetQty = clItem && clItem.quantity ? Number(clItem.quantity) : 1;
             await supabase
               .from("checklist")
-              .update({ checked: true, bought: clItem.quantity })
-              .eq("id", linkedChecklistId);
-            setChecklistItems((prev) =>
-              prev.map((c) =>
-                c.id === linkedChecklistId
-                  ? { ...c, checked: true, bought: c.quantity }
-                  : c,
-              ),
-            );
-            showToast("บันทึกรายการสำเร็จ ✅ ติ๊กรายการซื้อแล้ว");
-          } else {
-            showToast("บันทึกรายการสำเร็จ");
+              .update({ checked: true, bought: targetQty })
+              .eq("id", clId);
           }
+          setChecklistItems((prev) =>
+            prev.map((c) =>
+              linkedChecklistIds.includes(c.id)
+                ? { ...c, checked: true, bought: c.quantity ? Number(c.quantity) : 1 }
+                : c,
+            ),
+          );
+          showToast(`บันทึกรายการสำเร็จ ✅ เปลี่ยนสถานะเป็นซื้อแล้ว (${linkedChecklistIds.length} รายการ)`);
         } else {
           showToast("บันทึกรายการสำเร็จ");
         }
@@ -883,7 +980,7 @@ export default function App() {
         quantity: "1",
         images: [],
       });
-      setLinkedChecklistId(null);
+      setLinkedChecklistIds([]);
       setClSearch("");
     } catch (error) {
       console.log(error);
@@ -926,7 +1023,13 @@ export default function App() {
           : [],
     });
 
-    setLinkedChecklistId(item.checklist_id || null);
+    let initialClIds = [];
+    if (Array.isArray(item.checklist_ids) && item.checklist_ids.length > 0) {
+      initialClIds = item.checklist_ids;
+    } else if (item.checklist_id) {
+      initialClIds = [item.checklist_id];
+    }
+    setLinkedChecklistIds(initialClIds);
     setClSearch("");
     setOpen(true);
   };
@@ -1028,6 +1131,17 @@ export default function App() {
         localStorage.setItem(
           "am-home-budget-images",
           JSON.stringify(localImagesMap),
+        );
+      }
+
+      const localChecklistsMap = JSON.parse(
+        localStorage.getItem("am-home-budget-linked-checklists") || "{}",
+      );
+      if (localChecklistsMap[id]) {
+        delete localChecklistsMap[id];
+        localStorage.setItem(
+          "am-home-budget-linked-checklists",
+          JSON.stringify(localChecklistsMap),
         );
       }
     } catch (e) {
@@ -2613,24 +2727,38 @@ button:hover{
                                 )}
                               </div>
 
-                              {item.checklist_id && (() => {
-                                const cl = checklistItems.find(c => c.id === item.checklist_id);
-                                return cl ? (
-                                  <div style={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "5px",
-                                    padding: "4px 10px",
-                                    borderRadius: "999px",
-                                    background: "rgba(34,197,94,0.10)",
-                                    color: "#16a34a",
-                                    fontSize: "12px",
-                                    fontWeight: 600,
-                                  }}>
-                                    <span>✅</span>
-                                    <span>{cl.title}</span>
+                              {(() => {
+                                const ids = Array.isArray(item.checklist_ids) && item.checklist_ids.length > 0
+                                  ? item.checklist_ids
+                                  : (item.checklist_id ? [item.checklist_id] : []);
+                                if (!ids.length) return null;
+                                const linkedList = ids
+                                  .map((id) => checklistItems.find((c) => c.id === id))
+                                  .filter(Boolean);
+                                if (!linkedList.length) return null;
+                                return (
+                                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "2px" }}>
+                                    {linkedList.map((cl) => (
+                                      <div
+                                        key={cl.id}
+                                        style={{
+                                          display: "inline-flex",
+                                          alignItems: "center",
+                                          gap: "5px",
+                                          padding: "3px 9px",
+                                          borderRadius: "999px",
+                                          background: isDark ? "rgba(34,197,94,0.18)" : "rgba(34,197,94,0.10)",
+                                          color: isDark ? "#4ade80" : "#16a34a",
+                                          fontSize: "12px",
+                                          fontWeight: 600,
+                                        }}
+                                      >
+                                        <span>✅</span>
+                                        <span>{cl.title}</span>
+                                      </div>
+                                    ))}
                                   </div>
-                                ) : null;
+                                );
                               })()}
 
                               {item.images && item.images.length > 0 && (
@@ -3402,15 +3530,16 @@ button:hover{
                     />
                   </Field>
 
-                  <Field label="เชื่อมกับรายการซื้อ (ไม่บังคับ)">
-                    {linkedChecklistId ? (
+                  <Field label={`เชื่อมกับรายการซื้อ (เลือกได้หลายรายการ${linkedChecklistIds.length > 0 ? ` • ${linkedChecklistIds.length} รายการ` : ""})`}>
+                    {linkedChecklistIds.length > 0 && (
                       <div
                         style={{
+                          marginBottom: "12px",
                           display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "12px 16px",
-                          borderRadius: "18px",
+                          flexDirection: "column",
+                          gap: "8px",
+                          padding: "12px 14px",
+                          borderRadius: "16px",
                           background: isDark
                             ? "rgba(34, 197, 94, 0.12)"
                             : "rgba(34, 197, 94, 0.08)",
@@ -3423,109 +3552,174 @@ button:hover{
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "10px",
+                            justifyContent: "space-between",
+                            marginBottom: "2px",
                           }}
                         >
-                          <span style={{ fontSize: "16px" }}>✅</span>
-                          <div>
-                            <div
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "14px",
-                                color: isDark ? "#4ade80" : "#15803d",
-                              }}
-                            >
-                              {
-                                checklistItems.find(
-                                  (c) => c.id === linkedChecklistId,
-                                )?.title
-                              }
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "12px",
-                                color: isDark ? "#94a3b8" : "#6b7280",
-                              }}
-                            >
-                              {
-                                checklistItems.find(
-                                  (c) => c.id === linkedChecklistId,
-                                )?.category
-                              }
-                            </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              fontWeight: 700,
+                              fontSize: "13px",
+                              color: isDark ? "#4ade80" : "#15803d",
+                            }}
+                          >
+                            <span>✅</span>
+                            <span>รายการที่เชื่อมโยงแล้ว ({linkedChecklistIds.length})</span>
                           </div>
+                          <button
+                            type="button"
+                            onClick={() => setLinkedChecklistIds([])}
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              color: isDark ? "#f87171" : "#dc2626",
+                              fontSize: "12px",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              padding: "2px 6px",
+                              borderRadius: "6px",
+                            }}
+                          >
+                            ล้างทั้งหมด
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setLinkedChecklistId(null);
-                            setClSearch("");
-                          }}
-                          style={{
-                            background: isDark
-                              ? "rgba(255,255,255,0.1)"
-                              : "rgba(0,0,0,0.05)",
-                            border: "none",
-                            cursor: "pointer",
-                            color: isDark ? "#cbd5e1" : "#64748b",
-                            fontSize: "14px",
-                            width: "28px",
-                            height: "28px",
-                            borderRadius: "50%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            transition: "all 0.15s ease",
-                          }}
-                          title="ยกเลิกการเชื่อม"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ) : (
-                      <div>
-                        <input
-                          placeholder="ค้นหารายการซื้อ..."
-                          value={clSearch}
-                          onChange={(e) => setClSearch(e.target.value)}
-                          style={{ ...fieldStyle, marginBottom: "8px" }}
-                        />
                         <div
                           style={{
-                            maxHeight: "180px",
-                            overflowY: "auto",
-                            border: `1px solid ${C.line}`,
-                            borderRadius: "18px",
-                            background: isDark ? "#171A21" : "#FAFAFA",
-                            boxShadow: isDark
-                              ? "0 4px 20px rgba(0,0,0,0.25)"
-                              : "none",
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "8px",
                           }}
                         >
-                          {checklistItems
-                            .filter(
-                              (c) =>
-                                !clSearch ||
-                                c.title
-                                  ?.toLowerCase()
-                                  .includes(clSearch.toLowerCase()) ||
-                                c.category
-                                  ?.toLowerCase()
-                                  .includes(clSearch.toLowerCase()),
-                            )
-                            .map((c) => (
+                          {linkedChecklistIds.map((id) => {
+                            const cl = checklistItems.find((c) => c.id === id);
+                            if (!cl) return null;
+                            return (
+                              <div
+                                key={id}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                  padding: "6px 10px 6px 12px",
+                                  borderRadius: "12px",
+                                  background: isDark
+                                    ? "#1E293B"
+                                    : "#FFFFFF",
+                                  border: isDark
+                                    ? "1px solid rgba(255,255,255,0.12)"
+                                    : "1px solid rgba(0,0,0,0.1)",
+                                  fontSize: "13px",
+                                  color: C.text,
+                                  boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+                                }}
+                              >
+                                <span style={{ fontWeight: 600 }}>{cl.title}</span>
+                                {cl.category && (
+                                  <span
+                                    style={{
+                                      fontSize: "11px",
+                                      color: C.muted,
+                                      background: isDark
+                                        ? "rgba(255,255,255,0.06)"
+                                        : "rgba(0,0,0,0.04)",
+                                      padding: "1px 6px",
+                                      borderRadius: "6px",
+                                    }}
+                                  >
+                                    {cl.category}
+                                  </span>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setLinkedChecklistIds((prev) =>
+                                      prev.filter((item) => item !== id),
+                                    )
+                                  }
+                                  style={{
+                                    background: "transparent",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    color: C.muted,
+                                    fontSize: "13px",
+                                    padding: "0 2px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    lineHeight: 1,
+                                  }}
+                                  title="ลบรายการนี้"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <input
+                        placeholder="🔍 ค้นหารายการซื้อเพื่อเชื่อมโยง (คลิกเพื่อเลือก/ยกเลิก)..."
+                        value={clSearch}
+                        onChange={(e) => setClSearch(e.target.value)}
+                        style={{ ...fieldStyle, marginBottom: "8px" }}
+                      />
+                      <div
+                        style={{
+                          maxHeight: "190px",
+                          overflowY: "auto",
+                          border: `1px solid ${C.line}`,
+                          borderRadius: "18px",
+                          background: isDark ? "#171A21" : "#FAFAFA",
+                          boxShadow: isDark
+                            ? "0 4px 20px rgba(0,0,0,0.25)"
+                            : "none",
+                        }}
+                      >
+                        {checklistItems
+                          .filter(
+                            (c) =>
+                              !clSearch ||
+                              c.title
+                                ?.toLowerCase()
+                                .includes(clSearch.toLowerCase()) ||
+                              c.category
+                                ?.toLowerCase()
+                                .includes(clSearch.toLowerCase()),
+                          )
+                          .map((c) => {
+                            const isSelected = linkedChecklistIds.includes(c.id);
+                            return (
                               <button
                                 key={c.id}
                                 type="button"
-                                onClick={() => setLinkedChecklistId(c.id)}
+                                onClick={() => {
+                                  setLinkedChecklistIds((prev) =>
+                                    prev.includes(c.id)
+                                      ? prev.filter((id) => id !== c.id)
+                                      : [...prev, c.id],
+                                  );
+                                }}
                                 onMouseEnter={(e) => {
-                                  e.currentTarget.style.background = isDark
-                                    ? "rgba(255,255,255,0.06)"
-                                    : "rgba(0,0,0,0.03)";
+                                  e.currentTarget.style.background = isSelected
+                                    ? isDark
+                                      ? "rgba(34, 197, 94, 0.22)"
+                                      : "rgba(34, 197, 94, 0.15)"
+                                    : isDark
+                                      ? "rgba(255,255,255,0.06)"
+                                      : "rgba(0,0,0,0.03)";
                                 }}
                                 onMouseLeave={(e) => {
-                                  e.currentTarget.style.background =
-                                    "transparent";
+                                  e.currentTarget.style.background = isSelected
+                                    ? isDark
+                                      ? "rgba(34, 197, 94, 0.16)"
+                                      : "rgba(34, 197, 94, 0.10)"
+                                    : "transparent";
                                 }}
                                 style={{
                                   width: "100%",
@@ -3533,8 +3727,12 @@ button:hover{
                                   alignItems: "center",
                                   justifyContent: "space-between",
                                   gap: "8px",
-                                  padding: "12px 16px",
-                                  background: "transparent",
+                                  padding: "11px 16px",
+                                  background: isSelected
+                                    ? isDark
+                                      ? "rgba(34, 197, 94, 0.16)"
+                                      : "rgba(34, 197, 94, 0.10)"
+                                    : "transparent",
                                   border: "none",
                                   borderBottom: `1px solid ${C.lineFaint}`,
                                   cursor: "pointer",
@@ -3549,15 +3747,38 @@ button:hover{
                                     gap: "10px",
                                   }}
                                 >
-                                  <span style={{ fontSize: "14px" }}>
-                                    {c.checked ? "✅" : "🔲"}
+                                  <span
+                                    style={{
+                                      fontSize: "14px",
+                                      width: "22px",
+                                      height: "22px",
+                                      borderRadius: "6px",
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      background: isSelected
+                                        ? isDark
+                                          ? "#22c55e"
+                                          : "#16a34a"
+                                        : isDark
+                                          ? "rgba(255,255,255,0.08)"
+                                          : "rgba(0,0,0,0.06)",
+                                      color: isSelected ? "#ffffff" : C.muted,
+                                      fontWeight: 800,
+                                    }}
+                                  >
+                                    {isSelected ? "✓" : ""}
                                   </span>
                                   <div>
                                     <div
                                       style={{
                                         fontSize: "14px",
-                                        fontWeight: 500,
-                                        color: C.text,
+                                        fontWeight: isSelected ? 700 : 500,
+                                        color: isSelected
+                                          ? isDark
+                                            ? "#4ade80"
+                                            : "#15803d"
+                                          : C.text,
                                       }}
                                     >
                                       {c.title}
@@ -3566,7 +3787,7 @@ button:hover{
                                       style={{
                                         fontSize: "12px",
                                         color: C.muted,
-                                        marginTop: "2px",
+                                        marginTop: "1px",
                                       }}
                                     >
                                       {c.category}
@@ -3591,31 +3812,31 @@ button:hover{
                                   </span>
                                 )}
                               </button>
-                            ))}
-                          {checklistItems.filter(
-                            (c) =>
-                              !clSearch ||
-                              c.title
-                                ?.toLowerCase()
-                                .includes(clSearch.toLowerCase()) ||
+                            );
+                          })}
+                        {checklistItems.filter(
+                          (c) =>
+                            !clSearch ||
+                            c.title
+                              ?.toLowerCase()
+                              .includes(clSearch.toLowerCase()) ||
                               c.category
                                 ?.toLowerCase()
                                 .includes(clSearch.toLowerCase()),
-                          ).length === 0 && (
-                            <div
-                              style={{
-                                padding: "24px 16px",
-                                textAlign: "center",
-                                color: C.muted,
-                                fontSize: "13px",
-                              }}
-                            >
-                              ไม่พบรายการ
-                            </div>
-                          )}
-                        </div>
+                        ).length === 0 && (
+                          <div
+                            style={{
+                              padding: "24px 16px",
+                              textAlign: "center",
+                              color: C.muted,
+                              fontSize: "13px",
+                            }}
+                          >
+                            ไม่พบรายการ
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </Field>
                 </div>
 
@@ -3880,18 +4101,23 @@ button:hover{
                 <button
                   type="submit"
                   onClick={() => addItem()}
-                  disabled={!hasFormChanges}
+                  disabled={editingId ? !hasFormChanges : false}
                   style={{
                     minWidth: "130px",
                     height: "52px",
                     padding: "0 28px",
                     border: "none",
                     borderRadius: "999px",
-                    background: !hasFormChanges ? "#CCC" : "#111",
-                    color: "#fff",
+                    background: (editingId && !hasFormChanges)
+                      ? (isDark ? "#2A313E" : "#E2E8F0")
+                      : (isDark ? "#FFFFFF" : "#111111"),
+                    color: (editingId && !hasFormChanges)
+                      ? (isDark ? "#64748B" : "#94A3B8")
+                      : (isDark ? "#111111" : "#FFFFFF"),
                     fontSize: "15px",
-                    fontWeight: 600,
-                    cursor: !hasFormChanges ? "not-allowed" : "pointer",
+                    fontWeight: 700,
+                    cursor: (editingId && !hasFormChanges) ? "not-allowed" : "pointer",
+                    boxShadow: (editingId && !hasFormChanges) ? "none" : "0 4px 14px rgba(0,0,0,0.18)",
                     transition: "all .18s ease",
                   }}
                 >

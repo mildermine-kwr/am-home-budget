@@ -35,7 +35,59 @@ const CAT_TEXT = {
   "อื่นๆ": "#3F3F46",
 };
 
-export default function Checklist() {
+const CAT_COLORS_DARK = {
+  "ปลั๊กและสวิตช์": "rgba(59, 130, 246, 0.18)",
+  "เครื่องใช้ไฟฟ้า": "rgba(245, 158, 11, 0.18)",
+  "เฟอร์นิเจอร์": "rgba(34, 197, 94, 0.18)",
+  "วัสดุก่อสร้าง": "rgba(249, 115, 22, 0.18)",
+  "ห้องน้ำ": "rgba(99, 102, 241, 0.18)",
+  "ครัว": "rgba(236, 72, 153, 0.18)",
+  "ของตกแต่ง": "rgba(14, 165, 233, 0.18)",
+  "อื่นๆ": "rgba(255, 255, 255, 0.08)",
+};
+
+const CAT_TEXT_DARK = {
+  "ปลั๊กและสวิตช์": "#93C5FD",
+  "เครื่องใช้ไฟฟ้า": "#FDE68A",
+  "เฟอร์นิเจอร์": "#86EFAC",
+  "วัสดุก่อสร้าง": "#FDBA74",
+  "ห้องน้ำ": "#A5B4FC",
+  "ครัว": "#F472B6",
+  "ของตกแต่ง": "#7DD3FC",
+  "อื่นๆ": "#D4D4D8",
+};
+
+export default function Checklist({ isDark: propIsDark }) {
+  const [internalDark, setInternalDark] = useState(
+    () => document.documentElement.getAttribute("data-theme") === "dark"
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setInternalDark(document.documentElement.getAttribute("data-theme") === "dark");
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
+
+  const isDark = propIsDark !== undefined ? propIsDark : internalDark;
+
+  const C = {
+    text: isDark ? "#FFFFFF" : "#1B2430",
+    text2: isDark ? "#E0E6F0" : "#111111",
+    muted: isDark ? "#A0AEC0" : "#7C8798",
+    muted2: isDark ? "#718096" : "#A0AEC0",
+    card: isDark ? "#171A21" : "#FFFFFF",
+    cardChecked: isDark ? "rgba(23, 26, 33, 0.55)" : "#F9FAFB",
+    border: isDark ? "rgba(255, 255, 255, 0.08)" : "#DDE6F0",
+    borderFaint: isDark ? "rgba(255, 255, 255, 0.05)" : "#EEF3F9",
+    inputBg: isDark ? "#20242D" : "#FFFFFF",
+    inputColor: isDark ? "#FFFFFF" : "#1B2430",
+    pillBg: isDark ? "rgba(255, 255, 255, 0.08)" : "#EEF3F9",
+    btnSecondaryBg: isDark ? "#20242D" : "#F9FAFB",
+    modalBg: isDark ? "#171A21" : "#FFFFFF",
+  };
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dbError, setDbError] = useState(false);
@@ -106,21 +158,18 @@ export default function Checklist() {
 
   const toggleItem = (item) => {
     if (item.checked) {
-      // Uncheck: reset bought to 0
       setItems((prev) =>
         prev.map((i) => (i.id === item.id ? { ...i, checked: false, bought: 0 } : i))
       );
       supabase.from("checklist").update({ checked: false, bought: 0 }).eq("id", item.id);
       showToast("ยกเลิกเครื่องหมาย");
     } else if ((item.quantity || 1) <= 1) {
-      // Single item — check directly
       setItems((prev) =>
         prev.map((i) => (i.id === item.id ? { ...i, checked: true, bought: 1 } : i))
       );
       supabase.from("checklist").update({ checked: true, bought: 1 }).eq("id", item.id);
       showToast("ซื้อแล้ว ✓");
     } else {
-      // Multi-quantity — open buy modal
       const remaining = (item.quantity || 1) - (item.bought || 0);
       setBuyQty(remaining > 0 ? remaining : 1);
       setBuyingItem(item);
@@ -215,23 +264,24 @@ export default function Checklist() {
         style={{
           maxWidth: 640,
           margin: "60px auto",
-          background: "#fff",
+          background: C.card,
           borderRadius: 24,
           padding: 36,
-          border: "1px solid #DDE6F0",
+          border: `1px solid ${C.border}`,
           boxShadow: "0 4px 24px rgba(0,0,0,.06)",
+          color: C.text,
         }}
       >
         <div style={{ fontSize: 40, marginBottom: 16 }}>⚠️</div>
-        <h2 style={{ margin: "0 0 8px", color: "#1B2430" }}>
+        <h2 style={{ margin: "0 0 8px", color: C.text }}>
           ต้องสร้างตารางในฐานข้อมูลก่อน
         </h2>
-        <p style={{ color: "#7C8798", marginBottom: 24 }}>
+        <p style={{ color: C.muted, marginBottom: 24 }}>
           รัน SQL ด้านล่างนี้ใน Supabase → SQL Editor แล้ว reload หน้าเว็บ
         </p>
         <pre
           style={{
-            background: "#1B2430",
+            background: isDark ? "#101318" : "#1B2430",
             color: "#A8D8A8",
             borderRadius: 12,
             padding: "16px 20px",
@@ -258,8 +308,8 @@ alter table checklist disable row level security;`}
           onClick={() => { setDbError(false); loadItems(); }}
           style={{
             marginTop: 20,
-            background: "#111",
-            color: "#fff",
+            background: isDark ? "#FFFFFF" : "#111",
+            color: isDark ? "#111" : "#fff",
             border: "none",
             borderRadius: 14,
             padding: "12px 24px",
@@ -275,7 +325,7 @@ alter table checklist disable row level security;`}
   }
 
   return (
-    <div style={{ maxWidth: 860, margin: "0 auto" }}>
+    <div style={{ maxWidth: 860, margin: "0 auto", color: C.text }}>
       {toast.show && (
         <div
           style={{
@@ -283,8 +333,8 @@ alter table checklist disable row level security;`}
             bottom: 32,
             left: "50%",
             transform: "translateX(-50%)",
-            background: "#111",
-            color: "#fff",
+            background: isDark ? "#FFFFFF" : "#111",
+            color: isDark ? "#111" : "#fff",
             padding: "12px 24px",
             borderRadius: 99,
             fontWeight: 600,
@@ -303,7 +353,8 @@ alter table checklist disable row level security;`}
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,.5)",
+            background: "rgba(0,0,0,.6)",
+            backdropFilter: "blur(4px)",
             zIndex: 200,
             display: "flex",
             alignItems: "center",
@@ -313,19 +364,21 @@ alter table checklist disable row level security;`}
         >
           <div
             style={{
-              background: "#fff",
+              background: C.modalBg,
               borderRadius: 24,
               padding: 32,
               width: 320,
               textAlign: "center",
+              border: `1px solid ${C.border}`,
+              boxShadow: "0 12px 40px rgba(0,0,0,.3)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ fontSize: 36, marginBottom: 12 }}>🗑️</div>
-            <p style={{ fontWeight: 700, fontSize: 17, margin: "0 0 8px" }}>
+            <p style={{ fontWeight: 700, fontSize: 17, margin: "0 0 8px", color: C.text }}>
               ลบรายการนี้?
             </p>
-            <p style={{ color: "#7C8798", fontSize: 14, margin: "0 0 24px" }}>
+            <p style={{ color: C.muted, fontSize: 14, margin: "0 0 24px" }}>
               ไม่สามารถกู้คืนได้
             </p>
             <div style={{ display: "flex", gap: 10 }}>
@@ -333,8 +386,9 @@ alter table checklist disable row level security;`}
                 onClick={() => setDeleteId(null)}
                 style={{
                   flex: 1,
-                  border: "1px solid #DDE6F0",
-                  background: "#fff",
+                  border: `1px solid ${C.border}`,
+                  background: C.btnSecondaryBg,
+                  color: C.muted,
                   borderRadius: 12,
                   padding: "11px",
                   fontWeight: 600,
@@ -368,54 +422,56 @@ alter table checklist disable row level security;`}
       {buyingItem && (
         <div
           style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,.5)",
+            position: "fixed", inset: 0, background: "rgba(0,0,0,.6)",
+            backdropFilter: "blur(4px)",
             zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center",
           }}
           onClick={() => setBuyingItem(null)}
         >
           <div
             style={{
-              background: "#fff", borderRadius: 24, padding: 28,
-              width: 320, boxShadow: "0 20px 60px rgba(0,0,0,.18)",
+              background: C.modalBg, borderRadius: 24, padding: 28,
+              width: 320, border: `1px solid ${C.border}`,
+              boxShadow: "0 20px 60px rgba(0,0,0,.35)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <p style={{ margin: "0 0 4px", fontWeight: 800, fontSize: 17, color: "#1B2430" }}>
+            <p style={{ margin: "0 0 4px", fontWeight: 800, fontSize: 17, color: C.text }}>
               บันทึกการซื้อ
             </p>
             <p style={{
-              margin: "0 0 20px", fontSize: 13, color: "#7C8798",
+              margin: "0 0 20px", fontSize: 13, color: C.muted,
               whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
             }}>
               {buyingItem.title}
             </p>
 
-            <div style={{ background: "#F9FAFB", borderRadius: 16, padding: "14px 16px", marginBottom: 16 }}>
+            <div style={{ background: C.btnSecondaryBg, borderRadius: 16, padding: "14px 16px", marginBottom: 16, border: `1px solid ${C.borderFaint}` }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={{ fontSize: 13, color: "#7C8798" }}>ต้องซื้อทั้งหมด</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#1B2430" }}>{buyingItem.quantity} ชิ้น</span>
+                <span style={{ fontSize: 13, color: C.muted }}>ต้องซื้อทั้งหมด</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{buyingItem.quantity} ชิ้น</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={{ fontSize: 13, color: "#7C8798" }}>ซื้อไปแล้ว</span>
+                <span style={{ fontSize: 13, color: C.muted }}>ซื้อไปแล้ว</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#22C55E" }}>{buyingItem.bought || 0} ชิ้น</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 13, color: "#7C8798" }}>คงเหลือ</span>
+                <span style={{ fontSize: 13, color: C.muted }}>คงเหลือ</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#EF4444" }}>
                   {(buyingItem.quantity || 1) - (buyingItem.bought || 0)} ชิ้น
                 </span>
               </div>
             </div>
 
-            <p style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 700, color: "#1B2430" }}>
+            <p style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 700, color: C.text }}>
               ซื้อครั้งนี้กี่ชิ้น?
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
               <button
                 onClick={() => setBuyQty((q) => Math.max(1, q - 1))}
                 style={{
-                  width: 38, height: 38, borderRadius: 10, border: "1px solid #DDE6F0",
-                  background: "#F9FAFB", fontSize: 20, cursor: "pointer",
+                  width: 38, height: 38, borderRadius: 10, border: `1px solid ${C.border}`,
+                  background: C.btnSecondaryBg, color: C.text, fontSize: 20, cursor: "pointer",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >−</button>
@@ -429,9 +485,9 @@ alter table checklist disable row level security;`}
                 )))}
                 style={{
                   flex: 1, textAlign: "center", padding: "9px 12px",
-                  borderRadius: 10, border: "1px solid #DDE6F0",
-                  fontSize: 20, fontWeight: 800, color: "#1B2430",
-                  fontFamily: "inherit", outline: "none",
+                  borderRadius: 10, border: `1px solid ${C.border}`,
+                  fontSize: 20, fontWeight: 800, color: C.text,
+                  background: C.inputBg, fontFamily: "inherit", outline: "none",
                 }}
               />
               <button
@@ -439,8 +495,8 @@ alter table checklist disable row level security;`}
                   q + 1, (buyingItem.quantity || 1) - (buyingItem.bought || 0)
                 ))}
                 style={{
-                  width: 38, height: 38, borderRadius: 10, border: "1px solid #DDE6F0",
-                  background: "#F9FAFB", fontSize: 20, cursor: "pointer",
+                  width: 38, height: 38, borderRadius: 10, border: `1px solid ${C.border}`,
+                  background: C.btnSecondaryBg, color: C.text, fontSize: 20, cursor: "pointer",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >+</button>
@@ -451,7 +507,7 @@ alter table checklist disable row level security;`}
                 ✓ ครบ! จะย้ายไปที่ "ซื้อแล้ว"
               </p>
             ) : (
-              <p style={{ margin: "0 0 16px", fontSize: 12, color: "#7C8798", textAlign: "center" }}>
+              <p style={{ margin: "0 0 16px", fontSize: 12, color: C.muted, textAlign: "center" }}>
                 จะเหลืออีก {(buyingItem.quantity || 1) - (buyingItem.bought || 0) - buyQty} ชิ้น
               </p>
             )}
@@ -460,9 +516,9 @@ alter table checklist disable row level security;`}
               <button
                 onClick={() => setBuyingItem(null)}
                 style={{
-                  flex: 1, border: "1px solid #DDE6F0", background: "#fff",
+                  flex: 1, border: `1px solid ${C.border}`, background: C.btnSecondaryBg,
                   borderRadius: 12, padding: "12px", fontWeight: 600,
-                  cursor: "pointer", fontFamily: "inherit", color: "#7C8798",
+                  cursor: "pointer", fontFamily: "inherit", color: C.muted,
                 }}
               >
                 ยกเลิก
@@ -471,8 +527,8 @@ alter table checklist disable row level security;`}
                 onClick={confirmBuy}
                 style={{
                   flex: 2, border: "none",
-                  background: "linear-gradient(135deg,#111,#000)",
-                  color: "#fff", borderRadius: 12, padding: "12px",
+                  background: isDark ? "linear-gradient(135deg,#FFFFFF,#E2E8F0)" : "linear-gradient(135deg,#111,#000)",
+                  color: isDark ? "#111" : "#fff", borderRadius: 12, padding: "12px",
                   fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
                 }}
               >
@@ -486,7 +542,8 @@ alter table checklist disable row level security;`}
       {editingItem && (
         <div
           style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,.5)",
+            position: "fixed", inset: 0, background: "rgba(0,0,0,.6)",
+            backdropFilter: "blur(4px)",
             zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center",
             padding: 20,
           }}
@@ -494,13 +551,13 @@ alter table checklist disable row level security;`}
         >
           <div
             style={{
-              background: "#fff", borderRadius: 24, padding: 28,
-              width: "100%", maxWidth: 420,
-              boxShadow: "0 20px 60px rgba(0,0,0,.18)",
+              background: C.modalBg, borderRadius: 24, padding: 28,
+              width: "100%", maxWidth: 420, border: `1px solid ${C.border}`,
+              boxShadow: "0 20px 60px rgba(0,0,0,.35)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <p style={{ margin: "0 0 20px", fontWeight: 800, fontSize: 18, color: "#1B2430" }}>
+            <p style={{ margin: "0 0 20px", fontWeight: 800, fontSize: 18, color: C.text }}>
               แก้ไขรายการ
             </p>
 
@@ -512,38 +569,44 @@ alter table checklist disable row level security;`}
               placeholder="ชื่อรายการ"
               style={{
                 width: "100%", padding: "12px 16px", borderRadius: 12,
-                border: "1px solid #DDE6F0", fontSize: 15, fontFamily: "inherit",
+                border: `1px solid ${C.border}`, fontSize: 15, fontFamily: "inherit",
                 outline: "none", marginBottom: 14, boxSizing: "border-box",
-                fontWeight: 600, color: "#1B2430",
+                fontWeight: 600, color: C.text, background: C.inputBg,
               }}
             />
 
             <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
-              {CATS.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setEditCategory(c)}
-                  style={{
-                    border: editCategory === c ? "2px solid #111" : "1px solid #DDE6F0",
-                    background: editCategory === c ? CAT_COLORS[c] || "#F4F4F5" : "#fff",
-                    color: editCategory === c ? CAT_TEXT[c] || "#111" : "#7C8798",
-                    borderRadius: 999, padding: "5px 13px",
-                    fontWeight: editCategory === c ? 700 : 500,
-                    fontSize: 12, cursor: "pointer", fontFamily: "inherit",
-                  }}
-                >
-                  {c}
-                </button>
-              ))}
+              {CATS.map((c) => {
+                const isSelected = editCategory === c;
+                const bg = isDark ? (isSelected ? CAT_COLORS_DARK[c] : "rgba(255,255,255,0.05)") : (isSelected ? CAT_COLORS[c] : "#fff");
+                const textColor = isDark ? (isSelected ? CAT_TEXT_DARK[c] : C.muted) : (isSelected ? CAT_TEXT[c] : C.muted);
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setEditCategory(c)}
+                    style={{
+                      border: isSelected ? (isDark ? "1.5px solid #60A5FA" : "2px solid #111") : `1px solid ${C.border}`,
+                      background: bg,
+                      color: textColor,
+                      borderRadius: 999, padding: "5px 13px",
+                      fontWeight: isSelected ? 700 : 500,
+                      fontSize: 12, cursor: "pointer", fontFamily: "inherit",
+                    }}
+                  >
+                    {c}
+                  </button>
+                );
+              })}
             </div>
 
             <div style={{ display: "flex", gap: 10, marginBottom: 14, alignItems: "center" }}>
-              <span style={{ fontSize: 14, color: "#7C8798", fontWeight: 600, whiteSpace: "nowrap" }}>จำนวน</span>
+              <span style={{ fontSize: 14, color: C.muted, fontWeight: 600, whiteSpace: "nowrap" }}>จำนวน</span>
               <button
                 onClick={() => setEditQuantity((q) => Math.max(1, q - 1))}
                 style={{
-                  width: 34, height: 34, borderRadius: 10, border: "1px solid #DDE6F0",
-                  background: "#F9FAFB", fontSize: 18, cursor: "pointer",
+                  width: 34, height: 34, borderRadius: 10, border: `1px solid ${C.border}`,
+                  background: C.btnSecondaryBg, color: C.text, fontSize: 18, cursor: "pointer",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >−</button>
@@ -552,20 +615,20 @@ alter table checklist disable row level security;`}
                 onChange={(e) => setEditQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 style={{
                   width: 64, textAlign: "center", padding: "7px 10px",
-                  borderRadius: 10, border: "1px solid #DDE6F0",
+                  borderRadius: 10, border: `1px solid ${C.border}`,
                   fontSize: 15, fontFamily: "inherit", outline: "none",
-                  fontWeight: 700, color: "#1B2430",
+                  fontWeight: 700, color: C.text, background: C.inputBg,
                 }}
               />
               <button
                 onClick={() => setEditQuantity((q) => q + 1)}
                 style={{
-                  width: 34, height: 34, borderRadius: 10, border: "1px solid #DDE6F0",
-                  background: "#F9FAFB", fontSize: 18, cursor: "pointer",
+                  width: 34, height: 34, borderRadius: 10, border: `1px solid ${C.border}`,
+                  background: C.btnSecondaryBg, color: C.text, fontSize: 18, cursor: "pointer",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >+</button>
-              <span style={{ fontSize: 13, color: "#A0AEC0" }}>ชิ้น / อัน</span>
+              <span style={{ fontSize: 13, color: C.muted }}>ชิ้น / อัน</span>
             </div>
 
             <input
@@ -574,8 +637,9 @@ alter table checklist disable row level security;`}
               placeholder="หมายเหตุ (ไม่บังคับ)"
               style={{
                 width: "100%", padding: "10px 16px", borderRadius: 12,
-                border: "1px solid #DDE6F0", fontSize: 14, fontFamily: "inherit",
+                border: `1px solid ${C.border}`, fontSize: 14, fontFamily: "inherit",
                 outline: "none", marginBottom: 20, boxSizing: "border-box",
+                background: C.inputBg, color: C.text,
               }}
             />
 
@@ -583,9 +647,9 @@ alter table checklist disable row level security;`}
               <button
                 onClick={() => setEditingItem(null)}
                 style={{
-                  flex: 1, border: "1px solid #DDE6F0", background: "#fff",
+                  flex: 1, border: `1px solid ${C.border}`, background: C.btnSecondaryBg,
                   borderRadius: 12, padding: "12px", fontWeight: 600,
-                  cursor: "pointer", fontFamily: "inherit", color: "#7C8798",
+                  cursor: "pointer", fontFamily: "inherit", color: C.muted,
                 }}
               >
                 ยกเลิก
@@ -595,8 +659,10 @@ alter table checklist disable row level security;`}
                 disabled={!editTitle.trim() || saving}
                 style={{
                   flex: 2, border: "none",
-                  background: editTitle.trim() ? "linear-gradient(135deg,#111,#000)" : "#DDE6F0",
-                  color: editTitle.trim() ? "#fff" : "#aaa",
+                  background: editTitle.trim()
+                    ? (isDark ? "linear-gradient(135deg,#FFFFFF,#E2E8F0)" : "linear-gradient(135deg,#111,#000)")
+                    : (isDark ? "#20242D" : "#DDE6F0"),
+                  color: editTitle.trim() ? (isDark ? "#111" : "#fff") : "#777",
                   borderRadius: 12, padding: "12px", fontWeight: 700,
                   cursor: editTitle.trim() ? "pointer" : "default", fontFamily: "inherit",
                 }}
@@ -608,6 +674,7 @@ alter table checklist disable row level security;`}
         </div>
       )}
 
+      {/* Header */}
       <div
         style={{
           display: "flex",
@@ -624,13 +691,13 @@ alter table checklist disable row level security;`}
               margin: 0,
               fontSize: "clamp(28px,4vw,42px)",
               fontWeight: 800,
-              color: "#1B2430",
+              color: C.text,
               letterSpacing: "-0.03em",
             }}
           >
             รายการซื้อ
           </h1>
-          <p style={{ margin: "6px 0 0", color: "#7C8798", fontSize: 14 }}>
+          <p style={{ margin: "6px 0 0", color: C.muted, fontSize: 14 }}>
             {totalTodo > 0 ? `ยังต้องซื้ออีก ${totalTodo} รายการ` : "ซื้อครบแล้ว 🎉"}
             {totalDone > 0 && ` · ซื้อแล้ว ${totalDone} รายการ`}
           </p>
@@ -638,15 +705,15 @@ alter table checklist disable row level security;`}
         <button
           onClick={() => setShowForm(true)}
           style={{
-            background: "linear-gradient(135deg,#111,#000)",
-            color: "#fff",
+            background: isDark ? "linear-gradient(135deg,#FFFFFF,#E2E8F0)" : "linear-gradient(135deg,#111,#000)",
+            color: isDark ? "#111" : "#fff",
             border: "none",
             borderRadius: 36,
             padding: "12px 22px",
             fontWeight: 700,
             fontSize: 15,
             cursor: "pointer",
-            boxShadow: "0 6px 20px rgba(0,0,0,.28)",
+            boxShadow: isDark ? "0 6px 20px rgba(0,0,0,.5)" : "0 6px 20px rgba(0,0,0,.28)",
             fontFamily: "inherit",
             display: "flex",
             alignItems: "center",
@@ -657,6 +724,7 @@ alter table checklist disable row level security;`}
         </button>
       </div>
 
+      {/* Search & Filter */}
       <div
         style={{
           display: "flex",
@@ -672,48 +740,54 @@ alter table checklist disable row level security;`}
           style={{
             flex: 1,
             minWidth: 180,
-            padding: "10px 16px",
+            padding: "10px 18px",
             borderRadius: 999,
-            border: "1px solid #DDE6F0",
-            background: "#fff",
+            border: `1px solid ${C.border}`,
+            background: C.inputBg,
+            color: C.text,
             fontSize: 14,
             fontFamily: "inherit",
             outline: "none",
           }}
         />
-        {["all", "todo", "done"].map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            style={{
-              border: filter === f ? "none" : "1px solid #DDE6F0",
-              background: filter === f ? "#111" : "#fff",
-              color: filter === f ? "#fff" : "#7C8798",
-              borderRadius: 999,
-              padding: "10px 18px",
-              fontWeight: 600,
-              fontSize: 13,
-              cursor: "pointer",
-              fontFamily: "inherit",
-            }}
-          >
-            {f === "all" ? "ทั้งหมด" : f === "todo" ? "ยังต้องซื้อ" : "ซื้อแล้ว"}
-          </button>
-        ))}
+        {["all", "todo", "done"].map((f) => {
+          const isActive = filter === f;
+          return (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              style={{
+                border: isActive ? "none" : `1px solid ${C.border}`,
+                background: isActive ? (isDark ? "#FFFFFF" : "#111") : (isDark ? "rgba(255,255,255,0.06)" : "#fff"),
+                color: isActive ? (isDark ? "#111" : "#fff") : C.muted,
+                borderRadius: 999,
+                padding: "10px 18px",
+                fontWeight: 600,
+                fontSize: 13,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                transition: "all 0.15s ease",
+              }}
+            >
+              {f === "all" ? "ทั้งหมด" : f === "todo" ? "ยังต้องซื้อ" : "ซื้อแล้ว"}
+            </button>
+          );
+        })}
       </div>
 
+      {/* Add Form */}
       {showForm && (
         <div
           style={{
-            background: "#fff",
+            background: C.card,
             borderRadius: 20,
             padding: 24,
             marginBottom: 20,
-            border: "1px solid #DDE6F0",
-            boxShadow: "0 4px 20px rgba(0,0,0,.07)",
+            border: `1px solid ${C.border}`,
+            boxShadow: isDark ? "0 8px 32px rgba(0,0,0,.35)" : "0 4px 20px rgba(0,0,0,.07)",
           }}
         >
-          <p style={{ margin: "0 0 16px", fontWeight: 700, fontSize: 16, color: "#1B2430" }}>
+          <p style={{ margin: "0 0 16px", fontWeight: 700, fontSize: 16, color: C.text }}>
             เพิ่มรายการใหม่
           </p>
           <input
@@ -726,46 +800,54 @@ alter table checklist disable row level security;`}
               width: "100%",
               padding: "12px 16px",
               borderRadius: 12,
-              border: "1px solid #DDE6F0",
+              border: `1px solid ${C.border}`,
               fontSize: 15,
               fontFamily: "inherit",
               outline: "none",
               marginBottom: 12,
               boxSizing: "border-box",
+              background: C.inputBg,
+              color: C.text,
             }}
           />
           <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
-            {CATS.map((c) => (
-              <button
-                key={c}
-                onClick={() => setCategory(c)}
-                style={{
-                  border: category === c ? "2px solid #111" : "1px solid #DDE6F0",
-                  background: category === c ? CAT_COLORS[c] || "#F4F4F5" : "#fff",
-                  color: category === c ? CAT_TEXT[c] || "#111" : "#7C8798",
-                  borderRadius: 999,
-                  padding: "6px 14px",
-                  fontWeight: category === c ? 700 : 500,
-                  fontSize: 13,
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {c}
-              </button>
-            ))}
+            {CATS.map((c) => {
+              const isSelected = category === c;
+              const bg = isDark ? (isSelected ? CAT_COLORS_DARK[c] : "rgba(255,255,255,0.05)") : (isSelected ? CAT_COLORS[c] : "#fff");
+              const textColor = isDark ? (isSelected ? CAT_TEXT_DARK[c] : C.muted) : (isSelected ? CAT_TEXT[c] : C.muted);
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCategory(c)}
+                  style={{
+                    border: isSelected ? (isDark ? "1.5px solid #60A5FA" : "2px solid #111") : `1px solid ${C.border}`,
+                    background: bg,
+                    color: textColor,
+                    borderRadius: 999,
+                    padding: "6px 14px",
+                    fontWeight: isSelected ? 700 : 500,
+                    fontSize: 13,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {c}
+                </button>
+              );
+            })}
           </div>
           <div style={{ display: "flex", gap: 10, marginBottom: 12, alignItems: "center" }}>
-            <span style={{ fontSize: 14, color: "#7C8798", fontWeight: 600, whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: 14, color: C.muted, fontWeight: 600, whiteSpace: "nowrap" }}>
               จำนวน
             </span>
             <button
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               style={{
                 width: 34, height: 34, borderRadius: 10,
-                border: "1px solid #DDE6F0", background: "#F9FAFB",
-                fontSize: 18, cursor: "pointer", display: "flex",
+                border: `1px solid ${C.border}`, background: C.btnSecondaryBg,
+                color: C.text, fontSize: 18, cursor: "pointer", display: "flex",
                 alignItems: "center", justifyContent: "center", flexShrink: 0,
               }}
             >−</button>
@@ -777,21 +859,21 @@ alter table checklist disable row level security;`}
               style={{
                 width: 64, textAlign: "center",
                 padding: "7px 10px", borderRadius: 10,
-                border: "1px solid #DDE6F0", fontSize: 15,
+                border: `1px solid ${C.border}`, fontSize: 15,
                 fontFamily: "inherit", outline: "none",
-                fontWeight: 700, color: "#1B2430",
+                fontWeight: 700, color: C.text, background: C.inputBg,
               }}
             />
             <button
               onClick={() => setQuantity((q) => q + 1)}
               style={{
                 width: 34, height: 34, borderRadius: 10,
-                border: "1px solid #DDE6F0", background: "#F9FAFB",
-                fontSize: 18, cursor: "pointer", display: "flex",
+                border: `1px solid ${C.border}`, background: C.btnSecondaryBg,
+                color: C.text, fontSize: 18, cursor: "pointer", display: "flex",
                 alignItems: "center", justifyContent: "center", flexShrink: 0,
               }}
             >+</button>
-            <span style={{ fontSize: 13, color: "#A0AEC0" }}>ชิ้น / อัน</span>
+            <span style={{ fontSize: 13, color: C.muted }}>ชิ้น / อัน</span>
           </div>
           <input
             placeholder="หมายเหตุ (ไม่บังคับ)"
@@ -801,12 +883,14 @@ alter table checklist disable row level security;`}
               width: "100%",
               padding: "10px 16px",
               borderRadius: 12,
-              border: "1px solid #DDE6F0",
+              border: `1px solid ${C.border}`,
               fontSize: 14,
               fontFamily: "inherit",
               outline: "none",
               marginBottom: 16,
               boxSizing: "border-box",
+              background: C.inputBg,
+              color: C.text,
             }}
           />
           <div style={{ display: "flex", gap: 10 }}>
@@ -814,14 +898,14 @@ alter table checklist disable row level security;`}
               onClick={() => { setShowForm(false); setTitle(""); setNotes(""); }}
               style={{
                 flex: 1,
-                border: "1px solid #DDE6F0",
-                background: "#fff",
+                border: `1px solid ${C.border}`,
+                background: C.btnSecondaryBg,
                 borderRadius: 12,
                 padding: "12px",
                 fontWeight: 600,
                 cursor: "pointer",
                 fontFamily: "inherit",
-                color: "#7C8798",
+                color: C.muted,
               }}
             >
               ยกเลิก
@@ -832,8 +916,10 @@ alter table checklist disable row level security;`}
               style={{
                 flex: 2,
                 border: "none",
-                background: title.trim() ? "#111" : "#DDE6F0",
-                color: title.trim() ? "#fff" : "#aaa",
+                background: title.trim()
+                  ? (isDark ? "linear-gradient(135deg,#FFFFFF,#E2E8F0)" : "#111")
+                  : (isDark ? "#20242D" : "#DDE6F0"),
+                color: title.trim() ? (isDark ? "#111" : "#fff") : "#777",
                 borderRadius: 12,
                 padding: "12px",
                 fontWeight: 700,
@@ -847,8 +933,9 @@ alter table checklist disable row level security;`}
         </div>
       )}
 
+      {/* List Content */}
       {loading ? (
-        <div style={{ textAlign: "center", padding: 60, color: "#7C8798" }}>
+        <div style={{ textAlign: "center", padding: 60, color: C.muted }}>
           กำลังโหลด...
         </div>
       ) : filtered.length === 0 ? (
@@ -856,14 +943,14 @@ alter table checklist disable row level security;`}
           style={{
             textAlign: "center",
             padding: "60px 20px",
-            color: "#7C8798",
-            background: "#fff",
+            color: C.muted,
+            background: C.card,
             borderRadius: 20,
-            border: "1px solid #DDE6F0",
+            border: `1px solid ${C.border}`,
           }}
         >
           <div style={{ fontSize: 48, marginBottom: 12 }}>🛒</div>
-          <p style={{ margin: 0, fontWeight: 600, fontSize: 16 }}>
+          <p style={{ margin: 0, fontWeight: 600, fontSize: 16, color: C.text }}>
             {search ? "ไม่พบรายการที่ค้นหา" : "ยังไม่มีรายการ"}
           </p>
           {!search && (
@@ -879,6 +966,8 @@ alter table checklist disable row level security;`}
               title="ยังต้องซื้อ"
               count={todo.length}
               color="#EF4444"
+              isDark={isDark}
+              C={C}
             >
               {todo.map((item) => (
                 <ChecklistItem
@@ -887,6 +976,8 @@ alter table checklist disable row level security;`}
                   onToggle={toggleItem}
                   onDelete={() => setDeleteId(item.id)}
                   onEdit={() => openEdit(item)}
+                  isDark={isDark}
+                  C={C}
                 />
               ))}
             </Section>
@@ -897,6 +988,8 @@ alter table checklist disable row level security;`}
               title="ซื้อแล้ว"
               count={done.length}
               color="#22C55E"
+              isDark={isDark}
+              C={C}
             >
               {done.map((item) => (
                 <ChecklistItem
@@ -905,6 +998,8 @@ alter table checklist disable row level security;`}
                   onToggle={toggleItem}
                   onDelete={() => setDeleteId(item.id)}
                   onEdit={() => openEdit(item)}
+                  isDark={isDark}
+                  C={C}
                 />
               ))}
             </Section>
@@ -915,7 +1010,7 @@ alter table checklist disable row level security;`}
   );
 }
 
-function Section({ title, count, color, children }) {
+function Section({ title, count, color, children, isDark, C }) {
   return (
     <div style={{ marginBottom: 24 }}>
       <div
@@ -934,15 +1029,16 @@ function Section({ title, count, color, children }) {
             background: color,
             display: "inline-block",
             flexShrink: 0,
+            boxShadow: `0 0 10px ${color}66`,
           }}
         />
-        <span style={{ fontWeight: 700, fontSize: 14, color: "#1B2430" }}>
+        <span style={{ fontWeight: 700, fontSize: 14, color: C.text }}>
           {title}
         </span>
         <span
           style={{
-            background: "#EEF3F9",
-            color: "#7C8798",
+            background: C.pillBg,
+            color: C.muted,
             borderRadius: 999,
             padding: "2px 10px",
             fontSize: 12,
@@ -959,18 +1055,26 @@ function Section({ title, count, color, children }) {
   );
 }
 
-function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
+function ChecklistItem({ item, onToggle, onDelete, onEdit, isDark, C }) {
+  const catBg = isDark
+    ? (CAT_COLORS_DARK[item.category] || "rgba(255,255,255,0.08)")
+    : (CAT_COLORS[item.category] || "#F4F4F5");
+  const catColor = isDark
+    ? (CAT_TEXT_DARK[item.category] || "#D4D4D8")
+    : (CAT_TEXT[item.category] || "#3F3F46");
+
   return (
     <div
       style={{
-        background: item.checked ? "#F9FAFB" : "#fff",
-        border: "1px solid #DDE6F0",
+        background: item.checked ? C.cardChecked : C.card,
+        border: `1px solid ${C.border}`,
         borderRadius: 16,
-        padding: "14px 16px",
+        padding: "14px 18px",
         display: "flex",
         alignItems: "center",
         gap: 14,
         transition: "all .2s ease",
+        boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.18)" : "0 2px 8px rgba(0,0,0,0.03)",
       }}
     >
       <button
@@ -979,8 +1083,8 @@ function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
           width: 28,
           height: 28,
           borderRadius: 8,
-          border: item.checked ? "none" : "2px solid #DDE6F0",
-          background: item.checked ? "#22C55E" : "#fff",
+          border: item.checked ? "none" : `2px solid ${isDark ? "rgba(255,255,255,0.2)" : "#DDE6F0"}`,
+          background: item.checked ? "#22C55E" : (isDark ? "rgba(255,255,255,0.05)" : "#fff"),
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
@@ -1000,7 +1104,7 @@ function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
           style={{
             fontWeight: 600,
             fontSize: 15,
-            color: item.checked ? "#A0AEC0" : "#1B2430",
+            color: item.checked ? C.muted2 : C.text,
             textDecoration: item.checked ? "line-through" : "none",
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -1021,8 +1125,12 @@ function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
           {(item.quantity || 1) > 1 && !item.checked && (
             <span
               style={{
-                background: (item.bought || 0) > 0 ? "#FEF3C7" : "#1B2430",
-                color: (item.bought || 0) > 0 ? "#92400E" : "#fff",
+                background: (item.bought || 0) > 0
+                  ? (isDark ? "rgba(245, 158, 11, 0.2)" : "#FEF3C7")
+                  : (isDark ? "rgba(255, 255, 255, 0.12)" : "#1B2430"),
+                color: (item.bought || 0) > 0
+                  ? (isDark ? "#FDE68A" : "#92400E")
+                  : (isDark ? "#FFFFFF" : "#fff"),
                 borderRadius: 999,
                 padding: "2px 9px",
                 fontSize: 11,
@@ -1037,8 +1145,8 @@ function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
           {(item.quantity || 1) > 1 && !item.checked && (item.bought || 0) > 0 && (
             <span
               style={{
-                background: "#FEF2F2",
-                color: "#DC2626",
+                background: isDark ? "rgba(239, 68, 68, 0.2)" : "#FEF2F2",
+                color: isDark ? "#FCA5A5" : "#DC2626",
                 borderRadius: 999,
                 padding: "2px 9px",
                 fontSize: 11,
@@ -1050,7 +1158,8 @@ function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
           )}
           {item.checked && (item.quantity || 1) > 1 && (
             <span style={{
-              background: "#F0FDF4", color: "#166534",
+              background: isDark ? "rgba(34, 197, 94, 0.18)" : "#F0FDF4",
+              color: isDark ? "#86EFAC" : "#166534",
               borderRadius: 999, padding: "2px 9px",
               fontSize: 11, fontWeight: 700,
             }}>
@@ -1060,8 +1169,8 @@ function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
           {item.category && (
             <span
               style={{
-                background: CAT_COLORS[item.category] || "#F4F4F5",
-                color: CAT_TEXT[item.category] || "#3F3F46",
+                background: catBg,
+                color: catColor,
                 borderRadius: 999,
                 padding: "2px 10px",
                 fontSize: 11,
@@ -1072,7 +1181,7 @@ function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
             </span>
           )}
           {item.notes && (
-            <span style={{ fontSize: 12, color: "#A0AEC0" }}>{item.notes}</span>
+            <span style={{ fontSize: 12, color: C.muted }}>{item.notes}</span>
           )}
         </div>
       </div>
@@ -1080,29 +1189,29 @@ function ChecklistItem({ item, onToggle, onDelete, onEdit }) {
       <button
         onClick={onEdit}
         style={{
-          border: "none", background: "transparent", color: "#C8D3DF",
+          border: "none", background: "transparent", color: isDark ? "#718096" : "#C8D3DF",
           cursor: "pointer", padding: 6, borderRadius: 8,
           display: "flex", alignItems: "center", justifyContent: "center",
           flexShrink: 0, transition: "color .2s",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#6B8CAE")}
-        onMouseLeave={(e) => (e.currentTarget.style.color = "#C8D3DF")}
+        onMouseEnter={(e) => (e.currentTarget.style.color = isDark ? "#60A5FA" : "#3B82F6")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = isDark ? "#718096" : "#C8D3DF")}
       >
-        <EditOutlined style={{ fontSize: 14 }} />
+        <EditOutlined style={{ fontSize: 15 }} />
       </button>
 
       <button
         onClick={onDelete}
         style={{
-          border: "none", background: "transparent", color: "#DDE6F0",
+          border: "none", background: "transparent", color: isDark ? "#718096" : "#DDE6F0",
           cursor: "pointer", padding: 6, borderRadius: 8,
           display: "flex", alignItems: "center", justifyContent: "center",
           flexShrink: 0, transition: "color .2s",
         }}
         onMouseEnter={(e) => (e.currentTarget.style.color = "#EF4444")}
-        onMouseLeave={(e) => (e.currentTarget.style.color = "#DDE6F0")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = isDark ? "#718096" : "#DDE6F0")}
       >
-        <DeleteOutlined style={{ fontSize: 15 }} />
+        <DeleteOutlined style={{ fontSize: 16 }} />
       </button>
     </div>
   );

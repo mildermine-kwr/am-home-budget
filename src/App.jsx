@@ -1637,7 +1637,7 @@ button:hover{
           fontFamily: "'IBM Plex Sans Thai', sans-serif",
         }}
       >
-        {page === "checklist" && <Checklist />}
+        {page === "checklist" && <Checklist isDark={isDark} />}
         {page === "settings" && (
           <div style={{ maxWidth: "640px", margin: "0 auto" }}>
             <h2

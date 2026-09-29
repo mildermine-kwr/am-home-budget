@@ -491,7 +491,6 @@ th{
   flex: 1;
   padding: 10px 8px;
   border: 1.5px solid var(--line);
-  borderRadius: 10px;
   background: transparent;
   color: var(--muted);
   font-size: 13px;

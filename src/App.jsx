@@ -405,7 +405,22 @@ export default function App() {
       return;
     }
 
-    const safeData = Array.isArray(data) ? data.map(normalizeItem) : [];
+    let localImagesMap = {};
+    try {
+      localImagesMap = JSON.parse(
+        localStorage.getItem("am-home-budget-images") || "{}",
+      );
+    } catch (e) {
+      console.error(e);
+    }
+
+    const safeData = (Array.isArray(data) ? data : []).map((item) => {
+      const itemImages =
+        Array.isArray(item.images) && item.images.length > 0
+          ? item.images
+          : localImagesMap[item.id] || (item.image ? [item.image] : []);
+      return normalizeItem({ ...item, images: itemImages });
+    });
 
     const sortNewest = (arr) =>
       [...arr].sort(
@@ -716,6 +731,23 @@ export default function App() {
           }
         }
 
+        try {
+          const localImagesMap = JSON.parse(
+            localStorage.getItem("am-home-budget-images") || "{}",
+          );
+          if (form.images && form.images.length > 0) {
+            localImagesMap[editingId] = form.images;
+          } else {
+            delete localImagesMap[editingId];
+          }
+          localStorage.setItem(
+            "am-home-budget-images",
+            JSON.stringify(localImagesMap),
+          );
+        } catch (e) {
+          console.error(e);
+        }
+
         setData((prev) => ({
           ...prev,
           [activeTab]: (prev[activeTab] || []).map((item) =>
@@ -750,22 +782,42 @@ export default function App() {
           showToast("แก้ไขรายการสำเร็จ");
         }
       } else {
-        let { error } = await supabase.from("budget").insert(next);
+        let insertedId = Date.now();
+        let res = await supabase.from("budget").insert(next).select();
 
-        if (error) {
-          console.warn("Supabase insert error (attempting retry without images column):", error);
+        if (res.error) {
+          console.warn("Supabase insert error (attempting retry without images column):", res.error);
           const { images, ...nextWithoutImages } = next;
-          const retry = await supabase.from("budget").insert(nextWithoutImages);
+          res = await supabase.from("budget").insert(nextWithoutImages).select();
 
-          if (retry.error) {
-            console.log(retry.error);
+          if (res.error) {
+            console.log(res.error);
             showToast("บันทึกรายการไม่สำเร็จ");
             return;
           }
         }
 
+        if (res.data && res.data[0]?.id) {
+          insertedId = res.data[0].id;
+        }
+
+        try {
+          if (form.images && form.images.length > 0) {
+            const localImagesMap = JSON.parse(
+              localStorage.getItem("am-home-budget-images") || "{}",
+            );
+            localImagesMap[insertedId] = form.images;
+            localStorage.setItem(
+              "am-home-budget-images",
+              JSON.stringify(localImagesMap),
+            );
+          }
+        } catch (e) {
+          console.error(e);
+        }
+
         const optimisticItem = {
-          id: Date.now(),
+          id: insertedId,
           created_at: new Date().toISOString(),
           type: activeTab,
           date: next.date || null,
@@ -966,6 +1018,21 @@ export default function App() {
 
   const deleteItem = async (id) => {
     await supabase.from("budget").delete().eq("id", id);
+
+    try {
+      const localImagesMap = JSON.parse(
+        localStorage.getItem("am-home-budget-images") || "{}",
+      );
+      if (localImagesMap[id]) {
+        delete localImagesMap[id];
+        localStorage.setItem(
+          "am-home-budget-images",
+          JSON.stringify(localImagesMap),
+        );
+      }
+    } catch (e) {
+      console.error(e);
+    }
 
     setData((prev) => ({
       ...prev,
